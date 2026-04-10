@@ -6,49 +6,49 @@
     <title>Current Fire Department Schedule</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
 
         /* Default Dark Theme Variables */
         :root {
-            --bg-color: #10141a;
-            --card-bg: #1C212B;
+            --bg-color: #0f1e2d;
+            --card-bg: #162b40;
             --text-color: #fff;
             --muted-text: #aeb6c1;
-            --border-color: #30363d;
-            --event-hover: #30363d;
+            --border-color: #1f3d5c;
+            --event-hover: #1f3d5c;
             --today-bg: #004085;
             --today-border: #9fceff;
-            --item-bg: #10141a;
+            --item-bg: #0f1e2d;
         }
 
         /* Light Theme Overrides */
         body.light-theme {
-            --bg-color: #f5f5f7;
-            --card-bg: #ffffff;
+            --bg-color: #e1e1e1;
+            --card-bg: #f0f0f0;
             --text-color: #1d1d1f;
             --muted-text: #86868b;
-            --border-color: #d2d2d7;
-            --event-hover: #f0f0f5;
+            --border-color: #c3c3c3;
+            --event-hover: #e1e1e1;
             --today-bg: #e6f2ff;
             --today-border: #007bff;
-            --item-bg: #fbfbfd;
+            --item-bg: #ffffff;
         }
 
         html, body {
             height: 100%;
             margin: 0;
-            overflow: hidden; 
+            overflow: hidden;
         }
-        
+
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Inter', sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 10px;
-            font-size: 625%; 
+            font-size: 625%;
             box-sizing: border-box;
             transition: background-color 0.5s, color 0.5s;
         }
@@ -60,18 +60,18 @@
         .page-container {
             width: 100%;
             height: 100%;
-            display: none; 
-            min-height: 0; 
+            display: none;
+            min-height: 0;
         }
         #page-dashboard, #page-chores { flex-direction: column; align-items: center; height: 100%; gap: 15px; width: 100%; }
-        
+
         .main-layout { display: flex; width: 100%; gap: 15px; min-height: 0; }
         #top-section { flex-shrink: 0; }
         #combined-permits-container { flex-grow: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; }
         .container { width: 100%; flex: 1; display: flex; flex-direction: column; min-height: 0; }
-        
+
         h2 {
-            font-family: 'Agency FB', sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             text-transform: uppercase;
             text-align: center;
             color: var(--muted-text);
@@ -91,7 +91,7 @@
             padding: 9px 18px;
             border-bottom: 1px solid var(--border-color);
             flex-shrink: 0;
-            border-radius: 4px;
+            border-radius: 0px;
         }
         .event.clickable { cursor: pointer; }
         .event.clickable:hover { background-color: var(--event-hover); }
@@ -100,7 +100,7 @@
         .event-name { font-size: 0.23em; font-weight: 500; color: var(--text-color); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
         .event-role { font-size: 0.15em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; margin-top: 1px; letter-spacing: 0.5px; }
         .event-until { font-size: 0.22em; color: var(--muted-text); font-weight: 400; }
-        
+
         .permit-details { display: flex; flex-direction: column; width: 100%; gap: 4px; }
         .permit-address { font-size: 0.23em; font-weight: 500; color: var(--text-color); white-space: normal; }
         .permit-burn-info { display: flex; justify-content: space-between; align-items: center; width: 100%; }
@@ -108,8 +108,8 @@
         .permit-time { font-size: 0.18em; color: var(--muted-text); font-weight: 400; }
 
         .no-events { text-align: center; color: var(--muted-text); padding: 15px; background-color: var(--card-bg); font-size: 0.23em; flex-shrink: 0; }
-        
-        #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 4px; padding: 20px;}
+
+        #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 0px; padding: 20px;}
         #danger-meter { width: 40%; height: 60px; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 0.4em; font-weight: 700; text-transform: uppercase; }
         #danger-date { font-size: 0.12em; color: var(--muted-text); margin-top: 5px; }
         .risk-snow-cover { background-color: #ffffff; color: #000 !important; border-color:#000 !important;}
@@ -119,24 +119,24 @@
         .risk-very-high { background-color: #8B4513; color:#fff;}
         .risk-extreme { background-color: #dc3545; color:#fff;}
 
-        #permitMap { height: 100%; width: 100%; border-radius: 4px; }
-        .permit-tooltip { background-color: rgba(255, 255, 255, 0.9); border: 1px solid #888; border-radius: 3px; color: #333; font-weight: bold; padding: 4px 8px; font-size: 10pt; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        #permitMap { height: 100%; width: 100%; border-radius: 0px; }
+        .permit-tooltip { background-color: rgba(255, 255, 255, 0.9); border: 1px solid #888; border-radius: 0px; color: #333; font-weight: bold; padding: 4px 8px; font-size: 10pt; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
         .flame-marker-icon { filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.7)); }
-        
+
         #page-calendar { display: none; flex-direction: column; gap: 15px; }
         .calendar-content-row { display: flex; flex: 1; gap: 15px; min-height: 0; margin-top: 15px; }
         .calendar-main-content { flex: 5; display: flex; flex-direction: column; min-height: 0; }
-        .calendar-sidebar { flex: 1; background-color: var(--card-bg); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+        .calendar-sidebar { flex: 1; background-color: var(--card-bg); border-radius: 0px; padding: 10px; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
         .calendar-sidebar h3 { font-size: 14pt; text-align: center; margin: 0 0 10px 0; color: var(--muted-text); border-bottom: 1px solid var(--border-color); padding-bottom: 5px; flex-shrink: 0; }
-        
+
         #open-shifts-section { display: flex; flex-direction: column; flex-grow: 1; min-height: 0; }
         #open-shifts-list { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; min-height: 0; padding-top: 5px; }
 
         .open-shift-link, .open-shift-link:visited { text-decoration: none; color: inherit; display: block; }
-        
-        .open-shift-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            background-color: var(--item-bg); padding: 10px 12px; border-radius: 6px; 
+
+        .open-shift-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background-color: var(--item-bg); padding: 10px 12px; border-radius: 0px;
             margin-bottom: 8px; font-size: clamp(10px, 1.1vw, 16px); gap: 15px;
             flex-shrink: 0; border: 1px solid var(--border-color);
         }
@@ -148,25 +148,25 @@
 
         .calendar-arrow { opacity: 0.15; cursor: pointer; transition: opacity 0.3s ease; user-select: none; padding: 0 15px; font-size: 24px; }
         .calendar-arrow:hover { opacity: 0.8; }
-        
+
         #calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; flex-grow: 1; min-height: 0; }
-        
+
         .chores-header, .calendar-header { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; margin-bottom: 5px; }
         .chores-header { font-size: 12pt; color: #ffc107; font-weight: bold; }
         .calendar-header { font-size: 14pt; color: var(--muted-text); }
-        
-        .calendar-day { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 5px; font-size: 10pt; display: flex; flex-direction: column; overflow: hidden; min-height: 0; min-width: 0; border-radius: 4px;}
+
+        .calendar-day { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 5px; font-size: 10pt; display: flex; flex-direction: column; overflow: hidden; min-height: 0; min-width: 0; border-radius: 0px;}
         .calendar-day.is-today { background-color: var(--today-bg); border-color: var(--today-border); }
         .calendar-day.other-month { opacity: 0.3; }
-        
+
         .day-number { display: flex; justify-content: space-between; align-items: center; color: var(--muted-text); margin-bottom: 5px; font-weight: 700; flex-shrink: 0; }
         .calendar-day.new-month { border-top: 2px solid #ffc107; }
         .calendar-day.new-month .day-number { color: #ffc107; }
         .chore-number { font-size: 0.7em; font-weight: normal; color: #ffc107; background-color: rgba(255, 255, 255, 0.1); border-radius: 50%; width: 1.5em; height: 1.5em; display: inline-flex; align-items: center; justify-content: center; }
         body.light-theme .chore-number { background-color: rgba(0,0,0,0.05); }
-        
-        .calendar-event { font-size: clamp(6px, 1.2vh, 10pt); padding: 1px 4px; border-radius: 3px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: 1px solid transparent; line-height: 1.2; flex-shrink: 1; min-height: 0; }
-        
+
+        .calendar-event { font-size: clamp(6px, 1.2vh, 10pt); padding: 1px 4px; border-radius: 0px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: 1px solid transparent; line-height: 1.2; flex-shrink: 1; min-height: 0; }
+
         .calendar-event.event-open { background-color: transparent; background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(128,128,128,0.2) 4px, rgba(128,128,128,0.2) 8px); color: var(--text-color); border: 1px dashed var(--muted-text); }
         .event-career { background-color: #6f42c1; color: white; }
         .event-per-diem { background-color: #e83e8c; color: white; }
@@ -177,15 +177,15 @@
 
         .calendar-legend { display: flex; justify-content: center; gap: 25px; margin-bottom: 10px; font-size: 11pt; color: var(--muted-text); flex-shrink: 0; }
         .legend-item { display: flex; align-items: center; gap: 8px; }
-        .legend-color-box { width: 20px; height: 20px; border-radius: 4px; }
-        .chore-item { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 25px 40px; border-radius: 8px; text-align: center; overflow: hidden; min-height: 0; }
+        .legend-color-box { width: 20px; height: 20px; border-radius: 0px; }
+        .chore-item { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 25px 40px; border-radius: 0px; text-align: center; overflow: hidden; min-height: 0; }
         .chore-list { list-style-type: none; padding: 0; margin: 0; font-size: 28pt; font-weight: 700; line-height: 1.5; color: var(--text-color); }
         .duties-date { font-size: 18pt; color: var(--muted-text); text-align: center; margin-top: -10px; margin-bottom: 15px; }
         .national-day { font-size: 18pt; color: var(--muted-text); font-style: italic; margin-top: 20px; }
         #debug-log { display: none; }
-        
+
         #permit-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
-        #permit-modal-content { background-color: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--muted-text); width: 100%; max-width: 900px; color: var(--text-color); font-size: 14pt; cursor: pointer; display: flex; flex-direction: column; }
+        #permit-modal-content { background-color: var(--card-bg); padding: 15px; border-radius: 0px; border: 1px solid var(--muted-text); width: 100%; max-width: 900px; color: var(--text-color); font-size: 14pt; cursor: pointer; display: flex; flex-direction: column; }
         #permit-modal-header h2 { margin-top: 0; margin-bottom: 5px; font-size: 14pt; color: #ffc107; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
         #permit-modal-body { max-height: 70vh; overflow-y: auto; line-height: 1.4; }
         #permit-modal-body table { width: 100%; border-collapse: collapse; font-size: 11pt; }
@@ -193,7 +193,7 @@
         #permit-modal-body tr:last-child td { border-bottom: none; }
         #permit-modal-body td:first-child { color: var(--muted-text); width: 30%; font-weight: bold; }
         #permit-modal-body strong { color: #ffc107; font-weight: 500; }
-        
+
         #audio-toggle-wrapper { display: none; position: absolute; top: 15px; left: 15px; z-index: 10000; opacity: 0.25; transition: opacity 0.3s ease; }
         #audio-toggle-wrapper:hover { opacity: 1; }
         .toggle-switch { position: relative; display: inline-block; width: 32px; height: 18px; margin: 0; }
@@ -206,13 +206,13 @@
         .announcement-content p { font-size: 16pt; line-height: 1.4; margin: 0 0 10px 0; color: var(--text-color); }
         .announcement-content h1, .announcement-content h2, .announcement-content h3 { color: #ffc107; margin-top:0; border:none; padding:0; text-align: left; }
         .announcement-content ul, .announcement-content ol { text-align: left; font-size: 16pt; margin: 0 0 10px 20px; color: var(--text-color);}
-        .announcement-card { background: var(--item-bg); padding: 20px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 10px; text-align: left;}
+        .announcement-card { background: var(--item-bg); padding: 20px; border-radius: 0px; border: 1px solid var(--border-color); margin-bottom: 10px; text-align: left;}
 
         #admin-link:hover { opacity: 1 !important; }
     </style>
 </head>
 <body>
-    
+
     <a href="admin.php" id="admin-link" title="Open Admin Dashboard" style="position: absolute; bottom: 15px; right: 15px; z-index: 10000; opacity: 0.15; color: var(--text-color); text-decoration: none; font-size: 24px; transition: opacity 0.3s;">⚙️</a>
 
     <div id="audio-toggle-wrapper" title="Toggle Audio Announcements">
@@ -235,12 +235,12 @@
         <div class="container" id="combined-permits-container">
              <h2>Active Online-Issued Burn Permits</h2>
              <div id="permits-content-wrapper" style="display: flex; flex-grow: 1; min-height: 0; gap: 15px; width: 100%;">
-                 <div id="burnPermitsContainer" style="flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; min-height: 0;"></div>
-                 <div id="permitMap" style="flex: 1; border-radius: 4px;"></div>
+                 <div id="burnPermitsContainer" style="flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 0px; overflow: hidden; min-height: 0;"></div>
+                 <div id="permitMap" style="flex: 1; border-radius: 0px;"></div>
              </div>
         </div>
     </div>
-    
+
     <div id="page-calendar" class="page-container">
         <div class="calendar-content-row">
             <div class="calendar-main-content">
@@ -249,7 +249,7 @@
                     <h2 id="calendar-month-year" style="border: none; margin: 0; padding: 0;"></h2>
                     <div class="calendar-arrow" onclick="changeMonth(1)">&#10095;</div>
                 </div>
-                
+
                 <div class="calendar-legend">
                     <div class="legend-item"><div class="legend-color-box event-career"></div><span>Career</span></div>
                     <div class="legend-item"><div class="legend-color-box event-per-diem"></div><span>Per Diem</span></div>
@@ -272,15 +272,15 @@
             </div>
         </div>
     </div>
-    
+
     <div id="page-chores" class="page-container">
         <h2 style="margin-bottom: 5px;">Today's Overview</h2>
         <p id="duties-page-date" class="duties-date"></p>
-        
+
         <div id="chores-layout" style="display: flex; width: 100%; height: calc(100% - 120px); gap: 15px; min-height: 0;">
-            
+
             <div id="chores-duties-column" style="flex: 1.5; display: flex; flex-direction: column; gap: 15px; min-width: 0; min-height: 0;">
-                
+
                 <div class="chore-item" id="announcements-wrapper" style="display: none; flex-direction: column; padding: 20px;">
                     <h2 style="font-size: 24pt; border: none; padding: 0; margin: 0 0 15px 0; color: #ffc107;">📢 Announcements</h2>
                     <div id="announcements-container" style="display: flex; flex-direction: column; overflow: hidden;"></div>
@@ -295,7 +295,7 @@
 
             <div id="chores-staff-column" style="flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0;">
                  <div class="chore-item" style="height: 100%; box-sizing: border-box; display: flex; flex-direction: column; padding: 20px; overflow: hidden; min-height: 0;">
-                     
+
                      <div id="dept-events-container" style="display: none; margin-bottom: 30px; flex-shrink: 0;">
                          <h2 style="font-size: 24pt; border: none; padding: 0; margin: 0 0 15px 0;">📅 Department Events</h2>
                          <div id="dept-events-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
@@ -334,7 +334,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.5.0/ical.min.js"></script>
     <script>
-        let appConfig = null; 
+        let appConfig = null;
         let holidaysByDate = {};
         let announcedPermitUIDs = new Set();
         let permitCheckDate = new Date().toLocaleDateString();
@@ -343,18 +343,18 @@
         let modalCloseTimer = null;
         let permitMap = null;
         let permitMarkers = [];
-        
+
         let hasFireDanger = false;
         let hasBurnPermits = false;
-        let audioEnabled = false; 
-        
+        let audioEnabled = false;
+
         let currentFireEvents = [];
         let currentTownMeetings = [];
-        let calendarMonthOffset = 0; 
-        
+        let calendarMonthOffset = 0;
+
         const alertPlayer = new Audio();
         const voicePlayer = new Audio();
-        
+
         const flameIcon = L.icon({
             iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2Y5NzQwNiIgc3Ryb2tlPSIjZGMyNjI2IiBzdHJva2Utd2lkdGg9IjEuNSI+PHBhdGggZD0iTT EyIDJDMTIgMiA4IDYuNSA4IDExYzAgNCA0IDggNCA4czQtNCA0LThjMC00LjUtNC05LTQtOXoiLz48cGF0aCBkPSJNMTIgNGMtMS41IDEuNS0yIDQtMiA2cy41IDQuNSAyIDYiLz48cGF0aCBkPSJNMTQuNSAxM2MuNS0xLjUgMS0zLjUgMC01LjUiLz48L3N2Zz4=',
             iconSize: [32, 32],
@@ -367,7 +367,7 @@
         window.changeMonth = function(delta) {
             calendarMonthOffset += delta;
             renderCalendar(currentFireEvents, currentTownMeetings);
-            startRotation(); 
+            startRotation();
         };
 
         function performPruning(pageIndex) {
@@ -379,7 +379,7 @@
                 if (activePage.id === 'page-dashboard') pruneDashboard();
                 if (activePage.id === 'page-calendar') pruneCalendar();
                 if (activePage.id === 'page-chores') pruneChores();
-            }, 50); 
+            }, 50);
         }
 
         function pruneDashboard() {
@@ -424,7 +424,7 @@
                     }
                 });
             }
-            
+
             const annCol = document.getElementById('chores-duties-column');
             const annCont = document.getElementById('announcements-container');
             if (annCol && annCont) {
@@ -491,12 +491,12 @@
 
         async function initializeApp() {
             initPermitMap();
-            
+
             try {
                 const configResponse = await fetch('admin.php?api=true', { cache: 'no-store' });
                 if (!configResponse.ok) throw new Error("Config fetch failed");
                 appConfig = await configResponse.json();
-                
+
                 applyTheme();
 
                 if (appConfig.headers && appConfig.headers.length === 7) {
@@ -517,8 +517,8 @@
                     everyday_chores: ["Clean Bathrooms", "Empty Trash Cans", "Wash Coffee Pot and Dishes"],
                     headers: ["9-1", "9-2", "9-3", "9-4", "9-5", "9-6<br>Meds", "R4<br>R9"],
                     chores: [
-                        {id: 1, name: "Kitchen"}, {id: 2, name: "Dispatch/Vacuum/Offices/Bunks"}, 
-                        {id: 3, name: "Entries/Halls/Windows"}, {id: 4, name: "Bay Floors"}, 
+                        {id: 1, name: "Kitchen"}, {id: 2, name: "Dispatch/Vacuum/Offices/Bunks"},
+                        {id: 3, name: "Entries/Halls/Windows"}, {id: 4, name: "Bay Floors"},
                         {id: 5, name: "Tool/Gear/Compressor/Gym"}, {id: 6, name: "Atlantic/Stand-by"}
                     ],
                     manual_events: [], announcements: [], special_chores: []
@@ -528,8 +528,8 @@
             updateAllData().then(() => {
                 startRotation();
             });
-            
-            setInterval(updateAllData, 900000); 
+
+            setInterval(updateAllData, 900000);
             const scheduleHourlyUpdate = () => {
                 const now = new Date();
                 const target = new Date(now);
@@ -542,8 +542,8 @@
         }
 
         async function updateAllData() {
-            calendarMonthOffset = 0; 
-            
+            calendarMonthOffset = 0;
+
             if (appConfig && appConfig.dashboard_settings && appConfig.dashboard_settings.theme === 'auto') {
                 applyTheme(); // Refresh auto theme
             }
@@ -552,10 +552,10 @@
                 const fireSchedulePromise = fetchFireSchedule();
                 const holidaysPromise = loadHolidays();
                 const townMeetingsPromise = fetchAllTownMeetings();
-                
+
                 await loadFireDanger();
                 await loadBurnPermits();
-                
+
                 currentFireEvents = await fireSchedulePromise;
                 currentTownMeetings = await townMeetingsPromise;
                 await holidaysPromise;
@@ -563,13 +563,13 @@
                 renderDashboard(currentFireEvents);
                 renderChoresPage(currentFireEvents, currentTownMeetings);
                 renderCalendar(currentFireEvents, currentTownMeetings);
-                
+
                 performPruning(currentPageIndex);
             } catch (e) {
                 console.error("A critical error occurred in updateAllData:", e);
             }
         }
-        
+
         async function fetchFireSchedule() {
             const scheduleUrl = `https://calendar.google.com/calendar/ical/c303c9aa08e0a090db126a0b15eb0bc0e8b66cc1af810aa971059b7b01b6d25a@group.calendar.google.com/public/basic.ics?nocache=${Date.now()}`;
             const proxyUrl = `fetch_calendar.php?url=${encodeURIComponent(scheduleUrl)}&_cb=${Date.now()}`;
@@ -586,14 +586,14 @@
                 return [];
             }
         }
-        
+
         async function loadFireDanger() {
             const fireDangerCalendarUrl = `https://calendar.google.com/calendar/ical/permitsburn@gmail.com/public/basic.ics?nocache=${Date.now()}`;
             const proxyUrl = `fetch_calendar.php?url=${encodeURIComponent(fireDangerCalendarUrl)}&_cb=${Date.now()}`;
-            
+
             const meterDiv = document.getElementById('danger-meter');
             const dateDiv = document.getElementById('danger-date');
-            
+
             try {
                 const response = await fetch(proxyUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
                 if (!response.ok) { throw new Error(`Network response was not ok (${response.status})`); }
@@ -601,7 +601,7 @@
                 const jcalData = ICAL.parse(icsData);
                 const comp = new ICAL.Component(jcalData);
                 const allEvents = comp.getAllSubcomponents('vevent');
-                
+
                 const now = new Date();
                 let currentDangerEvent = null;
 
@@ -609,7 +609,7 @@
                     const vevent = new ICAL.Event(eventData);
                     const eventStart = vevent.startDate.toJSDate();
                     const eventEnd = vevent.endDate.toJSDate();
-                    
+
                     const summary = vevent.summary || '';
 
                     if (summary === "Today's Fire Danger" && eventStart <= now && eventEnd > now) {
@@ -620,14 +620,14 @@
                 if (currentDangerEvent) {
                     hasFireDanger = true;
                     document.getElementById('top-section').style.display = 'flex';
-                    
+
                     const riskLevel = (currentDangerEvent.description || '').trim();
                     const riskClass = "risk-" + riskLevel.toLowerCase().replace(/ /g, '-');
-                    
+
                     meterDiv.textContent = riskLevel;
                     meterDiv.className = "danger-meter " + riskClass;
                     dateDiv.textContent = "Published by Maine Forest Service";
-                    
+
                     if (meterDiv.dataset.lastLevel !== riskLevel) {
                          announceFireDanger(riskLevel);
                     }
@@ -641,11 +641,11 @@
                 console.error(`ERROR fetching fire danger: ${error.message}`);
                 hasFireDanger = false;
                 document.getElementById('top-section').style.display = 'none';
-                
+
                 meterDiv.textContent = "Unavailable";
-                meterDiv.className = "danger-meter"; 
+                meterDiv.className = "danger-meter";
                 dateDiv.textContent = "Will be available once published by the state (usually after 9a).";
-                delete meterDiv.dataset.lastLevel; 
+                delete meterDiv.dataset.lastLevel;
             }
         }
 
@@ -676,12 +676,12 @@
                         todaysPermits.push(vevent)
                     }
                 });
-                
+
                 todaysPermits.forEach(permit => {
                     if (permit.uid && !announcedPermitUIDs.has(permit.uid)) {
                         let address = permit.location ? permit.location.split(',')[0].trim() : 'Address not provided';
                         announceNewBurnPermit(address);
-                        announcedPermitUIDs.add(permit.uid); 
+                        announcedPermitUIDs.add(permit.uid);
                     }
                 });
 
@@ -690,9 +690,9 @@
                     const start = p.startDate.toJSDate();
                     const end = p.endDate.toJSDate();
                     const summary = p.summary || '';
-                    return now >= start && now < end && summary !== "Today's Fire Danger"; 
+                    return now >= start && now < end && summary !== "Today's Fire Danger";
                 });
-                
+
                 activePermits.sort((a, b) => a.startDate.toJSDate() - b.startDate.toJSDate());
 
                 container.innerHTML = '';
@@ -714,7 +714,7 @@
             }
         }
     </script>
-    
+
     <script>
         async function playGoogleTTS(textToRead) {
             if (!audioEnabled) return;
@@ -731,33 +731,33 @@
 
         function fallbackTTS(textToRead) {
             if (!audioEnabled || !window.speechSynthesis) return;
-            window.speechSynthesis.cancel(); 
+            window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(textToRead);
             utterance.lang = 'en-US';
             utterance.rate = 0.9;
             window.speechSynthesis.speak(utterance);
         }
 
-        function announceFireDanger(level) { 
-            if (!audioEnabled) return; 
-            try { 
+        function announceFireDanger(level) {
+            if (!audioEnabled) return;
+            try {
                 alertPlayer.src = 'https://cdn.freesound.org/previews/219/219244_4032688-lq.mp3';
-                alertPlayer.volume = 0.5; 
-                alertPlayer.play().catch(e => {}); 
-                alertPlayer.onended = () => { playGoogleTTS(`Today's Fire Danger is: ${level}`); }; 
-            } catch (e) { console.error(e); } 
+                alertPlayer.volume = 0.5;
+                alertPlayer.play().catch(e => {});
+                alertPlayer.onended = () => { playGoogleTTS(`Today's Fire Danger is: ${level}`); };
+            } catch (e) { console.error(e); }
         }
 
-        function announceNewBurnPermit(address) { 
-            if (!audioEnabled) return; 
-            try { 
+        function announceNewBurnPermit(address) {
+            if (!audioEnabled) return;
+            try {
                 alertPlayer.src = 'https://cdn.freesound.org/previews/415/415763_6142149-lq.mp3';
-                alertPlayer.volume = 0.6; 
-                alertPlayer.play().catch(e => {}); 
-                alertPlayer.onended = () => { playGoogleTTS(`New Permit Issued for ${address}`); }; 
-            } catch (e) { console.error(e); } 
+                alertPlayer.volume = 0.6;
+                alertPlayer.play().catch(e => {});
+                alertPlayer.onended = () => { playGoogleTTS(`New Permit Issued for ${address}`); };
+            } catch (e) { console.error(e); }
         }
-        
+
         function getNthWeekdayOfMonth(year, month, weekday, n) {
             let d = new Date(year, month, 1);
             let count = 0;
@@ -768,26 +768,26 @@
                 }
                 d.setDate(d.getDate() + 1);
             }
-            return null; 
+            return null;
         }
 
         function getTodaysSpecialChores(dateObj) {
             let choresToday = [];
             if (!appConfig || !appConfig.special_chores) return choresToday;
-            
+
             const targetYMD = formatYMD(dateObj);
-            
+
             appConfig.special_chores.forEach(sc => {
                 const baseDate = parseLocalYMD(sc.start_date);
                 const limitDate = sc.end_type === 'date' && sc.end_date_bound ? parseLocalYMD(sc.end_date_bound) : new Date(2100,0,1);
                 limitDate.setHours(23,59,59);
-                
-                if (dateObj > limitDate || formatYMD(baseDate) > targetYMD) return; 
-                
+
+                if (dateObj > limitDate || formatYMD(baseDate) > targetYMD) return;
+
                 let current = new Date(baseDate);
                 let occurrences = 0;
                 const maxOccurrences = sc.end_type === 'occurrences' ? parseInt(sc.end_occurrences) : 9999;
-                
+
                 if (sc.recurrence === 'none') {
                     if (formatYMD(current) === targetYMD) choresToday.push(sc.name);
                 } else if (sc.recurrence === 'days') {
@@ -821,8 +821,8 @@
                     }
                 } else if (sc.recurrence === 'monthly_nth') {
                     let interval = parseInt(sc.recur_interval) || 1;
-                    let targetNth = parseInt(sc.recur_month_nth); 
-                    let targetDay = parseInt(sc.recur_month_nth_day); 
+                    let targetNth = parseInt(sc.recur_month_nth);
+                    let targetDay = parseInt(sc.recur_month_nth_day);
                     current.setDate(1);
                     while (current <= limitDate && occurrences < maxOccurrences) {
                         let nThDay = getNthWeekdayOfMonth(current.getFullYear(), current.getMonth(), targetDay, targetNth);
@@ -840,11 +840,11 @@
         function getManualEvents(startWindow, endWindow) {
             let instances = [];
             if (!appConfig || !appConfig.manual_events) return instances;
-            
+
             appConfig.manual_events.forEach(evt => {
                 const baseDate = parseLocalYMD(evt.start_date);
                 const limitDate = parseLocalYMD(evt.end_date);
-                limitDate.setHours(23,59,59); 
+                limitDate.setHours(23,59,59);
 
                 if (evt.start_time && evt.all_day === false) {
                     const [h, min] = evt.start_time.split(':');
@@ -852,7 +852,7 @@
                 } else {
                     baseDate.setHours(0, 0, 0, 0);
                 }
-                
+
                 let duration = 0;
                 if (evt.end_time && evt.all_day === false) {
                     let endD = new Date(baseDate);
@@ -861,7 +861,7 @@
                     if (endD < baseDate) endD.setDate(endD.getDate() + 1);
                     duration = endD - baseDate;
                 }
-                
+
                 const addInst = (dObj) => {
                     let s = new Date(dObj);
                     let e = new Date(s.getTime() + duration);
@@ -871,7 +871,7 @@
                 };
 
                 let current = new Date(baseDate);
-                
+
                 if (evt.recurrence === 'none') {
                     if(current <= limitDate) addInst(current);
                 } else if (evt.recurrence === 'days') {
@@ -903,9 +903,9 @@
                     }
                 } else if (evt.recurrence === 'monthly_nth') {
                     let interval = parseInt(evt.recur_interval) || 1;
-                    let targetNth = parseInt(evt.recur_month_nth); 
-                    let targetDay = parseInt(evt.recur_month_nth_day); 
-                    current.setDate(1); 
+                    let targetNth = parseInt(evt.recur_month_nth);
+                    let targetDay = parseInt(evt.recur_month_nth_day);
+                    current.setDate(1);
                     while (current <= limitDate && current < endWindow) {
                         let nThDay = getNthWeekdayOfMonth(current.getFullYear(), current.getMonth(), targetDay, targetNth);
                         if (nThDay && nThDay >= baseDate && nThDay <= limitDate) {
@@ -919,9 +919,9 @@
             return instances;
         }
 
-        function createMeetingEventHtml(meeting, isDeptEvent=false) { 
-            let summary = meeting.summary || 'Meeting'; 
-            
+        function createMeetingEventHtml(meeting, isDeptEvent=false) {
+            let summary = meeting.summary || 'Meeting';
+
             if (isDeptEvent && meeting.eventType) {
                 if (meeting.eventType === 'Room Rental') {
                     summary = `Room Rental${meeting.location ? ' (' + meeting.location + ')' : ''} - ${summary}`;
@@ -935,54 +935,54 @@
                 let startTime = ''; let endTime = '';
                 if (meeting.startDate) {
                     const s = meeting.startDate.toJSDate ? meeting.startDate.toJSDate() : new Date(meeting.startDate);
-                    if(s.getHours()!==0 || s.getMinutes()!==0) startTime = s.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(' AM','a').replace(' PM','p'); 
+                    if(s.getHours()!==0 || s.getMinutes()!==0) startTime = s.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(' AM','a').replace(' PM','p');
                 }
                 if (meeting.endDate) {
                     const e = meeting.endDate.toJSDate ? meeting.endDate.toJSDate() : new Date(meeting.endDate);
-                    if(e.getHours()!==0 || e.getMinutes()!==0) endTime = e.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(' AM','a').replace(' PM','p'); 
+                    if(e.getHours()!==0 || e.getMinutes()!==0) endTime = e.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(' AM','a').replace(' PM','p');
                 }
                 timeStr = (startTime && endTime) ? `${startTime} - ${endTime}` : (startTime || 'All Day');
             }
-            
+
             const dotColor = isDeptEvent ? '#20c997' : '#007bff';
             return `<div class="event" style="padding: 15px 18px; border-left: 4px solid ${dotColor};">
                 <div class="event-left"><div class="event-name" style="font-size:1em;">${summary}</div></div>
                 <div class="event-right"><div class="event-until" style="font-size:0.9em;">${timeStr}</div></div>
-            </div>`; 
+            </div>`;
         }
-        
-        async function fetchAllTownMeetings() { 
-            const calendarUrl = `https://calendar.google.com/calendar/ical/amarshall@oaklandme.gov/public/basic.ics?nocache=${Date.now()}`; 
-            const proxyUrl = `fetch_calendar.php?url=${encodeURIComponent(calendarUrl)}&_cb=${Date.now()}`; 
-            const allMeetings = []; 
-            try { 
-                const response = await fetch(proxyUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' }); 
-                if (!response.ok) throw new Error('Failed to fetch town meetings calendar'); 
-                const icsData = await response.text(); 
-                const jcalData = ICAL.parse(icsData); 
-                const comp = new ICAL.Component(jcalData); 
-                comp.getAllSubcomponents('vevent').forEach(veventComp => { 
-                    const vevent = new ICAL.Event(veventComp); 
-                    if (vevent.location && vevent.location.includes("15 Fairfield St")) { 
-                        if (vevent.isRecurring()) { 
-                            const nextYear = new Date(); 
-                            nextYear.setFullYear(nextYear.getFullYear() + 1); 
-                            const iterator = vevent.iterator(); 
-                            let next; 
-                            while ((next = iterator.next()) && next.toJSDate() < nextYear) { 
-                                allMeetings.push(vevent.getOccurrenceDetails(next)); 
-                            } 
-                        } else { 
-                            allMeetings.push(vevent); 
-                        } 
-                    } 
-                }); 
-            } catch (error) { 
-                console.error("Could not load town meetings:", error); 
-            } 
-            return allMeetings; 
+
+        async function fetchAllTownMeetings() {
+            const calendarUrl = `https://calendar.google.com/calendar/ical/amarshall@oaklandme.gov/public/basic.ics?nocache=${Date.now()}`;
+            const proxyUrl = `fetch_calendar.php?url=${encodeURIComponent(calendarUrl)}&_cb=${Date.now()}`;
+            const allMeetings = [];
+            try {
+                const response = await fetch(proxyUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
+                if (!response.ok) throw new Error('Failed to fetch town meetings calendar');
+                const icsData = await response.text();
+                const jcalData = ICAL.parse(icsData);
+                const comp = new ICAL.Component(jcalData);
+                comp.getAllSubcomponents('vevent').forEach(veventComp => {
+                    const vevent = new ICAL.Event(veventComp);
+                    if (vevent.location && vevent.location.includes("15 Fairfield St")) {
+                        if (vevent.isRecurring()) {
+                            const nextYear = new Date();
+                            nextYear.setFullYear(nextYear.getFullYear() + 1);
+                            const iterator = vevent.iterator();
+                            let next;
+                            while ((next = iterator.next()) && next.toJSDate() < nextYear) {
+                                allMeetings.push(vevent.getOccurrenceDetails(next));
+                            }
+                        } else {
+                            allMeetings.push(vevent);
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Could not load town meetings:", error);
+            }
+            return allMeetings;
         }
-        
+
         function renderChoresPage(allEvents, townMeetings = []) {
             const now = new Date();
             const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
@@ -1029,7 +1029,7 @@
             if (deptContainer && deptListDiv) {
                 deptContainer.style.display = 'none';
                 deptListDiv.innerHTML = '';
-                
+
                 const todaysDeptEvents = getManualEvents(startOfToday, endOfToday);
                 if (todaysDeptEvents.length > 0) {
                     todaysDeptEvents.sort((a, b) => a.startDate - b.startDate);
@@ -1044,10 +1044,10 @@
             const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('duties-page-date').textContent = now.toLocaleDateString('en-US', dateOptions);
             choreList.innerHTML = '';
-            
+
             const dayOfWeek = now.getDay();
             const rawHeaders = appConfig.headers ? appConfig.headers.map(h => (h || '').replace(/<[^>]*>?/gm, ' ').trim()) : ["9-1", "9-2", "9-3", "9-4", "9-5", "9-6 Meds", "R4 & R9"];
-            
+
             let vehicleTasks = [];
             if(isTruckCheckWeek(now)) vehicleTasks.push("Check " + rawHeaders[dayOfWeek]);
             if(isTruckWashWeek(now)) vehicleTasks.push("Wash " + rawHeaders[dayOfWeek]);
@@ -1055,7 +1055,7 @@
                 choreList.innerHTML += `<li>${vehicleTasks.join(' & ')}</li>`;
             }
             if (dayOfWeek === 5) { choreList.innerHTML += `<li>Complete Medication Logs</li>`; }
-            
+
             const choreNum = getChoreNumber(now);
             const todaysChores = appConfig.chores ? appConfig.chores.filter(c => c.id == choreNum) : [];
             if (todaysChores.length > 0) {
@@ -1063,7 +1063,7 @@
             } else {
                  choreList.innerHTML += `<li>Clean (#${choreNum})</li>`;
             }
-            
+
             const todaysSpecialChores = getTodaysSpecialChores(now);
             todaysSpecialChores.forEach(scName => {
                 choreList.innerHTML += `<li style="color:#20c997;">${scName}</li>`;
@@ -1071,7 +1071,7 @@
 
             const everyDayTasks = appConfig.everyday_chores || ["Clean Bathrooms", "Empty Trash Cans", "Wash Coffee Pot and Dishes"];
             everyDayTasks.forEach(task => { choreList.innerHTML += `<li>${task}</li>`; });
-            
+
             const holidayContainer = document.getElementById('holiday-container');
             const nationalDayP = document.getElementById('national-day');
             const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -1090,22 +1090,22 @@
             onDutyContainer.innerHTML = '';
             onDutyLaterContainer.innerHTML = '';
 
-            const windowStart = new Date(); 
+            const windowStart = new Date();
             windowStart.setHours(7, 0, 0, 0);
             if (now.getHours() < 7) {
                 windowStart.setDate(windowStart.getDate() - 1);
             }
-            const windowEnd = new Date(windowStart); 
+            const windowEnd = new Date(windowStart);
             windowEnd.setDate(windowStart.getDate() + 1);
-            const searchStart = new Date(windowStart); 
+            const searchStart = new Date(windowStart);
             searchStart.setDate(searchStart.getDate() - 1);
-            
-            let onDutyNow = [], onDutyLater = []; 
+
+            let onDutyNow = [], onDutyLater = [];
             (allEvents || []).forEach(eventData => {
                 const vevent = new ICAL.Event(eventData);
                 processEventForDashboard(vevent, searchStart, windowEnd, now, onDutyNow, onDutyLater);
             });
-            
+
             onDutyNow.sort((a, b) => a.startDate.toJSDate() - b.startDate.toJSDate());
             const combinedOnDutyNow = combineConsecutiveShifts(onDutyNow);
             if (combinedOnDutyNow.length > 0) {
@@ -1123,137 +1123,137 @@
                 onDutyLaterWrapper.style.display = 'none';
             }
         }
-        
-        async function loadHolidays() { 
-            const holidayUrl = `https://calendars.icloud.com/holidays/us_en-us.ics?nocache=${Date.now()}`; 
-            const proxyUrl = `fetch_calendar.php?url=${encodeURIComponent(holidayUrl)}&_cb=${Date.now()}`; 
-            try { 
-                const response = await fetch(proxyUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' }); 
-                if (!response.ok) return; 
-                const icsData = await response.text(); 
-                const jcalData = ICAL.parse(icsData); 
-                const comp = new ICAL.Component(jcalData); 
-                const allEvents = comp.getAllSubcomponents('vevent'); 
-                holidaysByDate = {}; 
-                allEvents.forEach(event => { 
-                    const vevent = new ICAL.Event(event); 
-                    if (vevent.startDate.isDate) { 
-                        const startDate = vevent.startDate; 
-                        const dateKey = `${startDate.year}-${String(startDate.month).padStart(2,'0')}-${String(startDate.day).padStart(2,'0')}`; 
-                        holidaysByDate[dateKey] = vevent.summary; 
-                    } 
-                }); 
-            } catch (error) { 
-                console.error("Could not load holiday data:", error); 
-            } 
+
+        async function loadHolidays() {
+            const holidayUrl = `https://calendars.icloud.com/holidays/us_en-us.ics?nocache=${Date.now()}`;
+            const proxyUrl = `fetch_calendar.php?url=${encodeURIComponent(holidayUrl)}&_cb=${Date.now()}`;
+            try {
+                const response = await fetch(proxyUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
+                if (!response.ok) return;
+                const icsData = await response.text();
+                const jcalData = ICAL.parse(icsData);
+                const comp = new ICAL.Component(jcalData);
+                const allEvents = comp.getAllSubcomponents('vevent');
+                holidaysByDate = {};
+                allEvents.forEach(event => {
+                    const vevent = new ICAL.Event(event);
+                    if (vevent.startDate.isDate) {
+                        const startDate = vevent.startDate;
+                        const dateKey = `${startDate.year}-${String(startDate.month).padStart(2,'0')}-${String(startDate.day).padStart(2,'0')}`;
+                        holidaysByDate[dateKey] = vevent.summary;
+                    }
+                });
+            } catch (error) {
+                console.error("Could not load holiday data:", error);
+            }
         }
-        
-        function getCleanNameFromSummary(summary) { 
+
+        function getCleanNameFromSummary(summary) {
             if (!summary) return '';
-            const timeRegex = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi; 
-            let cleaned = summary.replace(timeRegex, '').trim(); 
-            const roles = ["Career", "Chief", "Per-Diem", "Night Duty"]; 
-            for (const role of roles) { 
-                const roleRegex = new RegExp(`\\s*${role}\\s*`, 'i'); 
-                cleaned = cleaned.replace(roleRegex, '').trim(); 
-            } 
-            return cleaned.trim(); 
+            const timeRegex = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
+            let cleaned = summary.replace(timeRegex, '').trim();
+            const roles = ["Career", "Chief", "Per-Diem", "Night Duty"];
+            for (const role of roles) {
+                const roleRegex = new RegExp(`\\s*${role}\\s*`, 'i');
+                cleaned = cleaned.replace(roleRegex, '').trim();
+            }
+            return cleaned.trim();
         }
 
-        function combineConsecutiveShifts(eventList) { 
-            if (eventList.length < 2) return eventList; 
-            const combinedList = []; 
-            for (let i = 0; i < eventList.length; i++) { 
-                let currentEvent = eventList[i]; 
-                if (i + 1 < eventList.length) { 
-                    let nextEvent = eventList[i + 1]; 
-                    if (getCleanNameFromSummary(currentEvent.summary) === getCleanNameFromSummary(nextEvent.summary) && currentEvent.endDate.toJSDate().getTime() === nextEvent.startDate.toJSDate().getTime()) { 
-                        const combinedEvent = { summary: currentEvent.summary, startDate: currentEvent.startDate, endDate: nextEvent.endDate, }; 
-                        currentEvent = combinedEvent; 
-                        i++; 
-                    } 
-                } 
-                combinedList.push(currentEvent); 
-            } 
-            return combinedList; 
-        }
-        
-        function renderDashboard(allEvents) { 
+        function combineConsecutiveShifts(eventList) {
+            if (eventList.length < 2) return eventList;
+            const combinedList = [];
+            for (let i = 0; i < eventList.length; i++) {
+                let currentEvent = eventList[i];
+                if (i + 1 < eventList.length) {
+                    let nextEvent = eventList[i + 1];
+                    if (getCleanNameFromSummary(currentEvent.summary) === getCleanNameFromSummary(nextEvent.summary) && currentEvent.endDate.toJSDate().getTime() === nextEvent.startDate.toJSDate().getTime()) {
+                        const combinedEvent = { summary: currentEvent.summary, startDate: currentEvent.startDate, endDate: nextEvent.endDate, };
+                        currentEvent = combinedEvent;
+                        i++;
+                    }
+                }
+                combinedList.push(currentEvent);
+            }
+            return combinedList;
         }
 
-        function isTruckCheckWeek(date) { 
+        function renderDashboard(allEvents) {
+        }
+
+        function isTruckCheckWeek(date) {
             if (!appConfig || !appConfig.truck_check) return true;
             const [year, month, day] = (appConfig.truck_check.anchor || "2025-07-13").split('-');
-            const anchorTime = new Date(year, month - 1, day, 0, 0, 0).getTime(); 
+            const anchorTime = new Date(year, month - 1, day, 0, 0, 0).getTime();
             const targetTime = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay(), 0, 0, 0).getTime();
-            const diffWeeks = Math.floor(Math.round((targetTime - anchorTime) / 86400000) / 7); 
-            return diffWeeks % parseInt(appConfig.truck_check.interval || 2) === 0; 
-        }
-        
-        function isTruckWashWeek(date) { 
-            if (!appConfig || !appConfig.truck_wash) return false;
-            const [year, month, day] = (appConfig.truck_wash.anchor || "2025-07-20").split('-');
-            const anchorTime = new Date(year, month - 1, day, 0, 0, 0).getTime(); 
-            const targetTime = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay(), 0, 0, 0).getTime();
-            const diffWeeks = Math.floor(Math.round((targetTime - anchorTime) / 86400000) / 7); 
-            return diffWeeks % parseInt(appConfig.truck_wash.interval || 2) === 0; 
+            const diffWeeks = Math.floor(Math.round((targetTime - anchorTime) / 86400000) / 7);
+            return diffWeeks % parseInt(appConfig.truck_check.interval || 2) === 0;
         }
 
-        function getChoreNumber(date) { 
+        function isTruckWashWeek(date) {
+            if (!appConfig || !appConfig.truck_wash) return false;
+            const [year, month, day] = (appConfig.truck_wash.anchor || "2025-07-20").split('-');
+            const anchorTime = new Date(year, month - 1, day, 0, 0, 0).getTime();
+            const targetTime = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay(), 0, 0, 0).getTime();
+            const diffWeeks = Math.floor(Math.round((targetTime - anchorTime) / 86400000) / 7);
+            return diffWeeks % parseInt(appConfig.truck_wash.interval || 2) === 0;
+        }
+
+        function getChoreNumber(date) {
             if (!appConfig || !appConfig.chore_anchor || !appConfig.chores || appConfig.chores.length === 0) return 1;
             const [year, month, day] = (appConfig.chore_anchor || "2025-07-15").split('-');
-            const anchorTime = new Date(Date.UTC(year, month - 1, day, 12, 0, 0)).getTime(); 
-            
-            const targetTime = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0)).getTime(); 
-            const diffDays = Math.round((targetTime - anchorTime) / (1000 * 60 * 60 * 24)); 
-            
+            const anchorTime = new Date(Date.UTC(year, month - 1, day, 12, 0, 0)).getTime();
+
+            const targetTime = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0)).getTime();
+            const diffDays = Math.round((targetTime - anchorTime) / (1000 * 60 * 60 * 24));
+
             const uniqueIds = [...new Set(appConfig.chores.map(item => item.id))].sort((a,b)=>a-b);
             const totalChores = parseInt(appConfig.chore_num_indices) || uniqueIds.length || 6;
-            
+
             let choreIndex = (((diffDays % totalChores) + totalChores) % totalChores) + 1;
-            return choreIndex; 
+            return choreIndex;
         }
 
         function renderCalendar(allFireEvents, townMeetings = []) {
             const timeRegex = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
             const now = new Date();
             const todayInET = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-            
+
             const targetMonth = new Date(todayInET.getFullYear(), todayInET.getMonth() + calendarMonthOffset, 1);
-            
+
             let firstDayOfGrid = new Date(targetMonth);
             firstDayOfGrid.setDate(1 - firstDayOfGrid.getDay());
             firstDayOfGrid.setHours(0, 0, 0, 0);
-            
+
             const startMonthStr = targetMonth.toLocaleString('default', { month: 'long' });
             const startYearStr = targetMonth.getFullYear();
 
             document.getElementById('calendar-month-year').textContent = `${startMonthStr} ${startYearStr}`;
-            
+
             const daysInMonth = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0).getDate();
             const startOffset = targetMonth.getDay();
             const weeks = Math.ceil((startOffset + daysInMonth) / 7);
             const daysToRender = weeks * 7;
-            
+
             const grid = document.getElementById('calendar-grid');
             grid.style.gridTemplateRows = `repeat(${weeks}, minmax(0, 1fr))`;
             grid.innerHTML = '';
-            
+
             const eventsByDate = {};
             const calendarEndDate = new Date(firstDayOfGrid);
-            calendarEndDate.setDate(calendarEndDate.getDate() + daysToRender); 
-            
+            calendarEndDate.setDate(calendarEndDate.getDate() + daysToRender);
+
             const parsingEndDate = new Date(todayInET);
-            parsingEndDate.setDate(parsingEndDate.getDate() + 75); 
+            parsingEndDate.setDate(parsingEndDate.getDate() + 75);
             const maxParseDate = parsingEndDate > calendarEndDate ? parsingEndDate : calendarEndDate;
 
             let maxPublishedDate = new Date(0);
-            
+
             (allFireEvents || []).forEach(event => {
                 const vevent = new ICAL.Event(event);
                 const summary = (vevent.summary || '').toLowerCase();
                 const isShift = summary.includes('career') || summary.includes('per-diem') || summary.includes('night duty');
-                
+
                 if (!vevent.isRecurring() && isShift) {
                     const sDate = vevent.startDate.toJSDate();
                     if (sDate > maxPublishedDate) maxPublishedDate = sDate;
@@ -1264,9 +1264,9 @@
                     const endJS = occurrence.endDate.toJSDate();
                     const dateKey = formatYMD(jsDate);
                     if (!eventsByDate[dateKey]) eventsByDate[dateKey] = [];
-                    eventsByDate[dateKey].push({ 
-                        type: 'fire', 
-                        summary: vevent.summary || '', 
+                    eventsByDate[dateKey].push({
+                        type: 'fire',
+                        summary: vevent.summary || '',
                         start: jsDate,
                         end: endJS
                     });
@@ -1287,7 +1287,7 @@
 
             const maxPubDay = new Date(maxPublishedDate);
             maxPubDay.setHours(23, 59, 59, 999);
-            
+
             const pubTextDiv = document.getElementById('schedule-published-text');
             if (maxPublishedDate > new Date(0)) {
                 pubTextDiv.textContent = `Schedule published through: ${maxPublishedDate.toLocaleDateString()}`;
@@ -1295,13 +1295,13 @@
                 pubTextDiv.textContent = "";
             }
 
-            townMeetings.forEach(meeting => { 
-                const eventStart = meeting.startDate.toJSDate(); 
-                if (eventStart >= firstDayOfGrid && eventStart < maxParseDate) { 
-                    const dateKey = formatYMD(eventStart); 
-                    if (!eventsByDate[dateKey]) eventsByDate[dateKey] = []; 
-                    eventsByDate[dateKey].push({ type: 'meeting', summary: meeting.summary || 'Meeting', startDate: meeting.startDate }); 
-                } 
+            townMeetings.forEach(meeting => {
+                const eventStart = meeting.startDate.toJSDate();
+                if (eventStart >= firstDayOfGrid && eventStart < maxParseDate) {
+                    const dateKey = formatYMD(eventStart);
+                    if (!eventsByDate[dateKey]) eventsByDate[dateKey] = [];
+                    eventsByDate[dateKey].push({ type: 'meeting', summary: meeting.summary || 'Meeting', startDate: meeting.startDate });
+                }
             });
 
             const manualEvents = getManualEvents(firstDayOfGrid, maxParseDate);
@@ -1312,25 +1312,25 @@
                 if (evt.eventType === 'Room Rental') s = `Rental${evt.location?' ('+evt.location+')':''} - ${s}`;
                 eventsByDate[dateKey].push({ type: 'dept', summary: s, startDate: evt.startDate, allDay: evt.allDay });
             });
-            
+
             const formatShortTime = (date) => {
                 let hours = date.getHours();
                 let minutes = date.getMinutes();
                 const ampm = hours >= 12 ? 'p' : 'a';
                 hours = hours % 12;
-                hours = hours ? hours : 12; 
+                hours = hours ? hours : 12;
                 const minStr = minutes === 0 ? '' : `:${minutes.toString().padStart(2, '0')}`;
                 return `${hours}${minStr}${ampm}`;
             };
 
             const mergeAndSort = (roleArray) => {
                 if (roleArray.length === 0) return roleArray;
-                
+
                 roleArray.sort((a, b) => a.rawStart.getTime() - b.rawStart.getTime());
-                
+
                 const merged = [];
                 let current = roleArray[0];
-                
+
                 for (let i = 1; i < roleArray.length; i++) {
                     const next = roleArray[i];
                     if (current.name === next.name && current.rawEnd.getTime() === next.rawStart.getTime()) {
@@ -1347,56 +1347,56 @@
 
             const todayKey = formatYMD(todayInET);
             let currentDay = new Date(firstDayOfGrid);
-            
-            for (let i = 0; i < daysToRender; i++) { 
-                const dateKey = formatYMD(currentDay); 
-                const dayEvents = eventsByDate[dateKey] || []; 
-                let dayNumberDisplay; 
-                let dayClass = 'calendar-day'; 
-                
-                if (dateKey === todayKey) dayClass += ' is-today'; 
+
+            for (let i = 0; i < daysToRender; i++) {
+                const dateKey = formatYMD(currentDay);
+                const dayEvents = eventsByDate[dateKey] || [];
+                let dayNumberDisplay;
+                let dayClass = 'calendar-day';
+
+                if (dateKey === todayKey) dayClass += ' is-today';
                 if (currentDay.getMonth() !== targetMonth.getMonth()) dayClass += ' other-month';
 
-                if (i === 0 || currentDay.getDate() === 1) { 
-                    dayClass += ' new-month'; 
-                    const monthName = currentDay.toLocaleString('default', { month: 'short' }); 
-                    dayNumberDisplay = `<span>${monthName} ${currentDay.getDate()}</span>`; 
-                } else { 
-                    dayNumberDisplay = `<span>${currentDay.getDate()}</span>`; 
-                } 
-                
-                if (currentDay.getDay() === 0) { 
+                if (i === 0 || currentDay.getDate() === 1) {
+                    dayClass += ' new-month';
+                    const monthName = currentDay.toLocaleString('default', { month: 'short' });
+                    dayNumberDisplay = `<span>${monthName} ${currentDay.getDate()}</span>`;
+                } else {
+                    dayNumberDisplay = `<span>${currentDay.getDate()}</span>`;
+                }
+
+                if (currentDay.getDay() === 0) {
                     let icons = [];
                     if(isTruckCheckWeek(currentDay)) icons.push('✅');
                     if(isTruckWashWeek(currentDay)) icons.push('🧽');
                     if(icons.length > 0) {
-                        dayNumberDisplay = `<span>${icons.join(' ')} ${dayNumberDisplay.replace(/<\/?span>/g, '')}</span>`; 
+                        dayNumberDisplay = `<span>${icons.join(' ')} ${dayNumberDisplay.replace(/<\/?span>/g, '')}</span>`;
                     }
-                } 
+                }
 
-                const choreNum = getChoreNumber(currentDay); 
-                let dayHtml = `<div class="${dayClass}"><div class="day-number">${dayNumberDisplay}<span class="chore-number">${choreNum}</span></div>`; 
-                
+                const choreNum = getChoreNumber(currentDay);
+                let dayHtml = `<div class="${dayClass}"><div class="day-number">${dayNumberDisplay}<span class="chore-number">${choreNum}</span></div>`;
+
                 const isUnpublished = currentDay > maxPubDay;
 
                 if (isUnpublished) {
                     dayHtml += `<div class="calendar-event event-unpublished" title="Schedule not yet published">Not Published</div>`;
                 } else {
-                    const fireEvents = dayEvents.filter(e => e.type === 'fire'); 
-                    const roles = { career: [], perDiem: [], nightDuty: [] }; 
-                    
-                    if (fireEvents.length > 0) { 
-                        fireEvents.forEach(event => { 
-                            const summary = (event.summary || '').toLowerCase(); 
-                            const name = (event.summary || '').replace(timeRegex, '').replace(/career|per-diem|night duty/ig, '').replace(/-/g, '').trim(); 
+                    const fireEvents = dayEvents.filter(e => e.type === 'fire');
+                    const roles = { career: [], perDiem: [], nightDuty: [] };
+
+                    if (fireEvents.length > 0) {
+                        fireEvents.forEach(event => {
+                            const summary = (event.summary || '').toLowerCase();
+                            const name = (event.summary || '').replace(timeRegex, '').replace(/career|per-diem|night duty/ig, '').replace(/-/g, '').trim();
                             const timeStr = `${formatShortTime(event.start)}-${formatShortTime(event.end)}`;
 
-                            if (summary.includes('career')) roles.career.push({ name, timeStr, rawStart: event.start, rawEnd: event.end }); 
-                            if (summary.includes('per-diem')) roles.perDiem.push({ name, timeStr, rawStart: event.start, rawEnd: event.end }); 
-                            if (summary.includes('night duty')) roles.nightDuty.push({ name, timeStr, rawStart: event.start, rawEnd: event.end }); 
-                        }); 
-                    } 
-                    
+                            if (summary.includes('career')) roles.career.push({ name, timeStr, rawStart: event.start, rawEnd: event.end });
+                            if (summary.includes('per-diem')) roles.perDiem.push({ name, timeStr, rawStart: event.start, rawEnd: event.end });
+                            if (summary.includes('night duty')) roles.nightDuty.push({ name, timeStr, rawStart: event.start, rawEnd: event.end });
+                        });
+                    }
+
                     const buildRoleHtml = (roleArray, roleType, prefix, cssClass) => {
                         if (roleArray.length === 0) {
                             return `<div class="calendar-event ${cssClass} event-open" title="${roleType}: Open">${prefix}: Open</div>`;
@@ -1420,15 +1420,15 @@
                     dayHtml += buildRoleHtml(perDiemMerged, 'Per Diem', 'P', 'event-per-diem');
                     dayHtml += buildRoleHtml(nightDutyMerged, 'Night Duty', 'N', 'event-night-duty');
                 }
-                
-                const meetings = dayEvents.filter(e => e.type === 'meeting'); 
-                meetings.sort((a, b) => a.startDate.toJSDate() - b.startDate.toJSDate()); 
-                if (meetings.length > 0) { 
-                    meetings.forEach(meeting => { 
-                        const time = meeting.startDate.toJSDate().toLocaleTimeString([], { hour: 'numeric', minute:'2-digit' }).replace(' AM','a').replace(' PM','p'); 
-                        dayHtml += `<div class="calendar-event event-town-meeting" title="${meeting.summary}">${time} - ${meeting.summary}</div>`; 
-                    }); 
-                } 
+
+                const meetings = dayEvents.filter(e => e.type === 'meeting');
+                meetings.sort((a, b) => a.startDate.toJSDate() - b.startDate.toJSDate());
+                if (meetings.length > 0) {
+                    meetings.forEach(meeting => {
+                        const time = meeting.startDate.toJSDate().toLocaleTimeString([], { hour: 'numeric', minute:'2-digit' }).replace(' AM','a').replace(' PM','p');
+                        dayHtml += `<div class="calendar-event event-town-meeting" title="${meeting.summary}">${time} - ${meeting.summary}</div>`;
+                    });
+                }
 
                 const deptEvents = dayEvents.filter(e => e.type === 'dept');
                 if (deptEvents.length > 0) {
@@ -1441,28 +1441,28 @@
                     });
                 }
 
-                dayHtml += `</div>`; 
-                grid.innerHTML += dayHtml; 
-                currentDay.setDate(currentDay.getDate() + 1); 
+                dayHtml += `</div>`;
+                grid.innerHTML += dayHtml;
+                currentDay.setDate(currentDay.getDate() + 1);
             }
-            
+
             const openShiftsList = document.getElementById('open-shifts-list');
             openShiftsList.innerHTML = '';
-            
+
             const allOpenShifts = [];
 
             let checkDate = new Date(todayInET);
             checkDate.setHours(0,0,0,0);
 
-            for (let i = 0; i < 60; i++) { 
+            for (let i = 0; i < 60; i++) {
                 if (checkDate > maxPubDay) {
                     checkDate.setDate(checkDate.getDate() + 1);
-                    continue; 
+                    continue;
                 }
 
                 const dateKey = formatYMD(checkDate);
                 const dayFireEvents = (eventsByDate[dateKey] || []).filter(e => e.type === 'fire');
-                
+
                 const rolesCount = { career: 0, perDiem: 0, nightDuty: 0 };
                 if (dayFireEvents.length > 0) {
                     dayFireEvents.forEach(event => {
@@ -1474,16 +1474,16 @@
                 }
 
                 const dateString = checkDate.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric'});
-                
+
                 if (rolesCount.career === 0) { allOpenShifts.push({ date: dateString, role: 'Career', time: '7a - 7a' }); }
                 if (rolesCount.perDiem === 0) { allOpenShifts.push({ date: dateString, role: 'Per Diem', time: '7a - 5p' }); }
                 if (rolesCount.nightDuty === 0) { allOpenShifts.push({ date: dateString, role: 'Night Duty', time: '5p - 7a' }); }
-                
+
                 checkDate.setDate(checkDate.getDate() + 1);
             }
 
             let openShiftsHtml = '';
-            
+
             if (allOpenShifts.length > 0) {
                 allOpenShifts.forEach(shift => {
                     openShiftsHtml += `
@@ -1515,20 +1515,20 @@
                  startRotation();
             }
         }
-        
-        function startRotation() { 
+
+        function startRotation() {
             if (rotationInterval) clearInterval(rotationInterval);
             const pages = [ document.getElementById('page-dashboard'), document.getElementById('page-calendar'), document.getElementById('page-chores') ];
-            
+
             if (currentPageIndex === 0 && !hasFireDanger && !hasBurnPermits) {
                 currentPageIndex = 1;
             }
-            
+
             pages.forEach((page, index) => {
                 if(page) page.style.display = (index === currentPageIndex) ? 'flex' : 'none';
             });
-            
-            performPruning(currentPageIndex); 
+
+            performPruning(currentPageIndex);
 
             if (pages[currentPageIndex].id === 'page-dashboard' && permitMap && hasBurnPermits) {
                 setTimeout(() => permitMap.invalidateSize(), 0);
@@ -1537,59 +1537,59 @@
             rotationInterval = setInterval(() => {
                 if (document.getElementById('permit-modal-overlay').style.display === 'flex') return;
                 pages[currentPageIndex].style.display = 'none';
-                
+
                 currentPageIndex = (currentPageIndex + 1) % pages.length;
-                
+
                 if (currentPageIndex === 0 && !hasFireDanger && !hasBurnPermits) {
                     currentPageIndex = (currentPageIndex + 1) % pages.length;
                 }
-                
+
                 const newPage = pages[currentPageIndex];
                 if (!newPage) return;
                 newPage.style.display = 'flex';
-                
-                performPruning(currentPageIndex); 
+
+                performPruning(currentPageIndex);
 
                 if (newPage.id === 'page-dashboard' && permitMap && hasBurnPermits) {
                     setTimeout(() => permitMap.invalidateSize(), 10);
                 }
             }, 15000);
         }
-        
-        function processEventForDashboard(vevent, searchStart, windowEnd, now, onDutyNow, onDutyLater) { 
-            if (vevent.isRecurring()) { 
-                const iterator = vevent.iterator(ICAL.Time.fromJSDate(searchStart)); 
-                let next; 
-                while ((next = iterator.next()) && next.toJSDate() < windowEnd) { 
-                    const occurrence = vevent.getOccurrenceDetails(next); 
-                    const eventStart = occurrence.startDate.toJSDate(); 
-                    const eventEnd = occurrence.endDate.toJSDate(); 
-                    if (eventStart < windowEnd && eventEnd > searchStart) { 
-                        const eventInstance = { 
-                            summary: vevent.summary || 'Unknown Event', 
-                            startDate: occurrence.startDate, 
-                            endDate: occurrence.endDate, 
-                        }; 
-                        if (eventStart <= now && eventEnd > now) { 
-                            onDutyNow.push(eventInstance); 
-                        } else if (eventStart > now && eventStart < windowEnd) { 
-                            onDutyLater.push(eventInstance); 
-                        } 
-                    } 
-                } 
-            } else { 
-                const eventStart = vevent.startDate.toJSDate(); 
-                const eventEnd = vevent.endDate.toJSDate(); 
-                if (eventStart < windowEnd && eventEnd > searchStart) { 
-                    if (eventStart <= now && eventEnd > now) { 
-                        onDutyNow.push(vevent); 
-                    } else if (eventStart > now && eventStart < windowEnd) { 
-                        onDutyLater.push(vevent); 
-                    } 
-                } 
-            } 
+
+        function processEventForDashboard(vevent, searchStart, windowEnd, now, onDutyNow, onDutyLater) {
+            if (vevent.isRecurring()) {
+                const iterator = vevent.iterator(ICAL.Time.fromJSDate(searchStart));
+                let next;
+                while ((next = iterator.next()) && next.toJSDate() < windowEnd) {
+                    const occurrence = vevent.getOccurrenceDetails(next);
+                    const eventStart = occurrence.startDate.toJSDate();
+                    const eventEnd = occurrence.endDate.toJSDate();
+                    if (eventStart < windowEnd && eventEnd > searchStart) {
+                        const eventInstance = {
+                            summary: vevent.summary || 'Unknown Event',
+                            startDate: occurrence.startDate,
+                            endDate: occurrence.endDate,
+                        };
+                        if (eventStart <= now && eventEnd > now) {
+                            onDutyNow.push(eventInstance);
+                        } else if (eventStart > now && eventStart < windowEnd) {
+                            onDutyLater.push(eventInstance);
+                        }
+                    }
+                }
+            } else {
+                const eventStart = vevent.startDate.toJSDate();
+                const eventEnd = vevent.endDate.toJSDate();
+                if (eventStart < windowEnd && eventEnd > searchStart) {
+                    if (eventStart <= now && eventEnd > now) {
+                        onDutyNow.push(vevent);
+                    } else if (eventStart > now && eventStart < windowEnd) {
+                        onDutyLater.push(vevent);
+                    }
+                }
+            }
         }
-        
+
         function renderEvent(eventData,container){
             const eventDiv=document.createElement('div');
             eventDiv.classList.add('event');
@@ -1598,7 +1598,7 @@
             const nameDiv=document.createElement('div');
             nameDiv.classList.add('event-name');
             const timeRegex=/\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
-            
+
             let cleanedSummary=(eventData.summary || '').replace(timeRegex,'').trim();
             const roles=["Career","Chief","Per-Diem","Night Duty"];
             let foundRole='';
@@ -1610,7 +1610,7 @@
                     break;
                 }
             }
-            
+
             nameDiv.textContent=cleanedSummary || 'Busy';
             leftColumn.appendChild(nameDiv);
             if(foundRole){
@@ -1619,7 +1619,7 @@
                 roleDiv.textContent=foundRole;
                 leftColumn.appendChild(roleDiv);
             }
-            
+
             const rightColumn=document.createElement('div');
             rightColumn.classList.add('event-right');
             const untilDiv=document.createElement('div');
@@ -1628,14 +1628,14 @@
             const eventEnd=eventData.endDate.toJSDate();
             let timeText='';
             let nextDaySpan='';
-            
+
             if(eventEnd.getDate()!==eventStart.getDate()){
                 const day=eventEnd.toLocaleDateString([],{weekday:'short'});
                 const m=eventEnd.getMonth()+1;
                 const d=eventEnd.getDate();
                 nextDaySpan=` <span style="font-size: 0.60em; opacity: 0.7;">(${day} ${m}/${d})</span>`;
             }
-            
+
             if(container.id==='onDutyLaterContainer' || container.id === 'chores-on-duty-later-container'){
                 const startTime=eventStart.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
                 const endTime=eventEnd.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
@@ -1644,27 +1644,27 @@
                 const endTime=eventEnd.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
                 timeText=`Until ${endTime}`;
             }
-            
+
             untilDiv.innerHTML=`${timeText}${nextDaySpan}`;
             rightColumn.appendChild(untilDiv);
             eventDiv.appendChild(leftColumn);
             eventDiv.appendChild(rightColumn);
             container.appendChild(eventDiv);
         }
-        
+
         function showPermitDetails(detailsHtml) {
             pauseRotation();
             const modalOverlay = document.getElementById('permit-modal-overlay');
             const modalBody = document.getElementById('permit-modal-body');
-            
+
             const cleanedDetailsHtml = detailsHtml.replace(/<td[^>]*>.*?DEPARTMENT OF AGRICULTURE, CONSERVATION &amp; FORESTRY<br>\s*OPEN BURNING PERMIT.*?<\/td>/s, '');
 
             modalBody.innerHTML = `<table><tbody>${cleanedDetailsHtml}</tbody></table>`;
             modalOverlay.style.display = 'flex';
-            
+
             const modalContent = document.getElementById('permit-modal-content');
             modalContent.addEventListener('click', closePermitDetails, { once: true });
-            
+
             if (modalCloseTimer) clearTimeout(modalCloseTimer);
             modalCloseTimer = setTimeout(closePermitDetails, 60000);
         }
@@ -1680,7 +1680,7 @@
                 resumeRotation();
             }
         }
-        
+
         function initPermitMap() {
             if (permitMap) return;
             try {
@@ -1703,11 +1703,11 @@
             const mapContainer = document.getElementById('permitMap');
 
             if (permits.length === 0) {
-                mapContainer.style.display = 'none'; 
+                mapContainer.style.display = 'none';
                 return;
             }
 
-            mapContainer.style.display = 'block'; 
+            mapContainer.style.display = 'block';
 
             const geocodePromises = permits.map(p => {
                 const address = p.location;
@@ -1741,7 +1741,7 @@
                             showPermitDetails(detailsHtml);
                         });
                     }
-                    
+
                     permitMarkers.push(marker);
                     locations.push([lat, lon]);
                 }
@@ -1750,7 +1750,7 @@
             if (locations.length > 0) {
                 const bounds = L.latLngBounds(locations);
                 permitMap.fitBounds(bounds, { padding: [75, 75] });
-                
+
                 setTimeout(() => permitMap.invalidateSize(), 100);
             }
         }
@@ -1758,7 +1758,7 @@
         function renderBurnPermitEvent(eventData, container) {
             const eventDiv = document.createElement('div');
             eventDiv.classList.add('event');
-            
+
             let detailsHtml = '';
             if (eventData.description) {
                 const descriptionParts = eventData.description.split('Details:');
