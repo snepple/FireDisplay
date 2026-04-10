@@ -1,0 +1,156 @@
+{
+    "admin_password": "ChangeMe123!",
+    "dashboard_settings": {
+        "theme": "auto"
+    },
+    "department_info": {
+        "name": "Oakland Fire Department",
+        "stations": [
+            {
+                "id": "69cafb494166b",
+                "number": "Station 9",
+                "address": "15 Fairfield St, Oakland, ME 04963",
+                "rooms": [
+                    "Atlantic Room"
+                ]
+            }
+        ],
+        "apparatus": [
+            {
+                "id": "69cafb494166f",
+                "name": "Rescue 4",
+                "abbr": "R4",
+                "category": "Fire",
+                "type": "Rescue unit",
+                "status": "In service"
+            },
+            {
+                "id": "69cb0d220fd68",
+                "name": "Ladder 1",
+                "abbr": "9-1",
+                "category": "Fire",
+                "type": "Engine",
+                "status": "In service"
+            },
+            {
+                "id": "69cb0d220fd6a",
+                "name": "Engine 2",
+                "abbr": "9-2",
+                "category": "Fire",
+                "type": "Engine",
+                "status": "In service"
+            },
+            {
+                "id": "69cb0d220fd6b",
+                "name": "Rescue 9",
+                "abbr": "R9",
+                "category": "Fire",
+                "type": "Engine",
+                "status": "In service"
+            },
+            {
+                "id": "69cb0d220fd6c",
+                "name": "Engine 5",
+                "abbr": "E5",
+                "category": "Fire",
+                "type": "Engine",
+                "status": "In service"
+            },
+            {
+                "id": "69cb0d220fd6d",
+                "name": "Fire Chief",
+                "abbr": "900",
+                "category": "Fire",
+                "type": "Engine",
+                "status": "In service"
+            },
+            {
+                "id": "69cb0d220fd6e",
+                "name": "Engine 5",
+                "abbr": "9-5",
+                "category": "Fire",
+                "type": "Engine",
+                "status": "In service"
+            },
+            {
+                "id": "69cb0d5bcc9d8",
+                "name": "Utility 6",
+                "abbr": "9-6",
+                "category": "Fire",
+                "type": "Engine",
+                "status": "In service"
+            },
+            {
+                "id": "69cb0d5bcc9da",
+                "name": "Engine 3",
+                "abbr": "9-3",
+                "category": "Fire",
+                "type": "Engine",
+                "status": "In service"
+            },
+            {
+                "id": "69cb0da388026",
+                "name": "Engine 4",
+                "abbr": "9-4",
+                "category": "Fire",
+                "type": "Engine",
+                "status": "In service"
+            }
+        ]
+    },
+    "headers": [
+        "9-1",
+        "9-2",
+        "9-3",
+        "9-4",
+        "9-5",
+        "9-6<br>Meds",
+        "R4 & R9"
+    ],
+    "truck_check": {
+        "anchor": "2025-07-13",
+        "interval": 2
+    },
+    "truck_wash": {
+        "anchor": "2025-07-20",
+        "interval": 2
+    },
+    "chore_anchor": "2025-07-15",
+    "chore_num_indices": 6,
+    "everyday_chores": [
+        "Clean Bathrooms",
+        "Empty Trash Cans",
+        "Wash Coffee Pot and Dishes"
+    ],
+    "chores": [
+        {
+            "id": 1,
+            "name": "Kitchen"
+        },
+        {
+            "id": 2,
+            "name": "Dispatch\/Vacuum\/Offices\/Bunks"
+        },
+        {
+            "id": 3,
+            "name": "Entries\/Halls\/Windows"
+        },
+        {
+            "id": 4,
+            "name": "Bay Floors"
+        },
+        {
+            "id": 5,
+            "name": "Tool\/Gear\/Compressor\/Gym"
+        },
+        {
+            "id": 6,
+            "name": "Atlantic\/Stand-by"
+        }
+    ],
+    "special_chores": [],
+    "manual_events": [],
+    "announcements": [],
+    "truckAnchorDate": "2025-07-13",
+    "choreAnchorDate": "2025-07-15"
+}
