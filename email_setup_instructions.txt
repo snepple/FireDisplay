@@ -1,0 +1,33 @@
+To configure your email addresses to trigger the new `process_email.php` script on Bluehost, follow these step-by-step instructions:
+
+### Step 1: Ensure Script Permissions
+First, ensure that the PHP script has the correct permissions so the mail server can execute it.
+Using the File Manager in cPanel or your FTP client, navigate to `api/process_email.php` and set its permissions to `755` (Read, Write, Execute for Owner; Read, Execute for Group and Public).
+*Note: I have already set this permission in the codebase, but verify it on your live server.*
+
+### Step 2: Ensure Proper Shebang
+The first line of `process_email.php` needs to tell the server where PHP is located.
+In cPanel, it's typically:
+`#!/usr/local/bin/php -q`
+*Note: I have already updated the script to include this as the very first line.*
+
+### Step 3: Set up Email Forwarders (Piping) in Bluehost cPanel
+You need to create a "Forwarder" for each email address you want to use (e.g., `danger@yourdomain.com` and `permits@yourdomain.com`).
+
+1. Log into your **Bluehost cPanel**.
+2. Scroll down to the **Email** section and click on **Forwarders**.
+3. Click the **Add Forwarder** button.
+4. **Address to Forward:**
+   * Enter the prefix for the email address (e.g., `danger`).
+   * Select your domain from the drop-down menu.
+5. **Destination:**
+   * Click on **Advanced Options** to expand the section.
+   * Select the option: **Pipe to a Program**.
+   * In the text box next to it, enter the path to your script relative to your home directory.
+     * *Example:* If your application is in the root `public_html` folder, the path would be: `public_html/api/process_email.php`
+     * *Note: Do not include a leading slash (`/`).*
+6. Click **Add Forwarder**.
+7. Repeat steps 3-6 for your second email address (e.g., `permits@yourdomain.com`), pointing it to the exact same script: `public_html/api/process_email.php`.
+
+### How It Works:
+Now, whenever an email is sent to `danger@yourdomain.com` or `permits@yourdomain.com`, Bluehost's mail server will automatically execute `public_html/api/process_email.php` and pass the entire contents of the email to the script. The script checks who the email was addressed to (or the subject) and updates the corresponding JSON file.

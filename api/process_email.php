@@ -1,3 +1,4 @@
+#!/usr/local/bin/php -q
 <?php
 // Script to be piped from cPanel email forwarders
 // Example email addresses: danger@yourdomain.com, permits@yourdomain.com
