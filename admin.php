@@ -44,6 +44,7 @@ $defaultConfig = [
 
 if (!file_exists($configFile)) file_put_contents($configFile, json_encode($defaultConfig, JSON_PRETTY_PRINT));
 $configData = array_merge($defaultConfig, json_decode(file_get_contents($configFile), true));
+unset($configData['google_api_key']);
 
 // Ensure new keys exist if updating from older version
 if (!isset($configData['department_info'])) $configData['department_info'] = $defaultConfig['department_info'];
@@ -96,6 +97,7 @@ if (isset($_GET['api'])) {
     header('Content-Type: application/json');
     $exportData = $configData;
     unset($exportData['admin_password']); 
+    unset($exportData['google_api_key']);
     echo json_encode($exportData);
     exit;
 }
