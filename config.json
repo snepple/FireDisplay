@@ -129,11 +129,11 @@
         },
         {
             "id": 2,
-            "name": "Dispatch\/Vacuum\/Offices\/Bunks"
+            "name": "Dispatch/Vacuum/Offices/Bunks"
         },
         {
             "id": 3,
-            "name": "Entries\/Halls\/Windows"
+            "name": "Entries/Halls/Windows"
         },
         {
             "id": 4,
@@ -141,16 +141,22 @@
         },
         {
             "id": 5,
-            "name": "Tool\/Gear\/Compressor\/Gym"
+            "name": "Tool/Gear/Compressor/Gym"
         },
         {
             "id": 6,
-            "name": "Atlantic\/Stand-by"
+            "name": "Atlantic/Stand-by"
         }
     ],
     "special_chores": [],
     "manual_events": [],
     "announcements": [],
     "truckAnchorDate": "2025-07-13",
-    "choreAnchorDate": "2025-07-15"
+    "choreAnchorDate": "2025-07-15",
+    "calendar_urls": {
+        "main": "https://calendar.google.com/calendar/ical/c303c9aa08e0a090db126a0b15eb0bc0e8b66cc1af810aa971059b7b01b6d25a@group.calendar.google.com/public/basic.ics",
+        "burn_permits": "https://calendar.google.com/calendar/ical/permitsburn@gmail.com/public/basic.ics",
+        "town_meetings": "https://calendar.google.com/calendar/ical/amarshall@oaklandme.gov/public/basic.ics",
+        "holidays": "https://calendars.icloud.com/holidays/us_en-us.ics"
+    }
 }

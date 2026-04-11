@@ -57,7 +57,7 @@ $todayStr = date('Y-m-d');
 $active_events = []; $archived_events = [];
 foreach ($configData['manual_events'] as $evt) {
     $isArchived = false;
-    if ($evt['recurrence'] === 'none') { if ($evt['start_date'] < $todayStr) $isArchived = true; } 
+    if ($evt['recurrence'] === 'none') { if ($evt['start_date'] < $todayStr) $isArchived = true; }
     else if ($evt['end_type'] === 'date' && !empty($evt['end_date_bound'])) { if ($evt['end_date_bound'] < $todayStr) $isArchived = true; }
     if ($isArchived) $archived_events[] = $evt; else $active_events[] = $evt;
 }
@@ -66,7 +66,7 @@ foreach ($configData['manual_events'] as $evt) {
 $active_chores = []; $archived_chores = [];
 foreach ($configData['special_chores'] as $sc) {
     $isArchived = false;
-    if ($sc['recurrence'] === 'none') { if ($sc['start_date'] < $todayStr) $isArchived = true; } 
+    if ($sc['recurrence'] === 'none') { if ($sc['start_date'] < $todayStr) $isArchived = true; }
     else if ($sc['end_type'] === 'date' && !empty($sc['end_date_bound'])) { if ($sc['end_date_bound'] < $todayStr) $isArchived = true; }
     if ($isArchived) $archived_chores[] = $sc; else $active_chores[] = $sc;
 }
@@ -95,7 +95,7 @@ foreach($configData['department_info']['apparatus'] as $app) {
 if (isset($_GET['api'])) {
     header('Content-Type: application/json');
     $exportData = $configData;
-    unset($exportData['admin_password']); 
+    unset($exportData['admin_password']);
     echo json_encode($exportData);
     exit;
 }
@@ -173,12 +173,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $configData['headers'] = $combined;
         $success = "Headers Saved.";
-    } 
+    }
     elseif (isset($_POST['save_apparatus'])) {
         $configData['truck_check'] = ["anchor" => $_POST['truck_check_anchor'], "interval" => (int)$_POST['truck_check_interval']];
         $configData['truck_wash'] = ["anchor" => $_POST['truck_wash_anchor'], "interval" => (int)$_POST['truck_wash_interval']];
         $success = "Apparatus Schedules Saved.";
-    } 
+    }
     elseif (isset($_POST['save_chores'])) {
         $configData['everyday_chores'] = array_filter(array_map('trim', $_POST['everyday_chores'] ?? []), 'strlen');
         $configData['chore_anchor'] = $_POST['chore_anchor'];
@@ -207,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $active_chores = $newSpecialChores;
 
         $success = "Station Duties Saved.";
-    } 
+    }
     elseif (isset($_POST['save_events'])) {
         $newActiveEvents = [];
         if (!empty($_POST['events_json'])) {
@@ -222,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $configData['manual_events'] = array_merge($newActiveEvents, $archived_events);
         $active_events = $newActiveEvents;
         $success = "Events Saved.";
-    } 
+    }
     elseif (isset($_POST['save_announcements'])) {
         $newAnns = [];
         if (!empty($_POST['anns_json'])) {
@@ -286,7 +286,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
     <style>
         /* iOS / Light Apple Inspired Aesthetic */
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f5f5f7; color: #1d1d1f; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        
+
         .sidebar { width: 260px; background: #ffffff; border-right: 1px solid #e5e5ea; display: flex; flex-direction: column; flex-shrink: 0;}
         .sidebar-header { padding: 25px 20px; font-size: 1.3em; font-weight: 700; border-bottom: 1px solid #e5e5ea; color: #1d1d1f; letter-spacing: -0.5px;}
         .sidebar-menu { list-style: none; padding: 0; margin: 0; flex-grow: 1; overflow-y: auto;}
@@ -295,15 +295,15 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
         .sidebar-menu li a.active { background: #eef2ff; color: #007aff; border-left: 4px solid #007aff; padding-left: 16px;}
         .sub-menu a { padding-left: 40px !important; font-size: 0.9em; border-bottom: none !important; border-left: none !important;}
         .sub-menu a.active { background: #f5f5f7; color: #007aff; font-weight: bold;}
-        
+
         .logout-btn { padding: 18px; text-align: center; background: #f5f5f7; color: #ff3b30; text-decoration: none; font-weight: 600; border-top: 1px solid #e5e5ea; transition: 0.2s;}
         .logout-btn:hover { background: #ffeaeb; }
-        
+
         .content { flex-grow: 1; padding: 40px 50px; overflow-y: auto; position: relative;}
-        
+
         .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .header-bar h1 { margin: 0; font-size: 2.2em; font-weight: 700; letter-spacing: -0.5px;}
-        
+
         /* Buttons */
         button.save-btn { background: #34c759; color: white; border: none; padding: 12px 28px; font-size: 1.05em; border-radius: 8px; cursor: pointer; font-weight: 600; box-shadow: 0 2px 8px rgba(52,199,89,0.3); transition: all 0.2s;}
         button.save-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(52,199,89,0.4); }
@@ -318,26 +318,26 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
         h2 { margin-top: 0; color: #1d1d1f; border-bottom: 1px solid #e5e5ea; padding-bottom: 12px; font-weight: 600;}
         h3 { color: #1d1d1f; margin-bottom: 12px; font-weight: 600;}
         p.help { font-size: 0.95em; color: #86868b; margin-top: -5px; margin-bottom: 25px; line-height: 1.5; }
-        
-        input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, input[type="password"] { 
+
+        input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, input[type="password"] {
             padding: 12px; background: #ffffff; border: 1px solid #d2d2d7; color: #1d1d1f; border-radius: 8px; box-sizing: border-box; width: 100%; font-size: 1em; font-family: inherit; transition: border-color 0.2s;
         }
         input[type="text"]:focus, input[type="date"]:focus, select:focus, input[type="password"]:focus { border-color: #007aff; outline: none; box-shadow: 0 0 0 3px rgba(0,122,255,0.1);}
         input[type="checkbox"] { transform: scale(1.2); margin-right: 8px;}
         label { font-size: 0.9em; color: #515154; font-weight: 600; margin-bottom: 8px; display: block;}
-        
+
         .success { background: #e8f8eb; border: 1px solid #34c759; color: #248a3d; padding: 16px; border-radius: 8px; margin-bottom: 25px; font-weight: 600; }
         .error { background: #ffeaeb; border: 1px solid #ff3b30; color: #cc2e26; padding: 16px; border-radius: 8px; margin-bottom: 25px; font-weight: 600; }
-        
+
         /* Layouts */
         .flex-row { display: flex; gap: 20px; align-items: flex-end; margin-bottom: 20px; }
         .flex-col { display: flex; flex-direction: column; flex: 1;}
         .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; }
-        
+
         .item-card, .event-card, .ann-card { background: #fbfbfd; padding: 25px; border: 1px solid #e5e5ea; border-radius: 10px; margin-bottom: 20px; position: relative; }
         .event-card hr, .ann-card hr { border-top: 1px solid #d2d2d7; border-bottom: none; margin: 20px 0; }
         .config-box { background: #fbfbfd; padding: 20px; border-radius: 10px; border: 1px solid #e5e5ea; }
-        
+
         .room-tag { display: inline-flex; align-items: center; background: #e5e5ea; padding: 6px 12px; border-radius: 6px; margin: 5px 5px 0 0; font-size: 0.9em; color: #1d1d1f; font-weight: 500;}
         .room-tag button { background: none; border: none; color: #ff3b30; margin-left: 8px; cursor: pointer; font-weight: bold;}
 
@@ -354,28 +354,28 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
         .admin-cal-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #fbfbfd; padding: 15px; border-radius: 10px; border: 1px solid #e5e5ea;}
         .admin-cal-controls .btn-group { display: flex; gap: 8px; }
         .admin-cal-controls h3, .admin-cal-controls h2 { color: #1d1d1f !important;}
-        
+
         .admin-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e5e5ea; border: 1px solid #e5e5ea; border-radius: 8px; overflow: hidden; }
         .admin-cal-day { background: #ffffff; padding: 8px; min-height: 110px; cursor: pointer; transition: background 0.2s; display: flex; flex-direction: column; position: relative; overflow: hidden;}
         .admin-cal-day:hover { background: #f9f9fb; }
         .admin-cal-day-header { font-size: 0.85em; color: #86868b; text-align: right; margin-bottom: 5px; z-index: 2; font-weight: 600;}
         .admin-cal-lbl { background: #fbfbfd; text-align: center; font-weight: 600; padding: 10px 0; color: #515154; }
-        
+
         .cal-evt-pill { font-size: 0.75em; background: #34c759; color: #fff; padding: 4px 6px; border-radius: 4px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,0.1);}
-        
+
         /* Employee Shift Blocks on Admin Cal */
         .cal-shift-block { font-size: 0.7em; padding: 3px 5px; margin-bottom: 3px; border-radius: 4px; color: #1d1d1f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; position: relative; font-weight: 500; border-left: 3px solid transparent;}
         .bg-career { background-color: #eef2ff; border-left-color: #007aff;}
         .bg-perdiem { background-color: #fdf1f7; border-left-color: #e83e8c;}
         .bg-night { background-color: #fff4e6; border-left-color: #fd7e14;}
-        
+
         /* Form Overrides */
         .recur-group, .end-group { background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #d2d2d7; margin-top: 15px;}
         .day-checkboxes { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;}
         .day-checkboxes label { display: inline-flex; align-items: center; background: #f5f5f7; padding: 8px 12px; border-radius: 6px; border: 1px solid #e5e5ea; font-weight: 500; margin-bottom:0; cursor: pointer; transition: 0.2s;}
         .day-checkboxes label:hover { background: #ebebf0;}
     </style>
-    
+
     <script>
         function enforceSunday(input) {
             if (!input.value) return;
@@ -401,13 +401,13 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
             let txt = arr.length > 0 ? arr.join(' & ') : '-- Select Apparatus --';
             document.getElementById(`ms-txt-${index}`).textContent = txt;
         }
-        
+
         function toggleRecurUI(sel, typePrefix) {
             const card = sel.closest(`.${typePrefix}-card`);
             const val = sel.value;
             card.querySelector('.r-interval').style.display = val !== 'none' ? 'flex' : 'none';
             card.querySelector('.r-end-opts').style.display = val !== 'none' ? 'block' : 'none';
-            
+
             const lbl = card.querySelector('.r-int-lbl');
             if (val === 'daily') lbl.textContent = 'days';
             if (val === 'weekly') lbl.textContent = 'weeks';
@@ -493,7 +493,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 <button type="button" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove Station</button>
                                 <input type="hidden" name="st_id[]" value="<?= $st['id'] ?>">
                                 <input type="hidden" name="st_rooms_json[]" class="st-rooms-json" value="<?= htmlspecialchars(json_encode($st['rooms'])) ?>">
-                                
+
                                 <div class="flex-row">
                                     <div class="flex-col" style="flex:1"><label>Station Number/Name</label><input type="text" name="st_number[]" value="<?= htmlspecialchars($st['number']) ?>" required></div>
                                     <div class="flex-col" style="flex:2"><label>Address</label><input type="text" name="st_address[]" value="<?= htmlspecialchars($st['address']) ?>" required></div>
@@ -612,20 +612,20 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                 <div class="card">
                     <h2>Calendar Day Headers (Sun - Sat)</h2>
                     <p class="help">Select the Apparatus abbreviation for each day. You can select multiple apparatuses. If you need a new apparatus, add it on the <a href="?page=dept_info" style="color:#007aff;">Department Info</a> page. You can optionally add "Other" free-text to appear beneath it.</p>
-                    
+
                     <div class="grid-7">
-                        <?php 
+                        <?php
                         $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
                         for ($i = 0; $i < 7; $i++) {
                             $parts = explode("<br>", $configData['headers'][$i] ?? '');
                             $appStr = htmlspecialchars($parts[0] ?? '');
                             $selectedApps = array_map('trim', explode('&', $appStr));
-                            
+
                             $oth = htmlspecialchars($parts[1] ?? '');
 
                             echo "<div class='config-box'>";
                             echo "<h4 style='margin:0 0 12px 0; text-align: center; color: #1d1d1f;'>{$days[$i]}</h4>";
-                            
+
                             $displayText = empty($appStr) ? "-- Select Apparatus --" : $appStr;
                             echo "<label>Apparatus</label>";
                             echo "<div class='ms-container'>";
@@ -689,26 +689,26 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                         const grid = document.getElementById('appPreviewCal');
                         grid.innerHTML = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="admin-cal-lbl" style="padding: 6px 0; font-size: 0.9em;">${d}</div>`).join('');
-                        
+
                         let now = new Date();
                         let targetMonth = new Date(now.getFullYear(), now.getMonth() + appMoOffset, 1);
                         document.getElementById('appMonthTitle').textContent = targetMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
-                        
+
                         let firstDay = new Date(targetMonth);
                         firstDay.setDate(1 - firstDay.getDay());
-                        
+
                         for(let i=0; i<35; i++) {
                             let currentDay = new Date(firstDay);
                             currentDay.setDate(firstDay.getDate() + i);
-                            
+
                             let div = document.createElement('div');
                             div.className = 'admin-cal-day';
                             div.style.minHeight = '70px';
                             if(currentDay.getMonth() !== targetMonth.getMonth()) div.style.opacity = '0.4';
                             if(currentDay.toDateString() === now.toDateString()) div.style.border = '2px solid #007aff';
-                            
+
                             let icons = [];
-                            if (currentDay.getDay() === 0) { 
+                            if (currentDay.getDay() === 0) {
                                 if (cAnchor) {
                                     const [cy, cm, cd] = cAnchor.split('-');
                                     const cTime = new Date(cy, cm - 1, cd, 0, 0, 0).getTime();
@@ -724,7 +724,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                     if (diffWks >= 0 && diffWks % wInt === 0) icons.push('🧽 Wash');
                                 }
                             }
-                            
+
                             let iconHtml = icons.length > 0 ? `<div style="color:#1d1d1f; font-size:0.9em; font-weight:600; margin-top:5px; text-align:center; line-height:1.5;">${icons.join('<br>')}</div>` : '';
                             div.innerHTML = `<div class="admin-cal-day-header">${currentDay.getDate()}</div>${iconHtml}`;
                             grid.appendChild(div);
@@ -737,7 +737,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
             <?php elseif ($page === 'chores'): ?>
                 <div class="card">
                     <h2>Station Duties Configuration</h2>
-                    
+
                     <div class="config-box flex-row" style="margin-bottom: 25px; align-items: flex-start;">
                         <div style="display: flex; flex-direction: column; gap: 20px; width: 250px; flex-shrink: 0;">
                             <div>
@@ -763,7 +763,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                     <h3 style="margin-bottom: 5px;">Numbered Chores</h3>
                     <p class="help">Define specific tasks to occur on specific index days in the rotation. <strong>You can assign multiple duties to the same Index #</strong> (e.g., both 'Kitchen' and 'Bathrooms' on Index #1).</p>
-                    
+
                     <div id="numbered-chores-container">
                         <div style="display: flex; gap: 15px; margin-bottom: 5px; padding: 0 10px;">
                             <label style="width: 80px;">Index #</label><label style="flex-grow:1;">Duty Description</label><label style="width:70px;"></label>
@@ -868,12 +868,12 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 </div>
                                 <div class="r-monthly-opts" style="display: ${rec==='monthly'?'block':'none'}; margin-top: 10px;">
                                     <div style="display:flex; align-items:center; gap:15px; margin-bottom: 10px;">
-                                        <input type="radio" class="sc-rm-type" name="sc_rm_type_${Math.random()}" value="date" ${rMoType==='date'?'checked':''} onchange="renderChorePreview()"> 
+                                        <input type="radio" class="sc-rm-type" name="sc_rm_type_${Math.random()}" value="date" ${rMoType==='date'?'checked':''} onchange="renderChorePreview()">
                                         <span style="display:flex; align-items:center; gap:8px;">Day <input type="number" class="sc-rm-date" value="${rMoDate}" min="1" max="31" style="width:70px;" onchange="renderChorePreview()"> of the month</span>
                                     </div>
                                     <div style="display:flex; align-items:center; gap:15px;">
                                         <input type="radio" class="sc-rm-type" name="sc_rm_type_${Math.random()}" value="nth" ${rMoType==='nth'?'checked':''} onchange="renderChorePreview()">
-                                        <span style="display:flex; align-items:center; gap:8px;">The 
+                                        <span style="display:flex; align-items:center; gap:8px;">The
                                             <select class="sc-rm-nth" style="width:auto;" onchange="renderChorePreview()">
                                                 <option value="1" ${rMoNth==1?'selected':''}>First</option><option value="2" ${rMoNth==2?'selected':''}>Second</option>
                                                 <option value="3" ${rMoNth==3?'selected':''}>Third</option><option value="4" ${rMoNth==4?'selected':''}>Fourth</option>
@@ -905,7 +905,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         document.getElementById('sc-container').appendChild(div);
                         renderChorePreview();
                     }
-                    
+
                     let choreMoOffset = 0;
                     function changeChoreMonth(d) { choreMoOffset += d; renderChorePreview(); }
 
@@ -913,44 +913,44 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         const anchorStr = document.getElementById('c_anchor').value;
                         const numIndices = parseInt(document.getElementById('c_indices').value) || 6;
                         if(!anchorStr) return;
-                        
+
                         const [y, m, d] = anchorStr.split('-');
                         const anchorTime = new Date(Date.UTC(y, m - 1, d, 12, 0, 0)).getTime();
-                        
+
                         const grid = document.getElementById('chorePreviewCal');
                         grid.innerHTML = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="admin-cal-lbl" style="padding: 4px 0; font-size: 0.85em;">${d}</div>`).join('');
-                        
+
                         let now = new Date();
                         let targetMonth = new Date(now.getFullYear(), now.getMonth() + choreMoOffset, 1);
                         document.getElementById('choreMonthTitle').textContent = targetMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
-                        
+
                         let firstDay = new Date(targetMonth);
                         firstDay.setDate(1 - firstDay.getDay());
-                        
+
                         // Parse live SC data for preview
                         let scByDate = {};
                         document.querySelectorAll('.sc-card').forEach(card => {
                             let wks = []; card.querySelectorAll('.sc-rwk:checked').forEach(c => wks.push(c.value));
                             let rmType = card.querySelector('.sc-rm-type:checked');
                             let endType = card.querySelector('.sc-end-type:checked');
-                            
+
                             const name = card.querySelector('.sc-name').value || 'Unnamed Duty';
                             const sDateStr = card.querySelector('.sc-sd').value;
                             if(!sDateStr) return;
-                            
+
                             const [sy, sm, sd] = sDateStr.split('-');
                             const baseDate = new Date(sy, sm-1, sd, 0,0,0);
                             const rec = card.querySelector('.sc-rec').value;
-                            
+
                             let limitDate = new Date(2100,0,1);
                             if (endType && endType.value === 'date' && card.querySelector('.sc-end-bound').value) {
                                 const [ly, lm, ld] = card.querySelector('.sc-end-bound').value.split('-');
                                 limitDate = new Date(ly, lm-1, ld, 23, 59, 59);
                             }
-                            
+
                             let occurrences = 0;
                             const maxOccurrences = (endType && endType.value === 'occurrences') ? parseInt(card.querySelector('.sc-end-occ').value) || 1 : 9999;
-                            
+
                             let current = new Date(baseDate);
                             const addInst = (dObj) => {
                                 const k = `${dObj.getFullYear()}-${String(dObj.getMonth()+1).padStart(2,'0')}-${String(dObj.getDate()).padStart(2,'0')}`;
@@ -983,18 +983,18 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         for(let i=0; i<35; i++) {
                             let currentDay = new Date(firstDay);
                             currentDay.setDate(firstDay.getDate() + i);
-                            
+
                             const targetTime = new Date(Date.UTC(currentDay.getFullYear(), currentDay.getMonth(), currentDay.getDate(), 12, 0, 0)).getTime();
                             const diffDays = Math.round((targetTime - anchorTime) / 86400000);
                             let choreIndex = (((diffDays % numIndices) + numIndices) % numIndices) + 1;
-                            
+
                             let div = document.createElement('div');
                             div.className = 'admin-cal-day';
                             div.style.minHeight = '50px';
                             div.style.padding = '4px 6px';
                             if(currentDay.getMonth() !== targetMonth.getMonth()) div.style.opacity = '0.4';
                             if(currentDay.toDateString() === now.toDateString()) div.style.border = '2px solid #007aff';
-                            
+
                             const dk = `${currentDay.getFullYear()}-${String(currentDay.getMonth()+1).padStart(2,'0')}-${String(currentDay.getDate()).padStart(2,'0')}`;
                             let pils = scByDate[dk] ? scByDate[dk].map(n => `<div class="cal-evt-pill" style="background:#eef2ff; color:#007aff; border: 1px solid #007aff;">${n}</div>`).join('') : '';
 
@@ -1043,7 +1043,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <div id="anns-container"></div>
                     <button type="button" class="action-btn add" onclick="addAnn()">+ Add Announcement</button>
                 </div>
-                
+
                 <script>
                     const existingAnns = <?= json_encode($active_announcements) ?>;
                     let quillEditors = [];
@@ -1053,12 +1053,12 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         const content = data ? data.content : '';
                         const sd = data ? data.start_date : '<?= $todayStr ?>';
                         const ed = data ? data.end_date : '<?= $todayStr ?>';
-                        
+
                         const container = document.getElementById('anns-container');
                         const div = document.createElement('div');
                         div.className = 'ann-card';
                         const editorId = 'editor_' + Math.random().toString(36).substr(2, 9);
-                        
+
                         div.innerHTML = `
                             <button type="button" class="delete-btn" style="position: absolute; right: 20px; top: 20px;" onclick="this.parentElement.remove()">Remove</button>
                             <input type="hidden" class="a-id" value="${id}">
@@ -1070,13 +1070,13 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             <div id="${editorId}"></div>
                         `;
                         container.appendChild(div);
-                        
+
                         var quill = new Quill('#' + editorId, {
                             theme: 'snow',
                             modules: { toolbar: [ [{ 'header': [1, 2, 3, false] }], ['bold', 'italic', 'underline', 'strike'], [{ 'color': [] }, { 'background': [] }], [{ 'list': 'ordered'}, { 'list': 'bullet' }], ['clean'] ] }
                         });
                         quill.root.innerHTML = content;
-                        div.dataset.editorId = editorId; 
+                        div.dataset.editorId = editorId;
                         quillEditors[editorId] = quill;
                     }
 
@@ -1096,7 +1096,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     }
 
                     window.onload = () => {
-                        if (existingAnns.length > 0) { existingAnns.forEach(a => addAnn(a)); } 
+                        if (existingAnns.length > 0) { existingAnns.forEach(a => addAnn(a)); }
                         else { addAnn(); }
                     };
                 </script>
@@ -1130,10 +1130,10 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                 <script>
                     const existingEvents = <?= $eventsJson ?>;
-                    const roomsDatalist = `<?= $roomsJson ?>`; 
+                    const roomsDatalist = `<?= $roomsJson ?>`;
                     let employeeShifts = {};
-                    
-                    let calViewMode = 'month'; 
+
+                    let calViewMode = 'month';
                     let calAnchorDate = new Date();
 
                     function setCalView(mode) {
@@ -1154,7 +1154,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                     function parseLocalYMD(dateStr) { const [y, m, d] = dateStr.split('-'); return new Date(y, m - 1, d); }
                     function formatYMD(dateObj) { return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`; }
-                    
+
                     function getNthWeekdayOfMonth(year, month, weekday, n) {
                         let d = new Date(year, month, 1);
                         let count = 0;
@@ -1165,21 +1165,21 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             }
                             d.setDate(d.getDate() + 1);
                         }
-                        return null; 
+                        return null;
                     }
 
                     async function loadAdminShifts() {
-                        const scheduleUrl = `https://calendar.google.com/calendar/ical/c303c9aa08e0a090db126a0b15eb0bc0e8b66cc1af810aa971059b7b01b6d25a@group.calendar.google.com/public/basic.ics?nocache=${Date.now()}`;
-                        const proxyUrl = `fetch_calendar.php?url=${encodeURIComponent(scheduleUrl)}&_cb=${Date.now()}`;
+                        const scheduleUrl = `<?= $config['calendar_urls']['main'] ?? 'https://calendar.google.com/calendar/ical/c303c9aa08e0a090db126a0b15eb0bc0e8b66cc1af810aa971059b7b01b6d25a@group.calendar.google.com/public/basic.ics' ?>&nocache=${Date.now()}`;
+                        const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(scheduleUrl)}&_cb=${Date.now()}`;
                         try {
                             const response = await fetch(proxyUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
                             if (!response.ok) throw new Error("Network issue");
                             const icsData = await response.text();
                             const jcalData = ICAL.parse(icsData);
                             const comp = new ICAL.Component(jcalData);
-                            
+
                             const parseDate = new Date(); parseDate.setDate(parseDate.getDate() + 90);
-                            
+
                             const timeRegex = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
 
                             const formatTime = (d) => {
@@ -1199,7 +1199,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 let typeCode = 'C';
                                 if(summary.includes('per-diem')) { typeClass = 'bg-perdiem'; typeCode = 'P'; }
                                 if(summary.includes('night duty')) { typeClass = 'bg-night'; typeCode = 'N'; }
-                                
+
                                 const nameClean = (vevent.summary || '').replace(timeRegex, '').replace(/career|per-diem|night duty/ig, '').replace(/-/g, '').trim();
 
                                 const processOccurrence = (occurrence) => {
@@ -1224,12 +1224,12 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     function buildAdminCalendar() {
                         let startDate = new Date(calAnchorDate);
                         let daysToRender = 0;
-                        
+
                         const labelsContainer = document.getElementById('adminCalLabels');
                         const grid = document.getElementById('adminCalGrid');
 
                         if (calViewMode === 'month') {
-                            startDate.setDate(1); startDate.setDate(1 - startDate.getDay()); 
+                            startDate.setDate(1); startDate.setDate(1 - startDate.getDay());
                             const daysInMonth = new Date(calAnchorDate.getFullYear(), calAnchorDate.getMonth() + 1, 0).getDate();
                             const weeks = Math.ceil((new Date(calAnchorDate.getFullYear(), calAnchorDate.getMonth(), 1).getDay() + daysInMonth) / 7);
                             daysToRender = weeks * 7;
@@ -1237,9 +1237,9 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             labelsContainer.style.display = 'grid'; labelsContainer.style.gridTemplateColumns = 'repeat(7, 1fr)';
                             labelsContainer.innerHTML = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="admin-cal-lbl">${d}</div>`).join('');
                             grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
-                        } 
+                        }
                         else if (calViewMode === 'week') {
-                            startDate.setDate(startDate.getDate() - startDate.getDay()); 
+                            startDate.setDate(startDate.getDate() - startDate.getDay());
                             daysToRender = 7;
                             let endWk = new Date(startDate); endWk.setDate(endWk.getDate() + 6);
                             document.getElementById('adminMonthTitle').textContent = `${startDate.toLocaleDateString([], {month:'short', day:'numeric'})} - ${endWk.toLocaleDateString([], {month:'short', day:'numeric', year:'numeric'})}`;
@@ -1302,8 +1302,8 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 }
                             } else if (evt.recurrence === 'monthly_nth') {
                                 let interval = parseInt(evt.recur_interval) || 1;
-                                let targetNth = parseInt(evt.recur_month_nth); 
-                                let targetDay = parseInt(evt.recur_month_nth_day); 
+                                let targetNth = parseInt(evt.recur_month_nth);
+                                let targetDay = parseInt(evt.recur_month_nth_day);
                                 current.setDate(1);
                                 while (current <= limitDate && current < endWindow) {
                                     let nThDay = getNthWeekdayOfMonth(current.getFullYear(), current.getMonth(), targetDay, targetNth);
@@ -1322,16 +1322,16 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             div.className = 'admin-cal-day';
                             if (calViewMode === 'month' && renderCurrent.getMonth() !== calAnchorDate.getMonth()) div.style.opacity = '0.4';
                             if (formatYMD(renderCurrent) === formatYMD(new Date())) div.style.border = '2px solid #007aff';
-                            
+
                             const dateStr = formatYMD(renderCurrent);
                             let headerText = renderCurrent.getDate();
                             if (calViewMode === 'week' || calViewMode === 'day') headerText = renderCurrent.toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'});
                             div.innerHTML = `<div class="admin-cal-day-header">${headerText}</div>`;
-                            
+
                             // Render Employee Shifts as text blocks
                             if (employeeShifts[dateStr]) {
-                                employeeShifts[dateStr].forEach(sh => { 
-                                    div.innerHTML += `<div class="cal-shift-block ${sh.class}" title="${sh.text}">${sh.text}</div>`; 
+                                employeeShifts[dateStr].forEach(sh => {
+                                    div.innerHTML += `<div class="cal-shift-block ${sh.class}" title="${sh.text}">${sh.text}</div>`;
                                 });
                             }
 
@@ -1356,7 +1356,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         const card = sel.closest('.event-card');
                         const locWrap = card.querySelector('.e-loc-wrap');
                         const locLbl = card.querySelector('.e-loc-lbl');
-                        
+
                         if (sel.value === 'Room Rental') {
                             locWrap.style.display = 'flex';
                             locLbl.textContent = 'Select/Enter Room';
@@ -1379,7 +1379,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         const ad = data && data.all_day !== undefined ? data.all_day : true;
                         const st = data && data.start_time ? data.start_time : '';
                         const et = data && data.end_time ? data.end_time : '';
-                        
+
                         const rec = data && data.recurrence ? data.recurrence : 'none';
                         const rInt = data && data.recur_interval ? data.recur_interval : 1;
                         const rWkDays = data && data.recur_weekdays ? data.recur_weekdays : [];
@@ -1387,7 +1387,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         const rMoDate = data && data.recur_month_date ? data.recur_month_date : 1;
                         const rMoNth = data && data.recur_month_nth ? data.recur_month_nth : 1;
                         const rMoNthDay = data && data.recur_month_nth_day ? data.recur_month_nth_day : 0;
-                        
+
                         const endType = data && data.end_type ? data.end_type : 'date';
                         const endOccur = data && data.end_occurrences ? data.end_occurrences : 10;
                         const endDateBound = data && data.end_date_bound ? data.end_date_bound : '';
@@ -1395,7 +1395,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         const tmpl = `
                             <button type="button" class="delete-btn" style="position: absolute; right: 20px; top: 20px;" onclick="this.parentElement.remove()">Remove Event</button>
                             <input type="hidden" class="e-id" value="${id}">
-                            
+
                             <div class="flex-row" style="margin-bottom: 15px; width: 85%;">
                                 <div class="flex-col" style="flex: 2;"><label>Event Title</label><input type="text" class="e-title" value="${title}" required></div>
                                 <div class="flex-col">
@@ -1408,7 +1408,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                     </select>
                                 </div>
                             </div>
-                            
+
                             <div class="flex-row e-loc-wrap" style="display: ${eType==='Training' ? 'none' : 'flex'}; margin-bottom: 15px; width: 85%;">
                                 <div class="flex-col">
                                     <label class="e-loc-lbl">${eType==='Room Rental'?'Select/Enter Room':'Location'}</label>
@@ -1430,7 +1430,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                     <div class="flex-col"><label>End Time</label><input type="time" class="e-et" value="${et}"></div>
                                 </div>
                             </div>
-                            
+
                             <hr>
                             <div class="recur-group">
                                 <div class="flex-row">
@@ -1467,12 +1467,12 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                                 <div class="r-monthly-opts" style="display: ${rec==='monthly'?'block':'none'}; margin-top: 15px;">
                                     <div style="display:flex; align-items:center; gap:15px; margin-bottom: 10px;">
-                                        <input type="radio" class="e-rm-type" name="rm_type_${Math.random()}" value="date" ${rMoType==='date'?'checked':''}> 
+                                        <input type="radio" class="e-rm-type" name="rm_type_${Math.random()}" value="date" ${rMoType==='date'?'checked':''}>
                                         <span style="display:flex; align-items:center; gap:8px;">Day <input type="number" class="e-rm-date" value="${rMoDate}" min="1" max="31" style="width:70px;"> of the month</span>
                                     </div>
                                     <div style="display:flex; align-items:center; gap:15px;">
                                         <input type="radio" class="e-rm-type" name="rm_type_${Math.random()}" value="nth" ${rMoType==='nth'?'checked':''}>
-                                        <span style="display:flex; align-items:center; gap:8px;">The 
+                                        <span style="display:flex; align-items:center; gap:8px;">The
                                             <select class="e-rm-nth" style="width:auto;">
                                                 <option value="1" ${rMoNth==1?'selected':''}>First</option><option value="2" ${rMoNth==2?'selected':''}>Second</option>
                                                 <option value="3" ${rMoNth==3?'selected':''}>Third</option><option value="4" ${rMoNth==4?'selected':''}>Fourth</option>
@@ -1533,7 +1533,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 all_day: card.querySelector('.e-allday').checked,
                                 start_time: card.querySelector('.e-st').value,
                                 end_time: card.querySelector('.e-et').value,
-                                
+
                                 recurrence: card.querySelector('.e-rec').value,
                                 recur_interval: card.querySelector('.e-rint').value,
                                 recur_weekdays: wks,
@@ -1598,7 +1598,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <?php endif; ?>
                 </div>
                 <script>function runPreSubmitHooks() {}</script>
-                
+
             <?php elseif ($page === 'archived_anns'): ?>
                 <div class="card">
                     <h2>Archived Announcements</h2>
@@ -1633,7 +1633,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                 </div>
                 <script>function runPreSubmitHooks() {}</script>
             <?php endif; ?>
-            
+
             <div style="display:flex; justify-content: flex-end;">
                 <button type="submit" name="save_<?= explode('_', $page)[0] ?>" class="save-btn" style="padding: 15px 40px; margin-bottom: 50px;">💾 Save Changes</button>
             </div>
