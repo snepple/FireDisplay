@@ -177,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $combined = [];
         for ($i=0; $i<7; $i++) {
             $appArr = $_POST['app'][$i] ?? [];
-            $app = implode(" & ", $appArr);
+            $app = is_array($appArr) ? implode(" & ", $appArr) : (is_string($appArr) ? $appArr : "");
             $oth = trim($_POST['other'][$i]);
             $combined[] = ($oth !== '') ? ($app !== '' ? $app . "<br>" . $oth : $oth) : $app;
         }

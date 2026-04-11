@@ -397,12 +397,13 @@ if (!empty($dashboardToken)) {
                 if (activePage.id === 'page-dashboard') pruneDashboard();
                 if (activePage.id === 'page-calendar') pruneCalendar();
                 if (activePage.id === 'page-chores') pruneChores();
-            }, 50);
+            }, 200);
         }
 
         function pruneDashboard() {
             const container = document.getElementById('burnPermitsContainer');
             if (!container) return;
+            if (container.clientHeight === 0) return;
             while (container.scrollHeight > container.clientHeight + 2 && container.children.length > 0) {
                 container.removeChild(container.lastElementChild);
             }
@@ -412,6 +413,7 @@ if (!empty($dashboardToken)) {
             const sidebar = document.querySelector('.calendar-sidebar');
             const list = document.getElementById('open-shifts-list');
             if (sidebar && list) {
+                if (sidebar.clientHeight === 0) return;
                 while (sidebar.scrollHeight > sidebar.clientHeight + 2 && list.querySelectorAll('.open-shift-link').length > 0) {
                     const links = list.querySelectorAll('.open-shift-link');
                     const lastLink = links[links.length - 1];
@@ -432,6 +434,7 @@ if (!empty($dashboardToken)) {
                 targets.forEach(target => {
                     const container = document.getElementById(target.id);
                     if (container) {
+                        if (column.clientHeight === 0) return;
                         while (column.scrollHeight > column.clientHeight + 2 && container.children.length > 0) {
                             container.removeChild(container.lastElementChild);
                         }
@@ -446,6 +449,7 @@ if (!empty($dashboardToken)) {
             const annCol = document.getElementById('chores-duties-column');
             const annCont = document.getElementById('announcements-container');
             if (annCol && annCont) {
+                if (annCol.clientHeight === 0) return;
                 while (annCol.scrollHeight > annCol.clientHeight + 2 && annCont.children.length > 0) {
                     annCont.removeChild(annCont.lastElementChild);
                 }
