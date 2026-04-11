@@ -133,6 +133,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $configData['dashboard_settings']['theme'] = $_POST['dash_theme'];
         $configData['dashboard_token'] = $_POST['dashboard_token'];
         $configData['fire_danger_zone'] = $_POST['fire_danger_zone'] ?? '8';
+
+        $configData['calendar_urls']['main'] = $_POST['cal_main'] ?? '';
+        $configData['calendar_urls']['burn_permits'] = $_POST['cal_burn_permits'] ?? '';
+        $configData['calendar_urls']['town_meetings'] = $_POST['cal_town_meetings'] ?? '';
+        $configData['calendar_urls']['holidays'] = $_POST['cal_holidays'] ?? '';
+
         $success = "Dashboard Settings Saved.";
     }
     elseif (isset($_POST['save_dept_info'])) {
@@ -489,6 +495,31 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         <label>Fire Danger Zone</label>
                         <p class="help">The zone number used to extract the correct fire danger level from daily emails.</p>
                         <input type="text" name="fire_danger_zone" value="<?= htmlspecialchars($configData['fire_danger_zone'] ?? '8') ?>" placeholder="e.g., 8" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h2>Calendar URLs (.ics)</h2>
+                    <p class="help">Enter the public .ics URLs for each calendar to display on the dashboard.</p>
+
+                    <div style="margin-top: 15px;">
+                        <label>Main Schedule Calendar</label>
+                        <input type="text" name="cal_main" value="<?= htmlspecialchars($configData['calendar_urls']['main'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <label>Burn Permits Calendar</label>
+                        <input type="text" name="cal_burn_permits" value="<?= htmlspecialchars($configData['calendar_urls']['burn_permits'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <label>Town Meetings Calendar</label>
+                        <input type="text" name="cal_town_meetings" value="<?= htmlspecialchars($configData['calendar_urls']['town_meetings'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <label>Holidays Calendar</label>
+                        <input type="text" name="cal_holidays" value="<?= htmlspecialchars($configData['calendar_urls']['holidays'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
                 </div>
                 <script>function runPreSubmitHooks() {}</script>
