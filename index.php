@@ -1,3 +1,21 @@
+<?php
+$configFile = 'config.json';
+$config = [];
+if (file_exists($configFile)) {
+    $config = json_decode(file_get_contents($configFile), true);
+}
+
+$dashboardToken = isset($config['dashboard_token']) ? $config['dashboard_token'] : '';
+
+// If a token is set in the config, require it
+if (!empty($dashboardToken)) {
+    $providedToken = isset($_GET['token']) ? $_GET['token'] : '';
+    if ($providedToken !== $dashboardToken) {
+        http_response_code(403);
+        die("<h1 style='color: #aeb6c1; text-align: center; font-family: sans-serif; padding-top: 50px;'>Access Denied</h1>");
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -436,30 +454,22 @@
         }
 
         window.addEventListener('load', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const password = urlParams.get('password');
-            const correctPassword = 'OFD1888';
+            const toggleWrapper = document.getElementById('audio-toggle-wrapper');
+            if (toggleWrapper) toggleWrapper.style.display = 'block';
 
-            if (password === correctPassword) {
-                const toggleWrapper = document.getElementById('audio-toggle-wrapper');
-                if (toggleWrapper) toggleWrapper.style.display = 'block';
+            const toggleCheckbox = document.getElementById('audio-toggle-checkbox');
+            toggleCheckbox.addEventListener('change', function(e) {
+                audioEnabled = e.target.checked;
+                if (audioEnabled) {
+                    const silentStr = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+                    alertPlayer.src = silentStr;
+                    alertPlayer.play().catch(err => {});
+                    voicePlayer.src = silentStr;
+                    voicePlayer.play().catch(err => {});
+                }
+            });
 
-                const toggleCheckbox = document.getElementById('audio-toggle-checkbox');
-                toggleCheckbox.addEventListener('change', function(e) {
-                    audioEnabled = e.target.checked;
-                    if (audioEnabled) {
-                        const silentStr = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
-                        alertPlayer.src = silentStr;
-                        alertPlayer.play().catch(err => {});
-                        voicePlayer.src = silentStr;
-                        voicePlayer.play().catch(err => {});
-                    }
-                });
-
-                initializeApp();
-            } else {
-                document.body.innerHTML = `<h1 style="color: #aeb6c1; text-align: center;">Access Denied</h1>`;
-            }
+            initializeApp();
         });
 
         function parseLocalYMD(dateStr) {

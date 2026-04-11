@@ -129,6 +129,7 @@ $success = ""; $error_msg = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['save_settings'])) {
         $configData['dashboard_settings']['theme'] = $_POST['dash_theme'];
+        $configData['dashboard_token'] = $_POST['dashboard_token'];
         $success = "Dashboard Settings Saved.";
     }
     elseif (isset($_POST['save_dept_info'])) {
@@ -475,6 +476,11 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             <option value="light" <?= $configData['dashboard_settings']['theme'] === 'light' ? 'selected' : '' ?>>Light Mode</option>
                             <option value="auto" <?= $configData['dashboard_settings']['theme'] === 'auto' ? 'selected' : '' ?>>Auto (Light daytime, Dark nighttime)</option>
                         </select>
+                    </div>
+                    <div style="max-width: 400px; margin-top: 15px;">
+                        <label>Dashboard Access Token</label>
+                        <p class="help">If set, users must append <code>?token=YOUR_TOKEN</code> to the dashboard URL.</p>
+                        <input type="text" name="dashboard_token" value="<?= htmlspecialchars($configData['dashboard_token'] ?? '') ?>" placeholder="Leave blank for public access" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
                 </div>
                 <script>function runPreSubmitHooks() {}</script>
