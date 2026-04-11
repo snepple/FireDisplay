@@ -1,0 +1,25 @@
+It is entirely feasible to remove Zapier and the external ICS calendar and process the emails directly within the application on your Bluehost shared hosting platform. Here is a breakdown of how it can be accomplished:
+
+### 1. Email Reception on Bluehost
+Yes, your Bluehost shared hosting account can receive and process emails automatically. There are two primary ways to do this in a PHP application:
+* **Email Piping (Recommended for instant processing):** cPanel (which Bluehost uses) allows you to set up "Email Forwarders" that pipe incoming emails directly into a PHP script. When an email arrives at a specific address (e.g., `danger@yourdomain.com` or `permits@yourdomain.com`), cPanel instantly executes your PHP script and passes the email's full content to it.
+* **IMAP Polling (Alternative):** Your application can periodically (e.g., via a Cron job every 5-10 minutes) connect to an email inbox using PHP's IMAP extension, read unread emails, extract the data, and then move or delete them.
+
+### 2. Extracting Information
+Once the PHP script receives the email (via piping or polling), it can parse the content:
+* **Fire Danger Level:** A PHP script will parse the daily email using regular expressions or simple text matching to extract the region's danger level. It will then store this level in a local file (e.g., `data/fire_danger.json`) or a database.
+* **Burn Permits:** A second script (or the same one handling a different inbox) will parse the permit email to extract details like the address, burn type, issue time, and expiration time. This data will be appended to a local storage file (e.g., `data/permits.json`).
+
+### 3. Displaying and Expiring Data
+The frontend (`index.php`) currently uses JavaScript to fetch calendar events from a URL. This would be updated to fetch from your new local data files:
+* **Fire Danger:** The application will simply fetch and display the current level stored in the JSON file. It remains displayed until a new email arrives and overwrites the JSON file.
+* **Burn Permits:** Since the expiration time is extracted from the email and saved, your application can handle expiration natively. The frontend will filter the list to only display permits where the current time is before the saved expiration time. Alternatively, a backend script or a daily Cron job can automatically clean up expired permits from the JSON file to keep it tidy.
+
+### Required Steps to Implement
+1. **Create Email Accounts/Forwarders:** Set up specific email addresses in Bluehost cPanel (e.g., `firedanger@yourdomain.com` and `burnpermits@yourdomain.com`).
+2. **Develop the PHP Parser Scripts:** Write the backend PHP logic that receives the piped email, parses the text to find the data, and updates the local data storage (JSON files).
+3. **Configure Email Piping:** In cPanel, point the forwarders for those email addresses to execute your new PHP parser scripts.
+4. **Update Frontend (`index.php`):** Modify the `loadBurnPermits()` and `loadFireDanger()` JavaScript functions to read from your new local APIs or JSON files instead of the external ICS URL, and to handle the expiration logic locally based on the extracted timestamps.
+
+**Conclusion:**
+This is a standard and highly feasible implementation for applications on shared hosting like Bluehost. It will successfully eliminate the dependency on Zapier and Google Calendar, reducing latency, saving costs, and removing potential points of failure.
