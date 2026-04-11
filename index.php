@@ -598,8 +598,8 @@ if (!empty($dashboardToken)) {
         }
 
         async function loadFireDanger() {
-            const fireDangerCalendarUrl = `${appConfig.calendar_urls?.burn_permits || 'https://calendar.google.com/calendar/ical/permitsburn@gmail.com/public/basic.ics'}?nocache=${Date.now()}`;
-            const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(fireDangerCalendarUrl)}&_cb=${Date.now()}`;
+            const fireDangerApiUrl = `api/get_fire_danger.php?nocache=${Date.now()}`;
+            const response = await fetch(fireDangerApiUrl);
 
             const meterDiv = document.getElementById('danger-meter');
             const dateDiv = document.getElementById('danger-date');
@@ -1765,7 +1765,50 @@ if (!empty($dashboardToken)) {
             }
         }
 
-        function renderBurnPermitEvent(eventData, container) {
+                function renderBurnPermitJsonEvent(eventData, container) {
+            const eventDiv = document.createElement('div');
+            eventDiv.classList.add('event');
+
+            const uid = eventData.uid || '';
+            const address = eventData.address || 'Unknown Address';
+            const type = eventData.type || 'Open Burn';
+
+            const expDate = new Date(eventData.expires);
+            const timeStr = expDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            eventDiv.innerHTML = `
+                <div class="permit-details">
+                    <div class="permit-address">${address}</div>
+                    <div class="permit-burn-info">
+                        <span class="permit-type">${type}</span>
+                        <span class="permit-time">Expires: ${timeStr}</span>
+                    </div>
+                </div>
+            `;
+            eventDiv.onclick = () => showPermitModal(eventData);
+            container.appendChild(eventDiv);
+        }
+
+        function showPermitModal(permitData) {
+            const modalOverlay = document.getElementById('permit-modal-overlay');
+            const modalBody = document.getElementById('permit-modal-body');
+
+            const tableHTML = `
+                <table>
+                    <tbody>
+                        <tr><td>Address:</td><td><strong>${permitData.address}</strong></td></tr>
+                        <tr><td>Type:</td><td><strong>${permitData.type}</strong></td></tr>
+                        <tr><td>Expires:</td><td><strong>${new Date(permitData.expires).toLocaleString()}</strong></td></tr>
+                        <tr><td>Details:</td><td>${(permitData.details || '').replace(/\n/g, '<br>')}</td></tr>
+                    </tbody>
+                </table>
+            `;
+            modalBody.innerHTML = tableHTML;
+            modalOverlay.style.display = 'flex';
+        }
+
+
+        function old_renderBurnPermitEvent(eventData, container) {
             const eventDiv = document.createElement('div');
             eventDiv.classList.add('event');
 
