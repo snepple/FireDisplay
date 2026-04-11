@@ -34,15 +34,41 @@ if (strpos($to, 'danger') !== false || strpos($subject, 'Fire Danger') !== false
 }
 
 function processFireDanger($body, $subject) {
+    // Get the configured fire danger zone
+    $configFile = __DIR__ . '/../config.json';
+    $config = [];
+    if (file_exists($configFile)) {
+        $config = json_decode(file_get_contents($configFile), true);
+    }
+    $zone = isset($config['fire_danger_zone']) ? $config['fire_danger_zone'] : '8';
+
     // Example: Looking for "Level: High" or similar
     // The exact regex depends on the email format from the state/source
     $level = "Unknown";
-    $levels = ['Low', 'Moderate', 'High', 'Very High', 'Extreme'];
+    // Order matters for regex: match longer words first
+    $levels = ['Extreme', 'Very High', 'High', 'Moderate', 'Low'];
 
-    foreach ($levels as $l) {
-        if (stripos($body, $l) !== false || stripos($subject, $l) !== false) {
-            $level = $l;
-            break;
+    // We'll try to find the fire danger level in the plain text part first.
+    // The format is: "Zone X: Level Forecast: ..." or "Zone X Level" in HTML table
+
+    // Convert HTML to plain text to make parsing easier if it's HTML, but $body might be raw.
+    // Replace newlines with spaces to handle HTML tables that might have line breaks
+    $clean_body = strip_tags(str_replace(array("\n", "\r"), ' ', $body));
+
+    // Match "Zone {X}" followed by optional punctuation, then the level.
+    // e.g. "Zone 8: Moderate" or "Zone 8 Moderate"
+    if (preg_match('/Zone\s*' . preg_quote($zone, '/') . '(?:[^A-Za-z0-9]*(?:Forecast|Fire Danger)?[^A-Za-z0-9]*)?\b(' . implode('|', $levels) . ')\b/i', $clean_body, $matches)) {
+        $level = ucwords(strtolower($matches[1]));
+    } elseif (preg_match('/Zone\s*' . preg_quote($zone, '/') . '[^\n\r]*?\b(' . implode('|', $levels) . ')\b/i', $clean_body, $line_match)) {
+        // Fallback to searching the rest of the line/row
+        $level = ucwords(strtolower($line_match[1]));
+    } else {
+        // Ultimate fallback
+        foreach ($levels as $l) {
+            if (stripos($clean_body, $l) !== false || stripos($subject, $l) !== false) {
+                $level = $l;
+                break;
+            }
         }
     }
 

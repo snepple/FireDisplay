@@ -8,6 +8,7 @@ $defaultConfig = [
     "dashboard_settings" => [
         "theme" => "dark"
     ],
+    "fire_danger_zone" => "8",
     "department_info" => [
         "name" => "Oakland Fire Department",
         "stations" => [
@@ -50,6 +51,7 @@ if (!isset($configData['department_info'])) $configData['department_info'] = $de
 if (!isset($configData['chore_num_indices'])) $configData['chore_num_indices'] = 6;
 if (!isset($configData['special_chores'])) $configData['special_chores'] = [];
 if (!isset($configData['dashboard_settings'])) $configData['dashboard_settings'] = $defaultConfig['dashboard_settings'];
+if (!isset($configData['fire_danger_zone'])) $configData['fire_danger_zone'] = $defaultConfig['fire_danger_zone'];
 
 $todayStr = date('Y-m-d');
 
@@ -130,6 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['save_settings'])) {
         $configData['dashboard_settings']['theme'] = $_POST['dash_theme'];
         $configData['dashboard_token'] = $_POST['dashboard_token'];
+        $configData['fire_danger_zone'] = $_POST['fire_danger_zone'] ?? '8';
         $success = "Dashboard Settings Saved.";
     }
     elseif (isset($_POST['save_dept_info'])) {
@@ -481,6 +484,11 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         <label>Dashboard Access Token</label>
                         <p class="help">If set, users must append <code>?token=YOUR_TOKEN</code> to the dashboard URL.</p>
                         <input type="text" name="dashboard_token" value="<?= htmlspecialchars($configData['dashboard_token'] ?? '') ?>" placeholder="Leave blank for public access" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                    </div>
+                    <div style="max-width: 400px; margin-top: 15px;">
+                        <label>Fire Danger Zone</label>
+                        <p class="help">The zone number used to extract the correct fire danger level from daily emails.</p>
+                        <input type="text" name="fire_danger_zone" value="<?= htmlspecialchars($configData['fire_danger_zone'] ?? '8') ?>" placeholder="e.g., 8" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
                 </div>
                 <script>function runPreSubmitHooks() {}</script>
