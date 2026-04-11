@@ -599,39 +599,19 @@ if (!empty($dashboardToken)) {
 
         async function loadFireDanger() {
             const fireDangerApiUrl = `api/get_fire_danger.php?nocache=${Date.now()}`;
-            const response = await fetch(fireDangerApiUrl);
-
             const meterDiv = document.getElementById('danger-meter');
             const dateDiv = document.getElementById('danger-date');
 
             try {
-                const response = await fetch(proxyUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
+                const response = await fetch(fireDangerApiUrl);
                 if (!response.ok) { throw new Error(`Network response was not ok (${response.status})`); }
-                const icsData = await response.text();
-                const jcalData = ICAL.parse(icsData);
-                const comp = new ICAL.Component(jcalData);
-                const allEvents = comp.getAllSubcomponents('vevent');
+                const data = await response.json();
 
-                const now = new Date();
-                let currentDangerEvent = null;
-
-                allEvents.forEach(eventData => {
-                    const vevent = new ICAL.Event(eventData);
-                    const eventStart = vevent.startDate.toJSDate();
-                    const eventEnd = vevent.endDate.toJSDate();
-
-                    const summary = vevent.summary || '';
-
-                    if (summary === "Today's Fire Danger" && eventStart <= now && eventEnd > now) {
-                        currentDangerEvent = vevent;
-                    }
-                });
-
-                if (currentDangerEvent) {
+                if (data && data.level && data.level !== "Unknown") {
                     hasFireDanger = true;
                     document.getElementById('top-section').style.display = 'flex';
 
-                    const riskLevel = (currentDangerEvent.description || '').trim();
+                    const riskLevel = data.level;
                     const riskClass = "risk-" + riskLevel.toLowerCase().replace(/ /g, '-');
 
                     meterDiv.textContent = riskLevel;
@@ -642,9 +622,8 @@ if (!empty($dashboardToken)) {
                          announceFireDanger(riskLevel);
                     }
                     meterDiv.dataset.lastLevel = riskLevel;
-
                 } else {
-                    throw new Error("No active 'Today's Fire Danger' event found.");
+                    throw new Error("Fire danger data unavailable.");
                 }
 
             } catch (error) {
