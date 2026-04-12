@@ -23,6 +23,8 @@ curl_close($ch);
 if ($httpCode !== 200 || !$content) {
     echo "Error: Could not fetch calendar. HTTP Code: " . $httpCode;
 } else {
+    $content = str_replace("\r\n", "\n", $content);
+    $content = str_replace("\n", "\r\n", $content);
     echo $content;
 }
 ?>
