@@ -606,32 +606,67 @@ if (!empty($dashboardToken)) {
             const meterDiv = document.getElementById('danger-meter');
             const dateDiv = document.getElementById('danger-date');
 
+            let riskLevel = "Unknown";
+
             try {
                 const response = await fetch(fireDangerApiUrl);
-                if (!response.ok) { throw new Error(`Network response was not ok (${response.status})`); }
-                const data = await response.json();
-
-                if (data && data.level && data.level !== "Unknown") {
-                    hasFireDanger = true;
-                    document.getElementById('top-section').style.display = 'flex';
-
-                    const riskLevel = data.level;
-                    const riskClass = "risk-" + riskLevel.toLowerCase().replace(/ /g, '-');
-
-                    meterDiv.textContent = riskLevel;
-                    meterDiv.className = "danger-meter " + riskClass;
-                    dateDiv.textContent = "Published by Maine Forest Service";
-
-                    if (meterDiv.dataset.lastLevel !== riskLevel) {
-                         announceFireDanger(riskLevel);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.level && data.level !== "Unknown") {
+                        riskLevel = data.level;
                     }
-                    meterDiv.dataset.lastLevel = riskLevel;
-                } else {
-                    throw new Error("Fire danger data unavailable.");
                 }
-
             } catch (error) {
-                console.error(`ERROR fetching fire danger: ${error.message}`);
+                console.error(`ERROR fetching fire danger from api: ${error.message}`);
+            }
+
+            // Fallback to ICS calendar if no email integration data available
+            const useEmailDanger = appConfig.email_integration && appConfig.email_integration.danger_address && appConfig.email_integration.danger_address.trim() !== '';
+
+            if (riskLevel === "Unknown" && !useEmailDanger && currentFireEvents && currentFireEvents.length > 0) {
+                // Try to parse from the ICS Fire Events schedule
+                const now = new Date();
+                const todayEvents = currentFireEvents.filter(e => {
+                    const event = new ICAL.Event(e);
+                    const start = event.startDate.toJSDate();
+                    const end = event.endDate.toJSDate();
+                    return now >= start && now < end && event.summary.includes("Fire Danger");
+                });
+
+                if (todayEvents.length > 0) {
+                    const summary = new ICAL.Event(todayEvents[0]).summary;
+                    // Try to extract level, e.g. "Today's Fire Danger: High"
+                    const parts = summary.split(':');
+                    if (parts.length > 1) {
+                        riskLevel = parts[1].trim();
+                    } else {
+                        // Just look for the words
+                        const levels = ['Extreme', 'Very High', 'High', 'Moderate', 'Low'];
+                        for (const l of levels) {
+                            if (summary.toLowerCase().includes(l.toLowerCase())) {
+                                riskLevel = l;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (riskLevel !== "Unknown") {
+                hasFireDanger = true;
+                document.getElementById('top-section').style.display = 'flex';
+
+                const riskClass = "risk-" + riskLevel.toLowerCase().replace(/ /g, '-');
+
+                meterDiv.textContent = riskLevel;
+                meterDiv.className = "danger-meter " + riskClass;
+                dateDiv.textContent = "Published by Maine Forest Service";
+
+                if (meterDiv.dataset.lastLevel !== riskLevel) {
+                     announceFireDanger(riskLevel);
+                }
+                meterDiv.dataset.lastLevel = riskLevel;
+            } else {
                 hasFireDanger = false;
                 document.getElementById('top-section').style.display = 'none';
 
@@ -648,27 +683,66 @@ if (!empty($dashboardToken)) {
                 announcedPermitUIDs.clear();
                 permitCheckDate = today;
             }
-            const calendarUrl = `${appConfig.calendar_urls?.burn_permits || 'https://calendar.google.com/calendar/ical/permitsburn@gmail.com/public/basic.ics'}?nocache=${Date.now()}`;
-            const fetchUrl = `api/fetch_calendar.php?url=${encodeURIComponent(calendarUrl)}&_cb=${Date.now()}`;
             const container = document.getElementById('burnPermitsContainer');
+
+            const useEmailPermits = appConfig.email_integration && appConfig.email_integration.permit_address && appConfig.email_integration.permit_address.trim() !== '';
+
             try {
-                const response = await fetch(fetchUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
-                if (!response.ok) { throw new Error(`Network response was not ok`) }
-                const icsData = await response.text();
-                const jcalData = ICAL.parse(icsData);
-                const comp = new ICAL.Component(jcalData);
-                const allEvents = comp.getAllSubcomponents('vevent');
-                const windowStart = new Date();
-                windowStart.setHours(9, 0, 0, 0);
-                const windowEnd = new Date(windowStart);
-                windowEnd.setDate(windowStart.getDate() + 1);
                 let todaysPermits = [];
-                allEvents.forEach(event => {
-                    const vevent = new ICAL.Event(event);
-                    if (vevent.startDate.toJSDate() < windowEnd && vevent.endDate.toJSDate() > windowStart) {
-                        todaysPermits.push(vevent)
-                    }
-                });
+                let activePermits = [];
+
+                if (useEmailPermits) {
+                    const fetchUrl = `api/get_permits.php?nocache=${Date.now()}`;
+                    const response = await fetch(fetchUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
+                    if (!response.ok) { throw new Error(`Network response was not ok`) }
+
+                    const data = await response.json();
+
+                    // Map to expected structure
+                    activePermits = data.map(p => {
+                        return {
+                            uid: p.uid,
+                            startDate: { toJSDate: () => new Date(p.created_at) },
+                            endDate: { toJSDate: () => new Date(p.expires) },
+                            summary: p.type + " at " + p.address,
+                            description: "Details:" + p.details,
+                            location: p.address,
+                            address: p.address,
+                            type: p.type,
+                            expires: p.expires,
+                            details: p.details
+                        };
+                    });
+                    todaysPermits = activePermits;
+                } else {
+                    const calendarUrl = `${appConfig.calendar_urls?.burn_permits || 'https://calendar.google.com/calendar/ical/permitsburn@gmail.com/public/basic.ics'}?nocache=${Date.now()}`;
+                    const fetchUrl = `api/fetch_calendar.php?url=${encodeURIComponent(calendarUrl)}&_cb=${Date.now()}`;
+
+                    const response = await fetch(fetchUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
+                    if (!response.ok) { throw new Error(`Network response was not ok`) }
+                    const icsData = await response.text();
+                    const jcalData = ICAL.parse(icsData);
+                    const comp = new ICAL.Component(jcalData);
+                    const allEvents = comp.getAllSubcomponents('vevent');
+                    const windowStart = new Date();
+                    windowStart.setHours(9, 0, 0, 0);
+                    const windowEnd = new Date(windowStart);
+                    windowEnd.setDate(windowStart.getDate() + 1);
+                    allEvents.forEach(event => {
+                        const vevent = new ICAL.Event(event);
+                        if (vevent.startDate.toJSDate() < windowEnd && vevent.endDate.toJSDate() > windowStart) {
+                            todaysPermits.push(vevent)
+                        }
+                    });
+
+                    const now = new Date();
+                    activePermits = todaysPermits.filter(p => {
+                        const start = p.startDate.toJSDate();
+                        const end = p.endDate.toJSDate();
+                        const summary = p.summary || '';
+                        return now >= start && now < end && summary !== "Today's Fire Danger";
+                    });
+                }
 
                 todaysPermits.forEach(permit => {
                     if (permit.uid && !announcedPermitUIDs.has(permit.uid)) {
@@ -676,14 +750,6 @@ if (!empty($dashboardToken)) {
                         announceNewBurnPermit(address);
                         announcedPermitUIDs.add(permit.uid);
                     }
-                });
-
-                const now = new Date();
-                const activePermits = todaysPermits.filter(p => {
-                    const start = p.startDate.toJSDate();
-                    const end = p.endDate.toJSDate();
-                    const summary = p.summary || '';
-                    return now >= start && now < end && summary !== "Today's Fire Danger";
                 });
 
                 activePermits.sort((a, b) => a.startDate.toJSDate() - b.startDate.toJSDate());
