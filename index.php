@@ -1034,8 +1034,6 @@ if (!empty($dashboardToken)) {
             }
 
             const choreList = document.getElementById('chore-list');
-            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('duties-page-date').textContent = now.toLocaleDateString('en-US', dateOptions);
             choreList.innerHTML = '';
 
             const dayOfWeek = now.getDay();
