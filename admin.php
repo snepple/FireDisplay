@@ -266,6 +266,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $configData['announcements'] = array_merge($active_announcements, $archived_announcements);
         $success = "Archived Announcement Deleted.";
     }
+    elseif (isset($_POST['save_email_integration'])) {
+        if (!isset($configData['email_integration'])) {
+            $configData['email_integration'] = [];
+        }
+        $configData['email_integration']['danger_address'] = trim($_POST['danger_address'] ?? '');
+        $configData['email_integration']['permit_address'] = trim($_POST['permit_address'] ?? '');
+        $success = "Email Integration Settings Saved.";
+    }
     elseif (isset($_POST['change_password'])) {
         if ($_POST['current_password'] === $configData['admin_password']) {
             if ($_POST['new_password'] === $_POST['confirm_password'] && strlen($_POST['new_password']) > 3) {
@@ -1664,6 +1672,140 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                 </div>
                 <script>function runPreSubmitHooks() {}</script>
 
+            <?php elseif ($page === 'email_integration'): ?>
+                <div class="content-header">
+                    <h1>Email Integration Settings</h1>
+                </div>
+
+                <div class="card">
+                    <form method="post">
+                        <div class="form-group">
+                            <label>Fire Danger Email Address / Prefix</label>
+                            <input type="text" name="danger_address" value="<?= htmlspecialchars($configData['email_integration']['danger_address'] ?? '') ?>" placeholder="e.g. danger@yourdomain.com" autocomplete="off">
+                            <small style="display:block; color:var(--muted-text); margin-top:5px;">If not set, falls back to ICS feed if provided, else "Unknown".</small>
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Burn Permits Email Address / Prefix</label>
+                            <input type="text" name="permit_address" value="<?= htmlspecialchars($configData['email_integration']['permit_address'] ?? '') ?>" placeholder="e.g. permits@yourdomain.com" autocomplete="off">
+                            <small style="display:block; color:var(--muted-text); margin-top:5px;">If not set, falls back to ICS feed if provided.</small>
+                        </div>
+
+                        <button type="submit" name="save_email_integration" class="save-btn" style="padding: 15px 40px; margin-top: 20px;">💾 Save Email Settings</button>
+                    </form>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h3>Setup Instructions</h3>
+                    <div style="background: var(--bg-color); padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.9em; line-height: 1.5; color: var(--text-color);">
+                        <p>To configure your email addresses to trigger the new <code>process_email.php</code> script on Bluehost, follow these step-by-step instructions:</p>
+
+                        <h4>Step 1: Ensure Script Permissions</h4>
+                        <p>First, ensure that the PHP script has the correct permissions so the mail server can execute it.<br>
+                        Using the File Manager in cPanel or your FTP client, navigate to <code>api/process_email.php</code> and set its permissions to <code>755</code> (Read, Write, Execute for Owner; Read, Execute for Group and Public).<br>
+                        <em>Note: I have already set this permission in the codebase, but verify it on your live server.</em></p>
+
+                        <h4>Step 2: Ensure Proper Shebang</h4>
+                        <p>The first line of <code>process_email.php</code> needs to tell the server where PHP is located.<br>
+                        In cPanel, it's typically:<br>
+                        <code>#!/usr/local/bin/php -q</code><br>
+                        <em>Note: I have already updated the script to include this as the very first line.</em></p>
+
+                        <h4>Step 3: Set up Email Forwarders (Piping) in Bluehost cPanel</h4>
+                        <p>You need to create a "Forwarder" for each email address you want to use (e.g., <code><?= htmlspecialchars($configData['email_integration']['danger_address'] ?: 'danger@yourdomain.com') ?></code> and <code><?= htmlspecialchars($configData['email_integration']['permit_address'] ?: 'permits@yourdomain.com') ?></code>).</p>
+
+                        <ol>
+                            <li>Log into your <strong>Bluehost cPanel</strong>.</li>
+                            <li>Scroll down to the <strong>Email</strong> section and click on <strong>Forwarders</strong>.</li>
+                            <li>Click the <strong>Add Forwarder</strong> button.</li>
+                            <li><strong>Address to Forward:</strong>
+                                <ul>
+                                    <li>Enter the prefix for the email address (e.g., <code><?= htmlspecialchars(explode('@', $configData['email_integration']['danger_address'] ?: 'danger')[0]) ?></code>).</li>
+                                    <li>Select your domain from the drop-down menu.</li>
+                                </ul>
+                            </li>
+                            <li><strong>Destination:</strong>
+                                <ul>
+                                    <li>Click on <strong>Advanced Options</strong> to expand the section.</li>
+                                    <li>Select the option: <strong>Pipe to a Program</strong>.</li>
+                                    <li>In the text box next to it, enter the path to your script relative to your home directory.
+                                        <ul>
+                                            <li><em>Example:</em> If your application is in the root <code>public_html</code> folder, the path would be: <code>public_html/api/process_email.php</code></li>
+                                            <li><em>Note: Do not include a leading slash (<code>/</code>).</em></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>Click <strong>Add Forwarder</strong>.</li>
+                            <li>Repeat steps 3-6 for your second email address (e.g., <code><?= htmlspecialchars($configData['email_integration']['permit_address'] ?: 'permits@yourdomain.com') ?></code>), pointing it to the exact same script: <code>public_html/api/process_email.php</code>.</li>
+                        </ol>
+
+                        <h4>How It Works:</h4>
+                        <p>Now, whenever an email is sent to <code><?= htmlspecialchars($configData['email_integration']['danger_address'] ?: 'danger@yourdomain.com') ?></code> or <code><?= htmlspecialchars($configData['email_integration']['permit_address'] ?: 'permits@yourdomain.com') ?></code>, Bluehost's mail server will automatically execute <code>public_html/api/process_email.php</code> and pass the entire contents of the email to the script. The script checks who the email was addressed to (or the subject) and updates the corresponding JSON file.</p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h3>Email Extraction Testing Tool</h3>
+                    <p style="color: var(--muted-text); font-size: 0.9em; margin-bottom: 15px;">Paste the raw text of an email (including headers like <code>To:</code> and <code>Subject:</code>) into the box below to test how the system parses it. <strong>This will not affect live data.</strong></p>
+                    <div class="form-group">
+                        <textarea id="test_email_content" rows="10" style="font-family: monospace; font-size: 0.85em; background: var(--bg-color); color: var(--text-color); width: 100%; border: 1px solid var(--border-color); padding: 10px; border-radius: 4px;"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-secondary" style="margin-top: 10px; padding: 10px 20px; font-weight: bold; background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;" onclick="testEmailExtraction()">Test Extraction</button>
+
+                    <div id="test_email_results" style="margin-top: 20px; padding: 15px; border-radius: 6px; background: #f8f9fa; border: 1px solid #dee2e6; display: none;">
+                        <h4 style="margin-top: 0; border-bottom: 1px solid #dee2e6; padding-bottom: 8px; margin-bottom: 12px; color: #495057;">Extraction Results</h4>
+                        <div id="test_email_results_content" style="color: #212529;"></div>
+                    </div>
+                </div>
+                <script>
+                    function runPreSubmitHooks() {}
+
+                    async function testEmailExtraction() {
+                        const content = document.getElementById('test_email_content').value;
+                        const resultsDiv = document.getElementById('test_email_results');
+                        const resultsContent = document.getElementById('test_email_results_content');
+
+                        if (!content.trim()) {
+                            alert("Please enter some email content to test.");
+                            return;
+                        }
+
+                        resultsDiv.style.display = 'block';
+                        resultsContent.innerHTML = '<em>Testing extraction...</em>';
+
+                        try {
+                            const response = await fetch('api/process_email.php?test=true', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'text/plain'
+                                },
+                                body: content
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+
+                            const result = await response.json();
+
+                            if (result.type === 'danger') {
+                                resultsContent.innerHTML = `<div style="font-size: 1.1em;">Danger Level: <strong>${result.data.level}</strong></div><div style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">(Matched rule: ${result.match_reason || 'Unknown'})</div>`;
+                            } else if (result.type === 'permit') {
+                                resultsContent.innerHTML = `<div style="font-size: 1.1em;">Extracted Permit:</div>
+                                    <ul style="margin-top: 5px; padding-left: 20px;">
+                                        <li><strong>Address:</strong> ${result.data.address}</li>
+                                        <li><strong>Type:</strong> ${result.data.type}</li>
+                                        <li><strong>Expires:</strong> ${new Date(result.data.expires).toLocaleString()}</li>
+                                    </ul>`;
+                            } else {
+                                resultsContent.innerHTML = `<div style="color: #dc3545;"><strong>No match.</strong> The email did not match either the Fire Danger or Burn Permit routing logic.</div>`;
+                            }
+
+                        } catch (e) {
+                            resultsContent.innerHTML = `<div style="color: #dc3545;"><strong>Error during extraction:</strong> ${e.message}</div>`;
+                        }
+                    }
+                </script>
             <?php elseif ($page === 'password'): ?>
                 <div class="card">
                     <h2>Change Admin Password</h2>
