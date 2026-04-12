@@ -601,6 +601,30 @@ if (!empty($dashboardToken)) {
             }
         }
 
+        function manageFireDangerPolling(lastUpdateStr) {
+            if (window.fireDangerInterval) {
+                clearInterval(window.fireDangerInterval);
+            }
+
+            const now = new Date();
+            const hour = now.getHours(); // 0-23
+
+            // "Last Update: Apr 12 2026, 8AM" -> roughly check if it contains today's short month+day
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const todayStr = `${months[now.getMonth()]} ${now.getDate()} ${now.getFullYear()}`;
+
+            const isUpdatedToday = lastUpdateStr.includes(todayStr) || lastUpdateStr.includes(`${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`);
+
+            let pollInterval = 3600000; // 1 hour default
+
+            // High-Frequency Window (9:00 AM - 10:00 AM EST), assuming system timezone is reasonably close or user wants local time 9-10.
+            if (hour === 9 && !isUpdatedToday) {
+                pollInterval = 300000; // 5 minutes
+            }
+
+            window.fireDangerInterval = setInterval(loadFireDanger, pollInterval);
+        }
+
         async function loadFireDanger() {
             const fireDangerApiUrl = `api/get_fire_danger.php?nocache=${Date.now()}`;
             const meterDiv = document.getElementById('danger-meter');
