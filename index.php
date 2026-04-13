@@ -199,7 +199,6 @@ if (!empty($dashboardToken)) {
         .legend-color-box { width: 20px; height: 20px; border-radius: 4px; }
         .chore-item { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 25px 40px; border-radius: 8px; text-align: center; overflow: hidden; min-height: 0; }
         .chore-list { list-style-type: none; padding: 0; margin: 0; font-size: 28pt; font-weight: 700; line-height: 1.5; color: var(--text-color); }
-        .duties-date { font-size: 18pt; color: var(--muted-text); text-align: center; margin-top: -10px; margin-bottom: 15px; }
         .national-day { font-size: 18pt; color: var(--muted-text); font-style: italic; margin-top: 20px; }
         #debug-log { display: none; }
 
@@ -295,7 +294,6 @@ if (!empty($dashboardToken)) {
 
     <div id="page-chores" class="page-container">
         <h2 style="margin-bottom: 5px;">Today's Overview</h2>
-        <!-- <p id="duties-page-date" class="duties-date"></p> -->
 
         <div id="chores-layout" style="display: flex; width: 100%; height: calc(100% - 120px); gap: 15px; min-height: 0;">
 
