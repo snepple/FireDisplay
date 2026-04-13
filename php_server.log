@@ -1,0 +1,37 @@
+[Mon Apr 13 03:51:16 2026] PHP 8.3.6 Development Server (http://127.0.0.1:8000) started
+[Mon Apr 13 03:52:18 2026] 127.0.0.1:40892 Accepted
+[Mon Apr 13 03:52:18 2026] 127.0.0.1:40892 [200]: GET /admin.php
+[Mon Apr 13 03:52:18 2026] 127.0.0.1:40892 Closing
+[Mon Apr 13 03:52:19 2026] 127.0.0.1:40894 Accepted
+[Mon Apr 13 03:52:19 2026] 127.0.0.1:40894 [302]: POST /admin.php
+[Mon Apr 13 03:52:19 2026] 127.0.0.1:40894 Closing
+[Mon Apr 13 03:52:19 2026] 127.0.0.1:40904 Accepted
+[Mon Apr 13 03:52:19 2026] 127.0.0.1:40904 [200]: GET /admin.php
+[Mon Apr 13 03:52:19 2026] 127.0.0.1:40904 Closing
+[Mon Apr 13 03:52:20 2026] 127.0.0.1:40916 Accepted
+[Mon Apr 13 03:52:20 2026] 127.0.0.1:40916 [200]: GET /admin.php?page=api_integrations
+[Mon Apr 13 03:52:20 2026] 127.0.0.1:40916 Closing
+[Mon Apr 13 03:52:20 2026] 127.0.0.1:40922 Accepted
+[Mon Apr 13 03:52:20 2026] 127.0.0.1:40922 [200]: POST /admin.php?page=api_integrations
+[Mon Apr 13 03:52:20 2026] 127.0.0.1:40922 Closing
+[Mon Apr 13 03:52:21 2026] 127.0.0.1:40928 Accepted
+[Mon Apr 13 03:52:21 2026] PHP Warning:  Undefined array key "email_integration" in /app/admin.php on line 1740
+[Mon Apr 13 03:52:21 2026] PHP Warning:  Trying to access array offset on null in /app/admin.php on line 1740
+[Mon Apr 13 03:52:21 2026] PHP Warning:  Undefined array key "email_integration" in /app/admin.php on line 1740
+[Mon Apr 13 03:52:21 2026] PHP Warning:  Trying to access array offset on null in /app/admin.php on line 1740
+[Mon Apr 13 03:52:21 2026] PHP Warning:  Undefined array key "email_integration" in /app/admin.php on line 1748
+[Mon Apr 13 03:52:21 2026] PHP Warning:  Trying to access array offset on null in /app/admin.php on line 1748
+[Mon Apr 13 03:52:21 2026] PHP Warning:  Undefined array key "email_integration" in /app/admin.php on line 1765
+[Mon Apr 13 03:52:21 2026] PHP Warning:  Trying to access array offset on null in /app/admin.php on line 1765
+[Mon Apr 13 03:52:21 2026] PHP Warning:  Undefined array key "email_integration" in /app/admin.php on line 1769
+[Mon Apr 13 03:52:21 2026] PHP Warning:  Trying to access array offset on null in /app/admin.php on line 1769
+[Mon Apr 13 03:52:21 2026] PHP Warning:  Undefined array key "email_integration" in /app/admin.php on line 1769
+[Mon Apr 13 03:52:21 2026] PHP Warning:  Trying to access array offset on null in /app/admin.php on line 1769
+[Mon Apr 13 03:52:21 2026] 127.0.0.1:40928 [200]: GET /admin.php?page=email_integration
+[Mon Apr 13 03:52:21 2026] 127.0.0.1:40928 Closing
+[Mon Apr 13 03:52:21 2026] 127.0.0.1:40936 Accepted
+[Mon Apr 13 03:52:21 2026] 127.0.0.1:40936 [200]: GET /admin.php?page=api_integrations
+[Mon Apr 13 03:52:21 2026] 127.0.0.1:40936 Closing
+[Mon Apr 13 03:52:44 2026] 127.0.0.1:32946 Accepted
+[Mon Apr 13 03:52:44 2026] 127.0.0.1:32946 [200]: GET /api/get_config.php
+[Mon Apr 13 03:52:44 2026] 127.0.0.1:32946 Closing
