@@ -353,6 +353,7 @@ if (!empty($dashboardToken)) {
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.5.0/ical.min.js"></script>
+    <script src="js/api.js"></script>
     <script>
         let appConfig = null;
         let holidaysByDate = {};
@@ -583,23 +584,6 @@ if (!empty($dashboardToken)) {
                 performPruning(currentPageIndex);
             } catch (e) {
                 console.error("A critical error occurred in updateAllData:", e);
-            }
-        }
-
-        async function fetchFireSchedule() {
-            const scheduleUrl = `${appConfig.calendar_urls?.main || 'https://calendar.google.com/calendar/ical/c303c9aa08e0a090db126a0b15eb0bc0e8b66cc1af810aa971059b7b01b6d25a@group.calendar.google.com/public/basic.ics'}?nocache=${Date.now()}`;
-            const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(scheduleUrl)}&_cb=${Date.now()}`;
-            try {
-                const response = await fetch(proxyUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
-                if (!response.ok) throw new Error(`Network response was not ok (${response.status})`);
-                const icsData = await response.text();
-                if (!icsData) throw new Error("ICS data is empty.");
-                const jcalData = ICAL.parse(icsData);
-                const comp = new ICAL.Component(jcalData);
-                return comp.getAllSubcomponents('vevent');
-            } catch (error) {
-                console.error(`ERROR fetching fire schedule: ${error.message}`);
-                return [];
             }
         }
 
