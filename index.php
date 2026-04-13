@@ -81,11 +81,12 @@ if (!empty($dashboardToken)) {
             display: none;
             min-height: 0;
         }
-        #page-dashboard, #page-chores { flex-direction: column; align-items: center; height: 100%; gap: 15px; width: 100%; }
+        #page-dashboard { flex-direction: row; align-items: stretch; height: 100%; gap: 15px; width: 100%; }
+        #page-chores { flex-direction: column; align-items: center; height: 100%; gap: 15px; width: 100%; }
 
-        .main-layout { display: flex; width: 100%; gap: 15px; min-height: 0; }
-        #top-section { flex-shrink: 0; }
-        #combined-permits-container { flex-grow: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; }
+        .main-layout { display: flex; flex-direction: column; height: 100%; gap: 15px; min-width: 0; }
+        #top-section { flex: 1; min-width: 0; }
+        #combined-permits-container { flex: 2; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
         .container { width: 100%; flex: 1; display: flex; flex-direction: column; min-height: 0; }
 
         h2 {
@@ -247,7 +248,7 @@ if (!empty($dashboardToken)) {
                 <div id="fire-danger-content">
                      <div id="danger-meter">Loading...</div>
                      <div id="danger-date"></div>
-                     <div id="danger-map-container" style="margin-top: 15px; width: 100%; height: 250px; display: none; overflow: hidden; border-radius: 4px; border: 1px solid var(--border-color); position: relative;"><iframe id="danger-map-iframe" src="about:blank" style="position: absolute; top: -140px; left: -20px; width: 104%; height: 600px; border: none; pointer-events: none;" scrolling="no"></iframe></div>
+                     <div id="danger-map-container" style="margin-top: 15px; width: 100%; flex: 1; display: none; overflow: hidden; border-radius: 4px; border: 1px solid var(--border-color); position: relative;"><iframe id="danger-map-iframe" src="about:blank" style="position: absolute; top: -50px; left: -220px; width: 250%; height: 600px; border: none; pointer-events: none;" scrolling="no"></iframe></div>
                 </div>
             </div>
         </div>
