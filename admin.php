@@ -6,7 +6,12 @@ $configFile = 'config.json';
 $defaultConfig = [
     "admin_password" => "OFD1888",
     "dashboard_settings" => [
-        "theme" => "dark"
+        "theme" => "dark",
+        "pages" => [
+            "dashboard" => ["enabled" => true, "duration" => 15],
+            "calendar" => ["enabled" => true, "duration" => 15],
+            "chores" => ["enabled" => true, "duration" => 15]
+        ]
     ],
     "fire_danger_zone" => "8",
     "department_info" => [
@@ -51,6 +56,7 @@ if (!isset($configData['department_info'])) $configData['department_info'] = $de
 if (!isset($configData['chore_num_indices'])) $configData['chore_num_indices'] = 6;
 if (!isset($configData['special_chores'])) $configData['special_chores'] = [];
 if (!isset($configData['dashboard_settings'])) $configData['dashboard_settings'] = $defaultConfig['dashboard_settings'];
+if (!isset($configData['dashboard_settings']['pages'])) $configData['dashboard_settings']['pages'] = $defaultConfig['dashboard_settings']['pages'];
 if (!isset($configData['fire_danger_zone'])) $configData['fire_danger_zone'] = $defaultConfig['fire_danger_zone'];
 
 $todayStr = date('Y-m-d');
@@ -131,6 +137,14 @@ $success = ""; $error_msg = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['save_settings'])) {
         $configData['dashboard_settings']['theme'] = $_POST['dash_theme'];
+
+        // Update page rotation settings
+        $pagesConfig = [
+            'dashboard' => ['enabled' => isset($_POST['page_dashboard_enabled']), 'duration' => max(1, (int)($_POST['page_dashboard_duration'] ?? 15))],
+            'calendar'  => ['enabled' => isset($_POST['page_calendar_enabled']),  'duration' => max(1, (int)($_POST['page_calendar_duration'] ?? 15))],
+            'chores'    => ['enabled' => isset($_POST['page_chores_enabled']),    'duration' => max(1, (int)($_POST['page_chores_duration'] ?? 15))]
+        ];
+        $configData['dashboard_settings']['pages'] = $pagesConfig;
         $configData['dashboard_token'] = $_POST['dashboard_token'];
         $configData['fire_danger_zone'] = $_POST['fire_danger_zone'] ?? '8';
 
@@ -504,6 +518,34 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         <label>Fire Danger Zone</label>
                         <p class="help">The zone number used to extract the correct fire danger level from daily emails.</p>
                         <input type="text" name="fire_danger_zone" value="<?= htmlspecialchars($configData['fire_danger_zone'] ?? '8') ?>" placeholder="e.g., 8" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h2>Rotating Pages</h2>
+                    <p class="help">Select which pages to display and how long (in seconds) they should stay on screen.</p>
+
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+                        <?php
+                        $pagesSettings = $configData['dashboard_settings']['pages'];
+                        $pageDefinitions = [
+                            "dashboard" => "Main Dashboard",
+                            "calendar" => "Calendar",
+                            "chores" => "Chores & Duties"
+                        ];
+                        foreach ($pageDefinitions as $key => $label):
+                            $enabled = $pagesSettings[$key]['enabled'];
+                            $duration = $pagesSettings[$key]['duration'];
+                        ?>
+                        <div style="border: 1px solid var(--border-color); padding: 15px; border-radius: 6px; flex: 1; min-width: 200px;">
+                            <label style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
+                                <input type="checkbox" name="page_<?= $key ?>_enabled" <?= $enabled ? 'checked' : '' ?> style="transform: scale(1.2);">
+                                <?= $label ?>
+                            </label>
+                            <label style="font-size: 0.9em; color: var(--muted-text); display: block; margin-bottom: 5px;">Duration (seconds)</label>
+                            <input type="number" name="page_<?= $key ?>_duration" value="<?= htmlspecialchars((string)$duration) ?>" min="1" style="width: 100px; padding: 6px; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
 
