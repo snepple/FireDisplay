@@ -247,6 +247,7 @@ if (!empty($dashboardToken)) {
                 <div id="fire-danger-content">
                      <div id="danger-meter">Loading...</div>
                      <div id="danger-date"></div>
+                     <div id="danger-map-container" style="margin-top: 15px; width: 100%; height: 250px; display: none; overflow: hidden; border-radius: 4px; border: 1px solid var(--border-color); position: relative;"><iframe id="danger-map-iframe" src="about:blank" style="position: absolute; top: -140px; left: -20px; width: 104%; height: 600px; border: none; pointer-events: none;" scrolling="no"></iframe></div>
                 </div>
             </div>
         </div>
@@ -630,18 +631,44 @@ if (!empty($dashboardToken)) {
             const meterDiv = document.getElementById('danger-meter');
             const dateDiv = document.getElementById('danger-date');
 
+            let lastUpdateStr = "";
+
             let riskLevel = "Unknown";
 
+            // Primary: Fetch from mainefireweather api
             try {
-                const response = await fetch(fireDangerApiUrl);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.level && data.level !== "Unknown") {
-                        riskLevel = data.level;
+                const mwfUrl = `api/fetch_mainefireweather.php?nocache=${Date.now()}`;
+                const mwfResp = await fetch(mwfUrl);
+                if (mwfResp.ok) {
+                    const mwfData = await mwfResp.json();
+                    const zone = appConfig.fire_danger_zone || '8';
+
+                    if (mwfData && mwfData.classdays && mwfData.classdays[zone]) {
+                        const levelInt = parseInt(mwfData.classdays[zone]);
+                        const levelsMap = { 1: "Low", 2: "Moderate", 3: "High", 4: "Very High", 5: "Extreme" };
+                        if (levelsMap[levelInt]) {
+                            riskLevel = levelsMap[levelInt];
+                            lastUpdateStr = mwfData.lastUpdate || "";
+                        }
                     }
                 }
             } catch (error) {
-                console.error(`ERROR fetching fire danger from api: ${error.message}`);
+                console.error(`ERROR fetching from mainefireweather API: ${error.message}`);
+            }
+
+            // Secondary: Fetch from email integration
+            if (riskLevel === "Unknown") {
+                try {
+                    const response = await fetch(fireDangerApiUrl);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data && data.level && data.level !== "Unknown") {
+                            riskLevel = data.level;
+                        }
+                    }
+                } catch (error) {
+                    console.error(`ERROR fetching fire danger from email api: ${error.message}`);
+                }
             }
 
             // Fallback to ICS calendar if no email integration data available
@@ -684,7 +711,16 @@ if (!empty($dashboardToken)) {
 
                 meterDiv.textContent = riskLevel;
                 meterDiv.className = "danger-meter " + riskClass;
-                dateDiv.textContent = "Published by Maine Forest Service";
+                if (lastUpdateStr !== "") {
+                    dateDiv.textContent = `Published by Maine Forest Service (${lastUpdateStr})`;
+                } else {
+                    dateDiv.textContent = "Published by Maine Forest Service";
+                }
+
+                const mapContainer = document.getElementById('danger-map-container');
+                const mapIframe = document.getElementById('danger-map-iframe');
+                mapIframe.src = "https://mainefireweather.org/index.php";
+                mapContainer.style.display = 'block';
 
                 if (meterDiv.dataset.lastLevel !== riskLevel) {
                      announceFireDanger(riskLevel);
@@ -697,6 +733,7 @@ if (!empty($dashboardToken)) {
                 meterDiv.textContent = "Unavailable";
                 meterDiv.className = "danger-meter";
                 dateDiv.textContent = "Will be available once published by the state (usually after 9a).";
+                document.getElementById('danger-map-container').style.display = 'none';
                 delete meterDiv.dataset.lastLevel;
             }
         }

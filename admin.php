@@ -463,6 +463,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <li><a href="?page=archived_anns" class="<?= isPage('archived_anns', $page) ?>">Archived Anns</a></li>
                 </ul>
             </li>
+            <li><a href="?page=email_integration" class="<?= isPage('email_integration', $page) ?>">Email Integration</a></li>
             <li><a href="?page=password" class="<?= isPage('password', $page) ?>">Change Password</a></li>
         </ul>
         <a href="?logout=true" class="logout-btn">Log Out Securely</a>
