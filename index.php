@@ -229,6 +229,7 @@ if (!empty($dashboardToken)) {
 
         #admin-link:hover { opacity: 1 !important; }
     </style>
+<script src="js/dateUtils.js"></script>
 </head>
 <body>
 
@@ -879,18 +880,7 @@ if (!empty($dashboardToken)) {
             } catch (e) { console.error(e); }
         }
 
-        function getNthWeekdayOfMonth(year, month, weekday, n) {
-            let d = new Date(year, month, 1);
-            let count = 0;
-            while (d.getMonth() === month) {
-                if (d.getDay() === weekday) {
-                    count++;
-                    if (count === n) return new Date(d);
-                }
-                d.setDate(d.getDate() + 1);
-            }
-            return null;
-        }
+
 
         function getTodaysSpecialChores(dateObj) {
             let choresToday = [];
