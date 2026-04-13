@@ -115,6 +115,7 @@ if (isset($_GET['api'])) {
     $exportData = $configData;
     unset($exportData['admin_password']);
     unset($exportData['api_integrations']['gemini_api_key']);
+    unset($exportData['dashboard_token']);
     echo json_encode($exportData);
     exit;
 }
