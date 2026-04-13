@@ -506,9 +506,7 @@ if (!empty($dashboardToken)) {
             }
         }
 
-        async function initializeApp() {
-            initPermitMap();
-
+        async function loadAppConfig() {
             try {
                 const configResponse = await fetch('api/get_config.php', { cache: 'no-store' });
                 if (!configResponse.ok) throw new Error("Config fetch failed");
@@ -541,11 +539,9 @@ if (!empty($dashboardToken)) {
                     manual_events: [], announcements: [], special_chores: []
                 };
             }
+        }
 
-            updateAllData().then(() => {
-                startRotation();
-            });
-
+        function setupDataRefreshSchedules() {
             setInterval(updateAllData, 900000);
             const scheduleHourlyUpdate = () => {
                 const now = new Date();
@@ -556,6 +552,18 @@ if (!empty($dashboardToken)) {
                 setTimeout(() => { updateAllData(); setInterval(updateAllData, 3600000); }, delay);
             };
             scheduleHourlyUpdate();
+        }
+
+        async function initializeApp() {
+            initPermitMap();
+
+            await loadAppConfig();
+
+            updateAllData().then(() => {
+                startRotation();
+            });
+
+            setupDataRefreshSchedules();
         }
 
         async function updateAllData() {
