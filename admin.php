@@ -4,7 +4,7 @@ $configFile = 'config.json';
 
 // --- DEFAULT CONFIGURATION ---
 $defaultConfig = [
-    "admin_password" => "OFD1888",
+    "admin_password" => "$2y$10$OdIhGvKsJVEAXe.ZA49dEunbChz4k/DiVCUZ3IL5szyvGkA89XrIG",
     "dashboard_settings" => [
         "theme" => "dark"
     ],
@@ -104,8 +104,25 @@ if (isset($_GET['api'])) {
 
 // --- HANDLE LOGIN / LOGOUT ---
 if (isset($_POST['login'])) {
-    if ($_POST['password'] === $configData['admin_password']) {
+    $is_valid = false;
+    $needs_rehash = false;
+
+    if (password_verify($_POST['password'], $configData['admin_password'])) {
+        $is_valid = true;
+        if (password_needs_rehash($configData['admin_password'], PASSWORD_DEFAULT)) {
+            $needs_rehash = true;
+        }
+    } elseif ($_POST['password'] === $configData['admin_password']) {
+        $is_valid = true;
+        $needs_rehash = true;
+    }
+
+    if ($is_valid) {
         $_SESSION['admin_logged_in'] = true;
+        if ($needs_rehash) {
+            $configData['admin_password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+            file_put_contents($configFile, json_encode($configData, JSON_PRETTY_PRINT));
+        }
         header("Location: admin.php"); exit;
     } else { $error = "Invalid Password"; }
 }
@@ -275,9 +292,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $success = "Email Integration Settings Saved.";
     }
     elseif (isset($_POST['change_password'])) {
-        if ($_POST['current_password'] === $configData['admin_password']) {
+        $is_valid = false;
+        if (password_verify($_POST['current_password'], $configData['admin_password'])) {
+            $is_valid = true;
+        } elseif ($_POST['current_password'] === $configData['admin_password']) {
+            $is_valid = true;
+        }
+
+        if ($is_valid) {
             if ($_POST['new_password'] === $_POST['confirm_password'] && strlen($_POST['new_password']) > 3) {
-                $configData['admin_password'] = $_POST['new_password'];
+                $configData['admin_password'] = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
                 $success = "Password changed successfully!";
             } else { $error_msg = "New passwords do not match or are too short."; }
         } else { $error_msg = "Incorrect current password."; }
