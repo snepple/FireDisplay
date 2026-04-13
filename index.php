@@ -1832,7 +1832,23 @@ if (!empty($dashboardToken)) {
                 const address = p.location;
                 if (!address) return Promise.resolve(null);
                 const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
-                return fetch(url).then(res => res.json()).catch(err => {
+                return fetch(url).then(res => res.json()).then(async (nominatimResult) => {
+                    if (nominatimResult && nominatimResult.length > 0) {
+                        return nominatimResult;
+                    } else {
+                        console.warn("Nominatim failed for:", address, ". Falling back to Gemini...");
+                        const fallbackUrl = `api/gemini_geocode.php?address=${encodeURIComponent(address)}`;
+                        return fetch(fallbackUrl).then(res => res.json()).then(geminiResult => {
+                            if (geminiResult && geminiResult.lat && geminiResult.lon) {
+                                return [{ lat: geminiResult.lat, lon: geminiResult.lon }];
+                            }
+                            return null;
+                        }).catch(err => {
+                            console.error("Gemini fallback failed:", err);
+                            return null;
+                        });
+                    }
+                }).catch(err => {
                     console.error("Geocoding fetch failed:", err);
                     return null;
                 });
