@@ -199,7 +199,6 @@ if (!empty($dashboardToken)) {
         .legend-color-box { width: 20px; height: 20px; border-radius: 4px; }
         .chore-item { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 25px 40px; border-radius: 8px; text-align: center; overflow: hidden; min-height: 0; }
         .chore-list { list-style-type: none; padding: 0; margin: 0; font-size: 28pt; font-weight: 700; line-height: 1.5; color: var(--text-color); }
-        .duties-date { font-size: 18pt; color: var(--muted-text); text-align: center; margin-top: -10px; margin-bottom: 15px; }
         .national-day { font-size: 18pt; color: var(--muted-text); font-style: italic; margin-top: 20px; }
         #debug-log { display: none; }
 
@@ -295,7 +294,6 @@ if (!empty($dashboardToken)) {
 
     <div id="page-chores" class="page-container">
         <h2 style="margin-bottom: 5px;">Today's Overview</h2>
-        <!-- <p id="duties-page-date" class="duties-date"></p> -->
 
         <div id="chores-layout" style="display: flex; width: 100%; height: calc(100% - 120px); gap: 15px; min-height: 0;">
 
@@ -356,6 +354,44 @@ if (!empty($dashboardToken)) {
     <script src="js/api.js"></script>
     <script src="js/date_utils.js"></script>
     <script>
+
+        const originalFetch = window.fetch;
+        const fetchPromises = new Map();
+
+        window.fetch = function(...args) {
+            const url = typeof args[0] === 'string' ? args[0] : (args[0] instanceof Request ? args[0].url : '');
+
+            // Deduplicate requests to fetch_calendar.php
+            if (typeof url === 'string' && url.includes('api/fetch_calendar.php')) {
+                let urlObj;
+                try {
+                    urlObj = new URL(url, window.location.origin);
+                } catch (e) {
+                    return originalFetch.apply(this, args);
+                }
+
+                const originalTargetUrl = urlObj.searchParams.get('url');
+
+                if (originalTargetUrl) {
+                    if (fetchPromises.has(originalTargetUrl)) {
+                        return fetchPromises.get(originalTargetUrl).then(res => res.clone());
+                    }
+
+                    const fetchPromise = originalFetch.apply(this, args).then(res => {
+                        setTimeout(() => fetchPromises.delete(originalTargetUrl), 5000);
+                        return res;
+                    }).catch(err => {
+                        fetchPromises.delete(originalTargetUrl);
+                        throw err;
+                    });
+
+                    fetchPromises.set(originalTargetUrl, fetchPromise);
+                    return fetchPromise.then(res => res.clone());
+                }
+            }
+
+            return originalFetch.apply(this, args);
+        };
         let appConfig = null;
         let holidaysByDate = {};
         let announcedPermitUIDs = new Set();
