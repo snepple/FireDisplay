@@ -90,30 +90,74 @@ function extractFireDanger($body, $subject, $config) {
 }
 
 function extractBurnPermit($body, $subject) {
-    $address = "Unknown Address";
-    if (preg_match('/Address:\s*(.*)/i', $body, $matches)) {
-        $address = trim($matches[1]);
+    $clean = strip_tags(str_replace(array("\n", "\r"), ' ', $body));
+    $clean = preg_replace('/\s+/', ' ', $clean);
+    $clean = trim($clean);
+
+    $name = "Unknown";
+    if (preg_match('/Permission is hereby granted to:\s*(.*?)\s*\(DOB:/i', $clean, $matches)) {
+        $name = trim($matches[1]);
     }
 
-    $type = "Open Burn";
-    if (preg_match('/Type:\s*(.*)/i', $body, $matches)) {
-        $type = trim($matches[1]);
+    $person_address = "Unknown Address";
+    if (preg_match('/\(DOB:[^\)]+\)\s*(.*?)\s*Phone:/i', $clean, $matches)) {
+        $person_address = trim($matches[1]);
+    }
+
+    $phone = "Unknown Phone";
+    if (preg_match('/Phone:\s*(.*?)\s*(?:--\s*)?Email:/i', $clean, $matches)) {
+        $phone = trim($matches[1]);
+    }
+
+    $email = "Unknown Email";
+    if (preg_match('/Email:\s*(.*?)\s*Date\/Time Permit was Issued/i', $clean, $matches)) {
+        $email = trim($matches[1]);
+    }
+
+    $burn_location_address = "";
+    if (preg_match('/Address of Burn Location:\s*(.*?)\s*(?:Burn Location on the Property:|Municipality\/Unorganized Territory:)/i', $clean, $matches)) {
+        $burn_location_address = trim($matches[1]);
+    }
+
+    $primary_address = $burn_location_address ? $burn_location_address : $person_address;
+
+    $burn_location_property = "";
+    if (preg_match('/Burn Location on the Property:\s*(.*?)\s*Municipality\/Unorganized Territory:/i', $clean, $matches)) {
+        $burn_location_property = trim($matches[1]);
+    }
+
+    $burn_type = "Open Burn";
+    if (preg_match('/Burn Type:\s*(.*?)\s*Type of Item\(s\) to Burn:/i', $clean, $matches)) {
+        $burn_type = trim($matches[1]);
+    }
+
+    $items_to_burn = "";
+    if (preg_match('/Type of Item\(s\) to Burn:\s*(.*?)(?:\s*Burn Requirements|$)/i', $clean, $matches)) {
+        $items_to_burn = trim($matches[1]);
     }
 
     $expires = date('c', strtotime('+1 day')); // Default
-    if (preg_match('/Expires?:\s*(.*)/i', $body, $matches)) {
+    if (preg_match('/Burning may be conducted from .*? to .*? on (\d{2}\/\d{2}\/\d{4})/i', $clean, $matches)) {
         $parsed_time = strtotime(trim($matches[1]));
         if ($parsed_time !== false) {
             $expires = date('c', $parsed_time);
         }
     }
 
-    $uid = md5($address . time());
+    $uid = md5($primary_address . time());
 
     return [
         'uid' => $uid,
-        'address' => $address,
-        'type' => $type,
+        'name' => $name,
+        'address' => $primary_address,
+        'person_address' => $person_address,
+        'phone' => $phone,
+        'email' => $email,
+        'burn_location_address' => $burn_location_address,
+        'burn_location_property' => $burn_location_property,
+        'burn_type' => $burn_type,
+        'type' => $burn_type,
+        'items_to_burn' => $items_to_burn,
         'expires' => $expires,
         'created_at' => date('c'),
         'details' => substr($body, 0, 500) // snippet
