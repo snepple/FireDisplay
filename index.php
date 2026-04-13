@@ -353,6 +353,8 @@ if (!empty($dashboardToken)) {
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.5.0/ical.min.js"></script>
+    <script src="js/shiftUtils.js"></script>
+    <script src="js/shiftUtils.js"></script>
     <script>
         let appConfig = null;
         let holidaysByDate = {};
@@ -1266,36 +1268,7 @@ if (!empty($dashboardToken)) {
                 console.error("Could not load holiday data:", error);
             }
         }
-
-        function getCleanNameFromSummary(summary) {
-            if (!summary) return '';
-            const timeRegex = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
-            let cleaned = summary.replace(timeRegex, '').trim();
-            const roles = ["Career", "Chief", "Per-Diem", "Night Duty"];
-            for (const role of roles) {
-                const roleRegex = new RegExp(`\\s*${role}\\s*`, 'i');
-                cleaned = cleaned.replace(roleRegex, '').trim();
-            }
-            return cleaned.trim();
-        }
-
-        function combineConsecutiveShifts(eventList) {
-            if (eventList.length < 2) return eventList;
-            const combinedList = [];
-            for (let i = 0; i < eventList.length; i++) {
-                let currentEvent = eventList[i];
-                if (i + 1 < eventList.length) {
-                    let nextEvent = eventList[i + 1];
-                    if (getCleanNameFromSummary(currentEvent.summary) === getCleanNameFromSummary(nextEvent.summary) && currentEvent.endDate.toJSDate().getTime() === nextEvent.startDate.toJSDate().getTime()) {
-                        const combinedEvent = { summary: currentEvent.summary, startDate: currentEvent.startDate, endDate: nextEvent.endDate, };
-                        currentEvent = combinedEvent;
-                        i++;
-                    }
-                }
-                combinedList.push(currentEvent);
-            }
-            return combinedList;
-        }
+        const { getCleanNameFromSummary, combineConsecutiveShifts } = window.shiftUtils;
 
         function renderDashboard(allEvents) {
         }
