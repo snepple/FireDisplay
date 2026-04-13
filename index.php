@@ -530,9 +530,7 @@ if (!empty($dashboardToken)) {
             }
         }
 
-        async function initializeApp() {
-            initPermitMap();
-
+        async function loadAppConfig() {
             try {
                 const configResponse = await fetch('api/get_config.php', { cache: 'no-store' });
                 if (!configResponse.ok) throw new Error("Config fetch failed");
@@ -549,7 +547,7 @@ if (!empty($dashboardToken)) {
             } catch (e) {
                 console.error("Failed to load config, using fallbacks.", e);
                 appConfig = {
-                    dashboard_settings: { theme: 'dark' },
+                    dashboard_settings: { theme: 'dark', pages: { dashboard: { enabled: true, duration: 15 }, calendar: { enabled: true, duration: 15 }, chores: { enabled: true, duration: 15 } } },
                     department_info: { name: "Fire Department", stations: [], apparatus: [] },
                     truck_check: { anchor: "2025-07-13", interval: 2 },
                     truck_wash: { anchor: "2025-07-20", interval: 2 },
@@ -565,11 +563,9 @@ if (!empty($dashboardToken)) {
                     manual_events: [], announcements: [], special_chores: []
                 };
             }
+        }
 
-            updateAllData().then(() => {
-                startRotation();
-            });
-
+        function setupDataRefreshSchedules() {
             setInterval(updateAllData, 900000);
             const scheduleHourlyUpdate = () => {
                 const now = new Date();
@@ -580,6 +576,18 @@ if (!empty($dashboardToken)) {
                 setTimeout(() => { updateAllData(); setInterval(updateAllData, 3600000); }, delay);
             };
             scheduleHourlyUpdate();
+        }
+
+        async function initializeApp() {
+            initPermitMap();
+
+            await loadAppConfig();
+
+            updateAllData().then(() => {
+                startRotation();
+            });
+
+            setupDataRefreshSchedules();
         }
 
         async function updateAllData() {
@@ -1699,12 +1707,41 @@ if (!empty($dashboardToken)) {
             }
         }
 
-        function startRotation() {
-            if (rotationInterval) clearInterval(rotationInterval);
-            const pages = [ document.getElementById('page-dashboard'), document.getElementById('page-calendar'), document.getElementById('page-chores') ];
+        let rotationTimeout = null;
 
-            if (currentPageIndex === 0 && !hasFireDanger && !hasBurnPermits) {
-                currentPageIndex = 1;
+        function startRotation() {
+            if (rotationTimeout) clearTimeout(rotationTimeout);
+            const pages = [ document.getElementById('page-dashboard'), document.getElementById('page-calendar'), document.getElementById('page-chores') ];
+            const pageKeys = ['dashboard', 'calendar', 'chores'];
+
+            const pagesConfig = (appConfig && appConfig.dashboard_settings && appConfig.dashboard_settings.pages) ||
+                                { dashboard: { enabled: true, duration: 15 }, calendar: { enabled: true, duration: 15 }, chores: { enabled: true, duration: 15 } };
+
+            function isPageEnabled(index) {
+                const key = pageKeys[index];
+                if (!pagesConfig[key] || !pagesConfig[key].enabled) return false;
+                if (index === 0 && !hasFireDanger && !hasBurnPermits) return false; // Existing logic
+                return true;
+            }
+
+            // Fallback if all pages disabled
+            let anyEnabled = false;
+            for(let i=0; i<pages.length; i++) {
+                if(isPageEnabled(i)) { anyEnabled = true; break; }
+            }
+            if(!anyEnabled) {
+                // Force dashboard if everything is disabled so screen isn't blank
+                pages[0].style.display = 'flex';
+                pages[1].style.display = 'none';
+                pages[2].style.display = 'none';
+                return;
+            }
+
+            // Ensure current index is enabled
+            let attempts = 0;
+            while (!isPageEnabled(currentPageIndex) && attempts < pages.length) {
+                currentPageIndex = (currentPageIndex + 1) % pages.length;
+                attempts++;
             }
 
             pages.forEach((page, index) => {
@@ -1717,26 +1754,41 @@ if (!empty($dashboardToken)) {
                 setTimeout(() => permitMap.invalidateSize(), 0);
             }
 
-            rotationInterval = setInterval(() => {
-                if (document.getElementById('permit-modal-overlay').style.display === 'flex') return;
+            function rotateNext() {
+                if (document.getElementById('permit-modal-overlay').style.display === 'flex') {
+                    // Paused, try again later without advancing
+                    rotationTimeout = setTimeout(rotateNext, 1000);
+                    return;
+                }
+
                 pages[currentPageIndex].style.display = 'none';
 
-                currentPageIndex = (currentPageIndex + 1) % pages.length;
-
-                if (currentPageIndex === 0 && !hasFireDanger && !hasBurnPermits) {
-                    currentPageIndex = (currentPageIndex + 1) % pages.length;
+                let nextIndex = (currentPageIndex + 1) % pages.length;
+                let findAttempts = 0;
+                while (!isPageEnabled(nextIndex) && findAttempts < pages.length) {
+                    nextIndex = (nextIndex + 1) % pages.length;
+                    findAttempts++;
                 }
+                currentPageIndex = nextIndex;
 
                 const newPage = pages[currentPageIndex];
-                if (!newPage) return;
-                newPage.style.display = 'flex';
+                if (newPage) {
+                    newPage.style.display = 'flex';
+                    performPruning(currentPageIndex);
 
-                performPruning(currentPageIndex);
-
-                if (newPage.id === 'page-dashboard' && permitMap && hasBurnPermits) {
-                    setTimeout(() => permitMap.invalidateSize(), 10);
+                    if (newPage.id === 'page-dashboard' && permitMap && hasBurnPermits) {
+                        setTimeout(() => permitMap.invalidateSize(), 10);
+                    }
                 }
-            }, 15000);
+
+                const currentKey = pageKeys[currentPageIndex];
+                const durationSeconds = (pagesConfig[currentKey] && pagesConfig[currentKey].duration) ? pagesConfig[currentKey].duration : 15;
+                rotationTimeout = setTimeout(rotateNext, durationSeconds * 1000);
+            }
+
+            const initialKey = pageKeys[currentPageIndex];
+            const initialDurationSeconds = (pagesConfig[initialKey] && pagesConfig[initialKey].duration) ? pagesConfig[initialKey].duration : 15;
+            rotationTimeout = setTimeout(rotateNext, initialDurationSeconds * 1000);
         }
 
         function processEventForDashboard(vevent, searchStart, windowEnd, now, onDutyNow, onDutyLater) {
