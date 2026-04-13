@@ -354,6 +354,7 @@ if (!empty($dashboardToken)) {
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.5.0/ical.min.js"></script>
+    <script src="js/date_utils.js"></script>
     <script>
         let appConfig = null;
         let holidaysByDate = {};
@@ -1154,32 +1155,10 @@ if (!empty($dashboardToken)) {
             const choreList = document.getElementById('chore-list');
             choreList.innerHTML = '';
 
-            const dayOfWeek = now.getDay();
-            const rawHeaders = appConfig.headers ? appConfig.headers.map(h => (h || '').replace(/<[^>]*>?/gm, ' ').trim()) : ["9-1", "9-2", "9-3", "9-4", "9-5", "9-6 Meds", "R4 & R9"];
-
-            let vehicleTasks = [];
-            if(isTruckCheckWeek(now)) vehicleTasks.push("Check " + rawHeaders[dayOfWeek]);
-            if(isTruckWashWeek(now)) vehicleTasks.push("Wash " + rawHeaders[dayOfWeek]);
-            if(vehicleTasks.length > 0) {
-                choreList.innerHTML += `<li>${vehicleTasks.join(' & ')}</li>`;
-            }
-            if (dayOfWeek === 5) { choreList.innerHTML += `<li>Complete Medication Logs</li>`; }
-
-            const choreNum = getChoreNumber(now);
-            const todaysChores = appConfig.chores ? appConfig.chores.filter(c => c.id == choreNum) : [];
-            if (todaysChores.length > 0) {
-                todaysChores.forEach(c => { choreList.innerHTML += `<li>Clean ${c.name} (#${choreNum})</li>`; });
-            } else {
-                 choreList.innerHTML += `<li>Clean (#${choreNum})</li>`;
-            }
-
-            const todaysSpecialChores = getTodaysSpecialChores(now);
-            todaysSpecialChores.forEach(scName => {
-                choreList.innerHTML += `<li style="color:#20c997;">${scName}</li>`;
-            });
-
-            const everyDayTasks = appConfig.everyday_chores || ["Clean Bathrooms", "Empty Trash Cans", "Wash Coffee Pot and Dishes"];
-            everyDayTasks.forEach(task => { choreList.innerHTML += `<li>${task}</li>`; });
+            renderVehicleTasks(now, choreList);
+            renderNumberedChores(now, choreList);
+            renderSpecialChores(now, choreList);
+            renderEverydayChores(choreList);
 
             const holidayContainer = document.getElementById('holiday-container');
             const nationalDayP = document.getElementById('national-day');
@@ -1269,6 +1248,42 @@ if (!empty($dashboardToken)) {
             return cleaned.trim();
         }
 
+
+        function renderVehicleTasks(now, choreList) {
+            const dayOfWeek = now.getDay();
+            const rawHeaders = appConfig.headers ? appConfig.headers.map(h => (h || '').replace(/<[^>]*>?/gm, ' ').trim()) : ["9-1", "9-2", "9-3", "9-4", "9-5", "9-6 Meds", "R4 & R9"];
+
+            let vehicleTasks = [];
+            if(isTruckCheckWeek(now)) vehicleTasks.push("Check " + rawHeaders[dayOfWeek]);
+            if(isTruckWashWeek(now)) vehicleTasks.push("Wash " + rawHeaders[dayOfWeek]);
+            if(vehicleTasks.length > 0) {
+                choreList.innerHTML += `<li>${vehicleTasks.join(' & ')}</li>`;
+            }
+            if (dayOfWeek === 5) { choreList.innerHTML += `<li>Complete Medication Logs</li>`; }
+        }
+
+        function renderNumberedChores(now, choreList) {
+            const choreNum = getChoreNumber(now);
+            const todaysChores = appConfig.chores ? appConfig.chores.filter(c => c.id == choreNum) : [];
+            if (todaysChores.length > 0) {
+                todaysChores.forEach(c => { choreList.innerHTML += `<li>Clean ${c.name} (#${choreNum})</li>`; });
+            } else {
+                 choreList.innerHTML += `<li>Clean (#${choreNum})</li>`;
+            }
+        }
+
+        function renderSpecialChores(now, choreList) {
+            const todaysSpecialChores = getTodaysSpecialChores(now);
+            todaysSpecialChores.forEach(scName => {
+                choreList.innerHTML += `<li style="color:#20c997;">${scName}</li>`;
+            });
+        }
+
+        function renderEverydayChores(choreList) {
+            const everyDayTasks = appConfig.everyday_chores || ["Clean Bathrooms", "Empty Trash Cans", "Wash Coffee Pot and Dishes"];
+            everyDayTasks.forEach(task => { choreList.innerHTML += `<li>${task}</li>`; });
+        }
+
         function combineConsecutiveShifts(eventList) {
             if (eventList.length < 2) return eventList;
             const combinedList = [];
@@ -1291,6 +1306,10 @@ if (!empty($dashboardToken)) {
         }
 
         function isTruckCheckWeek(date) {
+            if (typeof dateUtils !== 'undefined' && typeof dateUtils.isTruckCheckWeek === 'function') {
+                return dateUtils.isTruckCheckWeek(date, typeof appConfig !== 'undefined' ? appConfig : null);
+            }
+            // Fallback just in case
             if (!appConfig || !appConfig.truck_check) return true;
             const [year, month, day] = (appConfig.truck_check.anchor || "2025-07-13").split('-');
             const anchorTime = new Date(year, month - 1, day, 0, 0, 0).getTime();
@@ -1300,6 +1319,10 @@ if (!empty($dashboardToken)) {
         }
 
         function isTruckWashWeek(date) {
+            if (typeof dateUtils !== 'undefined' && typeof dateUtils.isTruckWashWeek === 'function') {
+                return dateUtils.isTruckWashWeek(date, typeof appConfig !== 'undefined' ? appConfig : null);
+            }
+            // Fallback just in case
             if (!appConfig || !appConfig.truck_wash) return false;
             const [year, month, day] = (appConfig.truck_wash.anchor || "2025-07-20").split('-');
             const anchorTime = new Date(year, month - 1, day, 0, 0, 0).getTime();
@@ -1323,40 +1346,56 @@ if (!empty($dashboardToken)) {
             return choreIndex;
         }
 
-        function renderCalendar(allFireEvents, townMeetings = []) {
-            const timeRegex = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
-            const now = new Date();
-            const todayInET = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
 
-            const targetMonth = new Date(todayInET.getFullYear(), todayInET.getMonth() + calendarMonthOffset, 1);
+        function formatShortTime(date) {
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'p' : 'a';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            const minStr = minutes === 0 ? '' : `:${minutes.toString().padStart(2, '0')}`;
+            return `${hours}${minStr}${ampm}`;
+        }
 
-            let firstDayOfGrid = new Date(targetMonth);
-            firstDayOfGrid.setDate(1 - firstDayOfGrid.getDay());
-            firstDayOfGrid.setHours(0, 0, 0, 0);
+        function mergeAndSort(roleArray) {
+            if (roleArray.length === 0) return roleArray;
 
-            const startMonthStr = targetMonth.toLocaleString('default', { month: 'long' });
-            const startYearStr = targetMonth.getFullYear();
+            roleArray.sort((a, b) => a.rawStart.getTime() - b.rawStart.getTime());
 
-            document.getElementById('calendar-month-year').textContent = `${startMonthStr} ${startYearStr}`;
+            const merged = [];
+            let current = roleArray[0];
 
-            const daysInMonth = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0).getDate();
-            const startOffset = targetMonth.getDay();
-            const weeks = Math.ceil((startOffset + daysInMonth) / 7);
-            const daysToRender = weeks * 7;
+            for (let i = 1; i < roleArray.length; i++) {
+                const next = roleArray[i];
+                if (current.name === next.name && current.rawEnd.getTime() === next.rawStart.getTime()) {
+                    current.rawEnd = next.rawEnd;
+                    current.timeStr = `${formatShortTime(current.rawStart)}-${formatShortTime(current.rawEnd)}`;
+                } else {
+                    merged.push(current);
+                    current = next;
+                }
+            }
+            merged.push(current);
+            return merged;
+        }
 
-            const grid = document.getElementById('calendar-grid');
-            grid.style.gridTemplateRows = `repeat(${weeks}, minmax(0, 1fr))`;
-            grid.innerHTML = '';
+        function buildRoleHtml(roleArray, roleType, prefix, cssClass) {
+            if (roleArray.length === 0) {
+                return `<div class="calendar-event ${cssClass} event-open" title="${roleType}: Open">${prefix}: Open</div>`;
+            }
+            let html = '';
+            roleArray.forEach(item => {
+                let text = `${prefix}: ${item.name}`;
+                if (roleArray.length > 1) {
+                    text += ` (${item.timeStr})`;
+                }
+                html += `<div class="calendar-event ${cssClass}" title="${roleType}: ${item.name} ${item.timeStr}">${text}</div>`;
+            });
+            return html;
+        }
 
+        function parseCalendarEvents(allFireEvents, townMeetings, manualEvents, firstDayOfGrid, maxParseDate, maxPublishedDateRef) {
             const eventsByDate = {};
-            const calendarEndDate = new Date(firstDayOfGrid);
-            calendarEndDate.setDate(calendarEndDate.getDate() + daysToRender);
-
-            const parsingEndDate = new Date(todayInET);
-            parsingEndDate.setDate(parsingEndDate.getDate() + 75);
-            const maxParseDate = parsingEndDate > calendarEndDate ? parsingEndDate : calendarEndDate;
-
-            let maxPublishedDate = new Date(0);
 
             (allFireEvents || []).forEach(event => {
                 const vevent = new ICAL.Event(event);
@@ -1365,7 +1404,7 @@ if (!empty($dashboardToken)) {
 
                 if (!vevent.isRecurring() && isShift) {
                     const sDate = vevent.startDate.toJSDate();
-                    if (sDate > maxPublishedDate) maxPublishedDate = sDate;
+                    if (sDate > maxPublishedDateRef.date) maxPublishedDateRef.date = sDate;
                 }
 
                 const processOccurrence = (occurrence) => {
@@ -1394,16 +1433,6 @@ if (!empty($dashboardToken)) {
                 }
             });
 
-            const maxPubDay = new Date(maxPublishedDate);
-            maxPubDay.setHours(23, 59, 59, 999);
-
-            const pubTextDiv = document.getElementById('schedule-published-text');
-            if (maxPublishedDate > new Date(0)) {
-                pubTextDiv.textContent = `Schedule published through: ${maxPublishedDate.toLocaleDateString()}`;
-            } else {
-                pubTextDiv.textContent = "";
-            }
-
             townMeetings.forEach(meeting => {
                 const eventStart = meeting.startDate.toJSDate();
                 if (eventStart >= firstDayOfGrid && eventStart < maxParseDate) {
@@ -1413,7 +1442,6 @@ if (!empty($dashboardToken)) {
                 }
             });
 
-            const manualEvents = getManualEvents(firstDayOfGrid, maxParseDate);
             manualEvents.forEach(evt => {
                 const dateKey = formatYMD(evt.startDate);
                 if (!eventsByDate[dateKey]) eventsByDate[dateKey] = [];
@@ -1422,40 +1450,12 @@ if (!empty($dashboardToken)) {
                 eventsByDate[dateKey].push({ type: 'dept', summary: s, startDate: evt.startDate, allDay: evt.allDay });
             });
 
-            const formatShortTime = (date) => {
-                let hours = date.getHours();
-                let minutes = date.getMinutes();
-                const ampm = hours >= 12 ? 'p' : 'a';
-                hours = hours % 12;
-                hours = hours ? hours : 12;
-                const minStr = minutes === 0 ? '' : `:${minutes.toString().padStart(2, '0')}`;
-                return `${hours}${minStr}${ampm}`;
-            };
+            return eventsByDate;
+        }
 
-            const mergeAndSort = (roleArray) => {
-                if (roleArray.length === 0) return roleArray;
-
-                roleArray.sort((a, b) => a.rawStart.getTime() - b.rawStart.getTime());
-
-                const merged = [];
-                let current = roleArray[0];
-
-                for (let i = 1; i < roleArray.length; i++) {
-                    const next = roleArray[i];
-                    if (current.name === next.name && current.rawEnd.getTime() === next.rawStart.getTime()) {
-                        current.rawEnd = next.rawEnd;
-                        current.timeStr = `${formatShortTime(current.rawStart)}-${formatShortTime(current.rawEnd)}`;
-                    } else {
-                        merged.push(current);
-                        current = next;
-                    }
-                }
-                merged.push(current);
-                return merged;
-            };
-
-            const todayKey = formatYMD(todayInET);
+        function renderCalendarDays(grid, daysToRender, firstDayOfGrid, targetMonth, todayKey, eventsByDate, maxPubDay, timeRegex) {
             let currentDay = new Date(firstDayOfGrid);
+            let allDaysHtml = '';
 
             for (let i = 0; i < daysToRender; i++) {
                 const dateKey = formatYMD(currentDay);
@@ -1506,21 +1506,6 @@ if (!empty($dashboardToken)) {
                         });
                     }
 
-                    const buildRoleHtml = (roleArray, roleType, prefix, cssClass) => {
-                        if (roleArray.length === 0) {
-                            return `<div class="calendar-event ${cssClass} event-open" title="${roleType}: Open">${prefix}: Open</div>`;
-                        }
-                        let html = '';
-                        roleArray.forEach(item => {
-                            let text = `${prefix}: ${item.name}`;
-                            if (roleArray.length > 1) {
-                                text += ` (${item.timeStr})`;
-                            }
-                            html += `<div class="calendar-event ${cssClass}" title="${roleType}: ${item.name} ${item.timeStr}">${text}</div>`;
-                        });
-                        return html;
-                    };
-
                     let careerMerged = mergeAndSort(roles.career);
                     let perDiemMerged = mergeAndSort(roles.perDiem);
                     let nightDutyMerged = mergeAndSort(roles.nightDuty);
@@ -1551,13 +1536,13 @@ if (!empty($dashboardToken)) {
                 }
 
                 dayHtml += `</div>`;
-                grid.innerHTML += dayHtml;
+                allDaysHtml += dayHtml;
                 currentDay.setDate(currentDay.getDate() + 1);
             }
+            grid.innerHTML = allDaysHtml;
+        }
 
-            const openShiftsList = document.getElementById('open-shifts-list');
-            openShiftsList.innerHTML = '';
-
+        function renderOpenShifts(openShiftsList, todayInET, maxPubDay, eventsByDate) {
             const allOpenShifts = [];
 
             let checkDate = new Date(todayInET);
@@ -1591,9 +1576,8 @@ if (!empty($dashboardToken)) {
                 checkDate.setDate(checkDate.getDate() + 1);
             }
 
-            let openShiftsHtml = '';
-
             if (allOpenShifts.length > 0) {
+                let openShiftsHtml = '';
                 allOpenShifts.forEach(shift => {
                     openShiftsHtml += `
                     <a href="https://whentowork.com/logins.htm" target="_blank" class="open-shift-link">
@@ -1612,6 +1596,59 @@ if (!empty($dashboardToken)) {
             }
         }
 
+        function renderCalendar(allFireEvents, townMeetings = []) {
+            const timeRegex = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
+            const now = new Date();
+            const todayInET = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+
+            const targetMonth = new Date(todayInET.getFullYear(), todayInET.getMonth() + calendarMonthOffset, 1);
+
+            let firstDayOfGrid = new Date(targetMonth);
+            firstDayOfGrid.setDate(1 - firstDayOfGrid.getDay());
+            firstDayOfGrid.setHours(0, 0, 0, 0);
+
+            const startMonthStr = targetMonth.toLocaleString('default', { month: 'long' });
+            const startYearStr = targetMonth.getFullYear();
+
+            document.getElementById('calendar-month-year').textContent = `${startMonthStr} ${startYearStr}`;
+
+            const daysInMonth = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0).getDate();
+            const startOffset = targetMonth.getDay();
+            const weeks = Math.ceil((startOffset + daysInMonth) / 7);
+            const daysToRender = weeks * 7;
+
+            const grid = document.getElementById('calendar-grid');
+            grid.style.gridTemplateRows = `repeat(${weeks}, minmax(0, 1fr))`;
+
+            const calendarEndDate = new Date(firstDayOfGrid);
+            calendarEndDate.setDate(calendarEndDate.getDate() + daysToRender);
+
+            const parsingEndDate = new Date(todayInET);
+            parsingEndDate.setDate(parsingEndDate.getDate() + 75);
+            const maxParseDate = parsingEndDate > calendarEndDate ? parsingEndDate : calendarEndDate;
+
+            const manualEvents = getManualEvents(firstDayOfGrid, maxParseDate);
+
+            let maxPublishedDateRef = { date: new Date(0) };
+            const eventsByDate = parseCalendarEvents(allFireEvents, townMeetings, manualEvents, firstDayOfGrid, maxParseDate, maxPublishedDateRef);
+            let maxPublishedDate = maxPublishedDateRef.date;
+
+            const maxPubDay = new Date(maxPublishedDate);
+            maxPubDay.setHours(23, 59, 59, 999);
+
+            const pubTextDiv = document.getElementById('schedule-published-text');
+            if (maxPublishedDate > new Date(0)) {
+                pubTextDiv.textContent = `Schedule published through: ${maxPublishedDate.toLocaleDateString()}`;
+            } else {
+                pubTextDiv.textContent = "";
+            }
+
+            const todayKey = formatYMD(todayInET);
+            renderCalendarDays(grid, daysToRender, firstDayOfGrid, targetMonth, todayKey, eventsByDate, maxPubDay, timeRegex);
+
+            const openShiftsList = document.getElementById('open-shifts-list');
+            renderOpenShifts(openShiftsList, todayInET, maxPubDay, eventsByDate);
+        }
         function pauseRotation() {
             if (rotationInterval) {
                 clearInterval(rotationInterval);
@@ -1822,7 +1859,23 @@ if (!empty($dashboardToken)) {
                 const address = p.location;
                 if (!address) return Promise.resolve(null);
                 const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
-                return fetch(url).then(res => res.json()).catch(err => {
+                return fetch(url).then(res => res.json()).then(async (nominatimResult) => {
+                    if (nominatimResult && nominatimResult.length > 0) {
+                        return nominatimResult;
+                    } else {
+                        console.warn("Nominatim failed for:", address, ". Falling back to Gemini...");
+                        const fallbackUrl = `api/gemini_geocode.php?address=${encodeURIComponent(address)}`;
+                        return fetch(fallbackUrl).then(res => res.json()).then(geminiResult => {
+                            if (geminiResult && geminiResult.lat && geminiResult.lon) {
+                                return [{ lat: geminiResult.lat, lon: geminiResult.lon }];
+                            }
+                            return null;
+                        }).catch(err => {
+                            console.error("Gemini fallback failed:", err);
+                            return null;
+                        });
+                    }
+                }).catch(err => {
                     console.error("Geocoding fetch failed:", err);
                     return null;
                 });

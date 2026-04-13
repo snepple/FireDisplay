@@ -1,15 +1,24 @@
 {
-  "name": "fire-display-tests",
+  "name": "fire-display",
   "version": "1.0.0",
   "description": "Tests for FireDisplay",
   "main": "index.js",
   "scripts": {
     "test": "jest"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snepple/FireDisplay.git"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/snepple/FireDisplay/issues"
+  },
+  "homepage": "https://github.com/snepple/FireDisplay#readme",
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^30.3.0"
   }
 }

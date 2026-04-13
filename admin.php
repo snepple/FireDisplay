@@ -44,7 +44,17 @@ $defaultConfig = [
 ];
 
 if (!file_exists($configFile)) file_put_contents($configFile, json_encode($defaultConfig, JSON_PRETTY_PRINT));
-$configData = array_merge($defaultConfig, json_decode(file_get_contents($configFile), true));
+
+$fileMtime = filemtime($configFile);
+if (isset($_SESSION['config_cache']) && isset($_SESSION['config_mtime']) && $_SESSION['config_mtime'] === $fileMtime) {
+    $decodedConfig = $_SESSION['config_cache'];
+} else {
+    $decodedConfig = json_decode(file_get_contents($configFile), true);
+    $_SESSION['config_cache'] = $decodedConfig;
+    $_SESSION['config_mtime'] = $fileMtime;
+}
+
+$configData = array_merge($defaultConfig, $decodedConfig);
 
 // Ensure new keys exist if updating from older version
 if (!isset($configData['department_info'])) $configData['department_info'] = $defaultConfig['department_info'];
@@ -98,6 +108,7 @@ if (isset($_GET['api'])) {
     header('Content-Type: application/json');
     $exportData = $configData;
     unset($exportData['admin_password']);
+    unset($exportData['api_integrations']['gemini_api_key']);
     echo json_encode($exportData);
     exit;
 }
@@ -265,6 +276,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $archived_announcements = array_filter($archived_announcements, function($e) use ($idToDel) { return $e['id'] !== $idToDel; });
         $configData['announcements'] = array_merge($active_announcements, $archived_announcements);
         $success = "Archived Announcement Deleted.";
+    }
+    elseif (isset($_POST['save_api_integration'])) {
+        if (!isset($configData['api_integrations'])) {
+            $configData['api_integrations'] = [];
+        }
+        $configData['api_integrations']['gemini_api_key'] = trim($_POST['gemini_api_key'] ?? '');
+        $success = "API Integration Settings Saved.";
     }
     elseif (isset($_POST['save_email_integration'])) {
         if (!isset($configData['email_integration'])) {
@@ -464,6 +482,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                 </ul>
             </li>
             <li><a href="?page=email_integration" class="<?= isPage('email_integration', $page) ?>">Email Integration</a></li>
+            <li><a href="?page=api_integrations" class="<?= isPage('api_integrations', $page) ?>">API Integrations</a></li>
             <li><a href="?page=password" class="<?= isPage('password', $page) ?>">Change Password</a></li>
         </ul>
         <a href="?logout=true" class="logout-btn">Log Out Securely</a>
@@ -1672,6 +1691,22 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <?php endif; ?>
                 </div>
                 <script>function runPreSubmitHooks() {}</script>
+
+            <?php elseif ($page === 'api_integrations'): ?>
+                <div class="card fade-in">
+                    <h1>API Integrations</h1>
+                    <p style="color: #86868b; margin-top: -10px; margin-bottom: 30px;">Manage third-party API keys and services used by the Fire Display dashboard.</p>
+
+                    <form method="POST">
+                        <div class="input-group">
+                            <label>Gemini API Key (for Geocoding fallback)</label>
+                            <input type="text" name="gemini_api_key" value="<?= htmlspecialchars($configData['api_integrations']['gemini_api_key'] ?? '') ?>" placeholder="AIzaSy..." autocomplete="off">
+                            <p style="font-size: 0.85em; color: #86868b; margin-top: 5px;">This key is used as a fallback to convert free-text burn permit locations into map coordinates when standard geocoding fails.</p>
+                        </div>
+
+                        <button type="submit" name="save_api_integration" class="save-btn" style="padding: 15px 40px; margin-top: 20px;">💾 Save API Integrations</button>
+                    </form>
+                </div>
 
             <?php elseif ($page === 'email_integration'): ?>
                 <div class="content-header">
