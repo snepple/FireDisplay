@@ -138,6 +138,16 @@ if (!empty($dashboardToken)) {
         .risk-very-high { background-color: #8B4513; color:#fff;}
         .risk-extreme { background-color: #dc3545; color:#fff;}
 
+        .zone-tooltip {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #000;
+            text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+        }
+
         #permitMap { height: 100%; width: 100%; border-radius: 4px; }
         .permit-tooltip { background-color: rgba(255, 255, 255, 0.9); border: 1px solid #888; border-radius: 3px; color: #333; font-weight: bold; padding: 4px 8px; font-size: 10pt; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
         .flame-marker-icon { filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.7)); }
@@ -248,7 +258,7 @@ if (!empty($dashboardToken)) {
                 <div id="fire-danger-content">
                      <div id="danger-meter">Loading...</div>
                      <div id="danger-date"></div>
-                     <div id="danger-map-container" style="margin-top: 15px; width: 100%; flex: 1; display: none; overflow: hidden; border-radius: 4px; border: 1px solid var(--border-color); position: relative;"><iframe id="danger-map-iframe" src="about:blank" style="position: absolute; top: -50px; left: -220px; width: 250%; height: 600px; border: none; pointer-events: none;" scrolling="no"></iframe></div>
+                     <div id="danger-map-container" style="margin-top: 15px; width: 100%; flex: 1; display: none; border-radius: 4px; border: 1px solid var(--border-color); position: relative;"><div id="dangerMap" style="width: 100%; height: 100%; min-height: 400px; border-radius: 4px; z-index: 1;"></div></div>
                 </div>
             </div>
         </div>
@@ -358,6 +368,20 @@ if (!empty($dashboardToken)) {
         let holidaysByDate = {};
         let announcedPermitUIDs = new Set();
         let permitCheckDate = new Date().toLocaleDateString();
+
+        let dangerMap = null;
+        let dangerGeoJsonLayer = null;
+
+        const dangerRatings = ['unknown','snow','low','moderate','high','veryhigh','extreme'];
+        const dangerColors = {
+            'unknown': '#259A5C',
+            'snow': '#FFFFFF',
+            'low': '#259A5C',
+            'moderate': '#536DBC',
+            'high': '#FFFF46',
+            'veryhigh': '#FFAF40',
+            'extreme': '#FF3C45'
+        };
         let rotationInterval = null;
         let currentPageIndex = 0;
         let modalCloseTimer = null;
@@ -719,9 +743,12 @@ if (!empty($dashboardToken)) {
                 }
 
                 const mapContainer = document.getElementById('danger-map-container');
-                const mapIframe = document.getElementById('danger-map-iframe');
-                mapIframe.src = "https://mainefireweather.org/index.php";
                 mapContainer.style.display = 'block';
+
+                initDangerMap();
+                if (data.classdays) {
+                    updateDangerMap(data.classdays);
+                }
 
                 if (meterDiv.dataset.lastLevel !== riskLevel) {
                      announceFireDanger(riskLevel);
@@ -1800,6 +1827,28 @@ if (!empty($dashboardToken)) {
             }
         }
 
+        function initDangerMap() {
+            if (dangerMap) return;
+            try {
+                dangerMap = L.map('dangerMap', {
+                    zoomControl: false,
+                    attributionControl: false,
+                    dragging: false,
+                    scrollWheelZoom: false,
+                    doubleClickZoom: false,
+                    boxZoom: false,
+                    keyboard: false,
+                    tap: false
+                }).setView([45.2538, -69.4455], 6);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(dangerMap);
+            } catch (e) {
+                console.error("Could not initialize danger map.", e);
+            }
+        }
+
         function initPermitMap() {
             if (permitMap) return;
             try {
@@ -1811,6 +1860,61 @@ if (!empty($dashboardToken)) {
             } catch (e) {
                 console.error("Could not initialize permit map.", e);
                 document.getElementById('permitMap').innerHTML = "Map service unavailable.";
+            }
+        }
+
+        let dangerZonesGeoJson = null;
+
+        async function updateDangerMap(classDays) {
+            if (!dangerMap) return;
+
+            try {
+                if (!dangerZonesGeoJson) {
+                    const response = await fetch('/api/fetch_danger_zones.php');
+                    if (response.ok) {
+                        dangerZonesGeoJson = await response.json();
+                    } else {
+                        console.error('Failed to load danger zones geojson');
+                        return;
+                    }
+                }
+
+                if (dangerGeoJsonLayer) {
+                    dangerMap.removeLayer(dangerGeoJsonLayer);
+                }
+
+                dangerGeoJsonLayer = L.geoJSON(dangerZonesGeoJson, {
+                    style: function (feature) {
+                        const zoneId = feature.properties.name;
+                        const ratingIdx = classDays[zoneId] ? parseInt(classDays[zoneId]) : 0;
+                        const ratingName = dangerRatings[ratingIdx] || 'unknown';
+                        const fillColor = dangerColors[ratingName] || dangerColors['unknown'];
+
+                        return {
+                            fillColor: fillColor,
+                            weight: 1.5,
+                            opacity: 1,
+                            color: '#666666',
+                            fillOpacity: 0.5
+                        };
+                    },
+                    onEachFeature: function (feature, layer) {
+                        if (feature.properties && feature.properties.name) {
+                            layer.bindTooltip(feature.properties.name, {
+                                permanent: true,
+                                direction: 'center',
+                                className: 'zone-tooltip'
+                            }).openTooltip();
+                        }
+                    }
+                }).addTo(dangerMap);
+
+                dangerMap.fitBounds(dangerGeoJsonLayer.getBounds(), { padding: [10, 10] });
+
+                // Force map to recalculate its size as it might have been initialized while display was none
+                setTimeout(() => dangerMap.invalidateSize(), 100);
+            } catch (e) {
+                console.error("Error updating danger map:", e);
             }
         }
 
