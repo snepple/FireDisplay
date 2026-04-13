@@ -354,6 +354,44 @@ if (!empty($dashboardToken)) {
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.5.0/ical.min.js"></script>
     <script>
+
+        const originalFetch = window.fetch;
+        const fetchPromises = new Map();
+
+        window.fetch = function(...args) {
+            const url = typeof args[0] === 'string' ? args[0] : (args[0] instanceof Request ? args[0].url : '');
+
+            // Deduplicate requests to fetch_calendar.php
+            if (typeof url === 'string' && url.includes('api/fetch_calendar.php')) {
+                let urlObj;
+                try {
+                    urlObj = new URL(url, window.location.origin);
+                } catch (e) {
+                    return originalFetch.apply(this, args);
+                }
+
+                const originalTargetUrl = urlObj.searchParams.get('url');
+
+                if (originalTargetUrl) {
+                    if (fetchPromises.has(originalTargetUrl)) {
+                        return fetchPromises.get(originalTargetUrl).then(res => res.clone());
+                    }
+
+                    const fetchPromise = originalFetch.apply(this, args).then(res => {
+                        setTimeout(() => fetchPromises.delete(originalTargetUrl), 5000);
+                        return res;
+                    }).catch(err => {
+                        fetchPromises.delete(originalTargetUrl);
+                        throw err;
+                    });
+
+                    fetchPromises.set(originalTargetUrl, fetchPromise);
+                    return fetchPromise.then(res => res.clone());
+                }
+            }
+
+            return originalFetch.apply(this, args);
+        };
         let appConfig = null;
         let holidaysByDate = {};
         let announcedPermitUIDs = new Set();
