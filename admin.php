@@ -300,6 +300,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.5.0/ical.min.js"></script>
+    <script src="js/utils.js"></script>
 
     <style>
         /* iOS / Light Apple Inspired Aesthetic */
@@ -1207,7 +1208,6 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     }
 
                     function parseLocalYMD(dateStr) { const [y, m, d] = dateStr.split('-'); return new Date(y, m - 1, d); }
-                    function formatYMD(dateObj) { return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`; }
 
                     function getNthWeekdayOfMonth(year, month, weekday, n) {
                         let d = new Date(year, month, 1);

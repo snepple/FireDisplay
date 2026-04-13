@@ -353,6 +353,7 @@ if (!empty($dashboardToken)) {
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.5.0/ical.min.js"></script>
+    <script src="js/utils.js"></script>
     <script>
         let appConfig = null;
         let holidaysByDate = {};
@@ -484,12 +485,6 @@ if (!empty($dashboardToken)) {
             return new Date(y, m - 1, d);
         }
 
-        function formatYMD(dateObj) {
-            const year = dateObj.getFullYear();
-            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const day = String(dateObj.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
 
         function applyTheme() {
             if (!appConfig || !appConfig.dashboard_settings) return;

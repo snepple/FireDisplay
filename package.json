@@ -1,0 +1,12 @@
+{
+  "name": "firedisplay",
+  "version": "1.0.0",
+  "description": "FireDisplay app",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
+  }
+}
