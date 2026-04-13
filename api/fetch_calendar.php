@@ -5,7 +5,48 @@ header("Content-Type: text/plain; charset=utf-8");
 $url = isset($_GET['url']) ? $_GET['url'] : '';
 
 if (empty($url)) {
+    http_response_code(400);
     die("Error: No URL provided.");
+}
+
+// Security: Prevent SSRF by checking against a whitelist
+$configFile = __DIR__ . '/../config.json';
+$allowedUrls = [
+    'https://calendar.google.com/calendar/ical/c303c9aa08e0a090db126a0b15eb0bc0e8b66cc1af810aa971059b7b01b6d25a@group.calendar.google.com/public/basic.ics',
+    'https://calendar.google.com/calendar/ical/permitsburn@gmail.com/public/basic.ics',
+    'https://calendar.google.com/calendar/ical/amarshall@oaklandme.gov/public/basic.ics',
+    'https://calendars.icloud.com/holidays/us_en-us.ics'
+];
+
+if (file_exists($configFile)) {
+    $configData = json_decode(file_get_contents($configFile), true);
+    if (isset($configData['calendar_urls']) && is_array($configData['calendar_urls'])) {
+        foreach ($configData['calendar_urls'] as $key => $val) {
+            if (!empty($val)) {
+                $allowedUrls[] = $val;
+            }
+        }
+    }
+}
+
+$isAllowed = false;
+
+// Remove any query string from the requested URL for comparison
+$requestedBaseUrl = explode('?', $url)[0];
+
+foreach ($allowedUrls as $allowedUrl) {
+    // Also remove query string from allowed URL just in case
+    $allowedBaseUrl = explode('?', $allowedUrl)[0];
+
+    if ($requestedBaseUrl === $allowedBaseUrl) {
+        $isAllowed = true;
+        break;
+    }
+}
+
+if (!$isAllowed) {
+    http_response_code(403);
+    die("Error: Requested URL is not allowed.");
 }
 
 // Use cURL instead of file_get_contents for better compatibility on Bluehost
