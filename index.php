@@ -353,6 +353,7 @@ if (!empty($dashboardToken)) {
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.5.0/ical.min.js"></script>
+    <script src="js/date_utils.js"></script>
     <script>
         let appConfig = null;
         let holidaysByDate = {};
@@ -1301,6 +1302,10 @@ if (!empty($dashboardToken)) {
         }
 
         function isTruckCheckWeek(date) {
+            if (typeof dateUtils !== 'undefined' && typeof dateUtils.isTruckCheckWeek === 'function') {
+                return dateUtils.isTruckCheckWeek(date, typeof appConfig !== 'undefined' ? appConfig : null);
+            }
+            // Fallback just in case
             if (!appConfig || !appConfig.truck_check) return true;
             const [year, month, day] = (appConfig.truck_check.anchor || "2025-07-13").split('-');
             const anchorTime = new Date(year, month - 1, day, 0, 0, 0).getTime();
@@ -1310,6 +1315,10 @@ if (!empty($dashboardToken)) {
         }
 
         function isTruckWashWeek(date) {
+            if (typeof dateUtils !== 'undefined' && typeof dateUtils.isTruckWashWeek === 'function') {
+                return dateUtils.isTruckWashWeek(date, typeof appConfig !== 'undefined' ? appConfig : null);
+            }
+            // Fallback just in case
             if (!appConfig || !appConfig.truck_wash) return false;
             const [year, month, day] = (appConfig.truck_wash.anchor || "2025-07-20").split('-');
             const anchorTime = new Date(year, month - 1, day, 0, 0, 0).getTime();
