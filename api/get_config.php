@@ -6,6 +6,7 @@ if (file_exists($file)) {
     $data = json_decode(file_get_contents($file), true);
     unset($data['admin_password']);
     unset($data['api_integrations']['gemini_api_key']);
+    unset($data['dashboard_token']);
     echo json_encode($data);
 } else {
     echo json_encode(['error' => 'Config file missing']);
