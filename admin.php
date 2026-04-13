@@ -1786,9 +1786,14 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             if (!response.ok) {
                                 throw new Error(`HTTP error! status: ${response.status}`);
                             }
-
-                            const result = await response.json();
-
+                            const rawText = await response.text();
+                            const jsonStart = rawText.indexOf("{");
+                            let result;
+                            if (jsonStart !== -1) {
+                                result = JSON.parse(rawText.substring(jsonStart));
+                            } else {
+                                throw new Error("Could not find valid JSON in response: " + rawText);
+                            }
                             if (result.type === 'danger') {
                                 resultsContent.innerHTML = `<div style="font-size: 1.1em;">Danger Level: <strong>${result.data.level}</strong></div><div style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">(Matched rule: ${result.match_reason || 'Unknown'})</div>`;
                             } else if (result.type === 'permit') {
