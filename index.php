@@ -353,6 +353,7 @@ if (!empty($dashboardToken)) {
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.5.0/ical.min.js"></script>
+    <script src="js/utils/chores.js"></script>
     <script>
         let appConfig = null;
         let holidaysByDate = {};
@@ -1175,7 +1176,7 @@ if (!empty($dashboardToken)) {
             }
             if (dayOfWeek === 5) { choreList.innerHTML += `<li>Complete Medication Logs</li>`; }
 
-            const choreNum = getChoreNumber(now);
+            const choreNum = getChoreNumber(now, appConfig);
             const todaysChores = appConfig.chores ? appConfig.chores.filter(c => c.id == choreNum) : [];
             if (todaysChores.length > 0) {
                 todaysChores.forEach(c => { choreList.innerHTML += `<li>Clean ${c.name} (#${choreNum})</li>`; });
@@ -1318,20 +1319,7 @@ if (!empty($dashboardToken)) {
             return diffWeeks % parseInt(appConfig.truck_wash.interval || 2) === 0;
         }
 
-        function getChoreNumber(date) {
-            if (!appConfig || !appConfig.chore_anchor || !appConfig.chores || appConfig.chores.length === 0) return 1;
-            const [year, month, day] = (appConfig.chore_anchor || "2025-07-15").split('-');
-            const anchorTime = new Date(Date.UTC(year, month - 1, day, 12, 0, 0)).getTime();
-
-            const targetTime = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0)).getTime();
-            const diffDays = Math.round((targetTime - anchorTime) / (1000 * 60 * 60 * 24));
-
-            const uniqueIds = [...new Set(appConfig.chores.map(item => item.id))].sort((a,b)=>a-b);
-            const totalChores = parseInt(appConfig.chore_num_indices) || uniqueIds.length || 6;
-
-            let choreIndex = (((diffDays % totalChores) + totalChores) % totalChores) + 1;
-            return choreIndex;
-        }
+        const { getChoreNumber } = window;
 
         function renderCalendar(allFireEvents, townMeetings = []) {
             const timeRegex = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
@@ -1493,7 +1481,7 @@ if (!empty($dashboardToken)) {
                     }
                 }
 
-                const choreNum = getChoreNumber(currentDay);
+                const choreNum = getChoreNumber(currentDay, appConfig);
                 let dayHtml = `<div class="${dayClass}"><div class="day-number">${dayNumberDisplay}<span class="chore-number">${choreNum}</span></div>`;
 
                 const isUnpublished = currentDay > maxPubDay;
