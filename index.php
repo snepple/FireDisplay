@@ -1165,32 +1165,10 @@ if (!empty($dashboardToken)) {
             const choreList = document.getElementById('chore-list');
             choreList.innerHTML = '';
 
-            const dayOfWeek = now.getDay();
-            const rawHeaders = appConfig.headers ? appConfig.headers.map(h => (h || '').replace(/<[^>]*>?/gm, ' ').trim()) : ["9-1", "9-2", "9-3", "9-4", "9-5", "9-6 Meds", "R4 & R9"];
-
-            let vehicleTasks = [];
-            if(isTruckCheckWeek(now)) vehicleTasks.push("Check " + rawHeaders[dayOfWeek]);
-            if(isTruckWashWeek(now)) vehicleTasks.push("Wash " + rawHeaders[dayOfWeek]);
-            if(vehicleTasks.length > 0) {
-                choreList.innerHTML += `<li>${vehicleTasks.join(' & ')}</li>`;
-            }
-            if (dayOfWeek === 5) { choreList.innerHTML += `<li>Complete Medication Logs</li>`; }
-
-            const choreNum = getChoreNumber(now);
-            const todaysChores = appConfig.chores ? appConfig.chores.filter(c => c.id == choreNum) : [];
-            if (todaysChores.length > 0) {
-                todaysChores.forEach(c => { choreList.innerHTML += `<li>Clean ${c.name} (#${choreNum})</li>`; });
-            } else {
-                 choreList.innerHTML += `<li>Clean (#${choreNum})</li>`;
-            }
-
-            const todaysSpecialChores = getTodaysSpecialChores(now);
-            todaysSpecialChores.forEach(scName => {
-                choreList.innerHTML += `<li style="color:#20c997;">${scName}</li>`;
-            });
-
-            const everyDayTasks = appConfig.everyday_chores || ["Clean Bathrooms", "Empty Trash Cans", "Wash Coffee Pot and Dishes"];
-            everyDayTasks.forEach(task => { choreList.innerHTML += `<li>${task}</li>`; });
+            renderVehicleTasks(now, choreList);
+            renderNumberedChores(now, choreList);
+            renderSpecialChores(now, choreList);
+            renderEverydayChores(choreList);
 
             const holidayContainer = document.getElementById('holiday-container');
             const nationalDayP = document.getElementById('national-day');
@@ -1278,6 +1256,42 @@ if (!empty($dashboardToken)) {
                 cleaned = cleaned.replace(roleRegex, '').trim();
             }
             return cleaned.trim();
+        }
+
+
+        function renderVehicleTasks(now, choreList) {
+            const dayOfWeek = now.getDay();
+            const rawHeaders = appConfig.headers ? appConfig.headers.map(h => (h || '').replace(/<[^>]*>?/gm, ' ').trim()) : ["9-1", "9-2", "9-3", "9-4", "9-5", "9-6 Meds", "R4 & R9"];
+
+            let vehicleTasks = [];
+            if(isTruckCheckWeek(now)) vehicleTasks.push("Check " + rawHeaders[dayOfWeek]);
+            if(isTruckWashWeek(now)) vehicleTasks.push("Wash " + rawHeaders[dayOfWeek]);
+            if(vehicleTasks.length > 0) {
+                choreList.innerHTML += `<li>${vehicleTasks.join(' & ')}</li>`;
+            }
+            if (dayOfWeek === 5) { choreList.innerHTML += `<li>Complete Medication Logs</li>`; }
+        }
+
+        function renderNumberedChores(now, choreList) {
+            const choreNum = getChoreNumber(now);
+            const todaysChores = appConfig.chores ? appConfig.chores.filter(c => c.id == choreNum) : [];
+            if (todaysChores.length > 0) {
+                todaysChores.forEach(c => { choreList.innerHTML += `<li>Clean ${c.name} (#${choreNum})</li>`; });
+            } else {
+                 choreList.innerHTML += `<li>Clean (#${choreNum})</li>`;
+            }
+        }
+
+        function renderSpecialChores(now, choreList) {
+            const todaysSpecialChores = getTodaysSpecialChores(now);
+            todaysSpecialChores.forEach(scName => {
+                choreList.innerHTML += `<li style="color:#20c997;">${scName}</li>`;
+            });
+        }
+
+        function renderEverydayChores(choreList) {
+            const everyDayTasks = appConfig.everyday_chores || ["Clean Bathrooms", "Empty Trash Cans", "Wash Coffee Pot and Dishes"];
+            everyDayTasks.forEach(task => { choreList.innerHTML += `<li>${task}</li>`; });
         }
 
         function combineConsecutiveShifts(eventList) {
