@@ -4,7 +4,7 @@ $configFile = 'config.json';
 
 // --- DEFAULT CONFIGURATION ---
 $defaultConfig = [
-    "admin_password" => "OFD1888",
+    "admin_password" => "",
     "dashboard_settings" => [
         "theme" => "dark"
     ],
@@ -103,6 +103,19 @@ if (isset($_GET['api'])) {
 }
 
 // --- HANDLE LOGIN / LOGOUT ---
+if (isset($_POST['setup_password'])) {
+    if ($configData['admin_password'] === "" || $configData['admin_password'] === "OFD1888") {
+        if ($_POST['new_password'] === $_POST['confirm_password'] && strlen($_POST['new_password']) > 3) {
+            $configData['admin_password'] = $_POST['new_password'];
+            file_put_contents($configFile, json_encode($configData, JSON_PRETTY_PRINT));
+            $_SESSION['admin_logged_in'] = true;
+            header("Location: admin.php"); exit;
+        } else {
+            $error = "Passwords do not match or are too short (min 4 chars).";
+        }
+    }
+}
+
 if (isset($_POST['login'])) {
     if ($_POST['password'] === $configData['admin_password']) {
         $_SESSION['admin_logged_in'] = true;
@@ -117,10 +130,19 @@ if (isset($_GET['logout'])) {
 if (!isset($_SESSION['admin_logged_in'])) {
     echo "<!DOCTYPE html><html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'></head><body style='font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif; background: #f5f5f7; color: #1d1d1f; display: flex; justify-content: center; align-items: center; height: 100vh; margin:0;'>";
     echo "<form method='POST' style='background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); width: 100%; max-width: 320px;'>";
-    echo "<h2 style='margin-top:0; color: #1d1d1f; text-align: center; font-weight: 600;'>Admin Login</h2>";
-    if (isset($error)) echo "<p style='color: #ff3b30; font-weight: bold; text-align: center; font-size: 0.9em;'>$error</p>";
-    echo "<input type='password' name='password' placeholder='Password' required style='padding: 12px; margin-bottom: 20px; width: 100%; box-sizing: border-box; background: #fff; border: 1px solid #d2d2d7; color: #1d1d1f; border-radius: 8px; font-size: 16px;'><br>";
-    echo "<button type='submit' name='login' style='padding: 12px; width: 100%; cursor: pointer; background: #007aff; color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 16px;'>Login</button>";
+    if ($configData['admin_password'] === "" || $configData['admin_password'] === "OFD1888") {
+        echo "<h2 style='margin-top:0; color: #1d1d1f; text-align: center; font-weight: 600;'>Setup Admin Password</h2>";
+        echo "<p style='color: #666; font-size: 0.9em; text-align: center; margin-bottom: 20px;'>Please set a secure admin password before continuing.</p>";
+        if (isset($error)) echo "<p style='color: #ff3b30; font-weight: bold; text-align: center; font-size: 0.9em;'>$error</p>";
+        echo "<input type='password' name='new_password' placeholder='New Password' required style='padding: 12px; margin-bottom: 15px; width: 100%; box-sizing: border-box; background: #fff; border: 1px solid #d2d2d7; color: #1d1d1f; border-radius: 8px; font-size: 16px;'><br>";
+        echo "<input type='password' name='confirm_password' placeholder='Confirm Password' required style='padding: 12px; margin-bottom: 20px; width: 100%; box-sizing: border-box; background: #fff; border: 1px solid #d2d2d7; color: #1d1d1f; border-radius: 8px; font-size: 16px;'><br>";
+        echo "<button type='submit' name='setup_password' style='padding: 12px; width: 100%; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 16px;'>Set Password</button>";
+    } else {
+        echo "<h2 style='margin-top:0; color: #1d1d1f; text-align: center; font-weight: 600;'>Admin Login</h2>";
+        if (isset($error)) echo "<p style='color: #ff3b30; font-weight: bold; text-align: center; font-size: 0.9em;'>$error</p>";
+        echo "<input type='password' name='password' placeholder='Password' required style='padding: 12px; margin-bottom: 20px; width: 100%; box-sizing: border-box; background: #fff; border: 1px solid #d2d2d7; color: #1d1d1f; border-radius: 8px; font-size: 16px;'><br>";
+        echo "<button type='submit' name='login' style='padding: 12px; width: 100%; cursor: pointer; background: #007aff; color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 16px;'>Login</button>";
+    }
     echo "</form></body></html>"; exit;
 }
 
