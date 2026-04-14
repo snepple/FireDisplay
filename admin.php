@@ -452,6 +452,21 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
     </style>
 
     <script>
+        function extractRecurrenceState(data) {
+            return {
+                rec: data && data.recurrence ? data.recurrence : 'none',
+                rInt: data && data.recur_interval ? data.recur_interval : 1,
+                rWkDays: data && data.recur_weekdays ? data.recur_weekdays : [],
+                rMoType: data && data.recur_month_type ? data.recur_month_type : 'date',
+                rMoDate: data && data.recur_month_date ? data.recur_month_date : 1,
+                rMoNth: data && data.recur_month_nth ? data.recur_month_nth : 1,
+                rMoNthDay: data && data.recur_month_nth_day ? data.recur_month_nth_day : 0,
+                endType: data && data.end_type ? data.end_type : 'date',
+                endOccur: data && data.end_occurrences ? data.end_occurrences : 10,
+                endDateBound: data && data.end_date_bound ? data.end_date_bound : ''
+            };
+        }
+
         function enforceSunday(input) {
             if (!input.value) return;
             const [y, m, d] = input.value.split('-');
@@ -957,16 +972,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         const id = data && data.id ? data.id : '';
                         const name = data && data.name ? data.name : '';
                         const sd = data && data.start_date ? data.start_date : '<?= $todayStr ?>';
-                        const rec = data && data.recurrence ? data.recurrence : 'none';
-                        const rInt = data && data.recur_interval ? data.recur_interval : 1;
-                        const rWkDays = data && data.recur_weekdays ? data.recur_weekdays : [];
-                        const rMoType = data && data.recur_month_type ? data.recur_month_type : 'date';
-                        const rMoDate = data && data.recur_month_date ? data.recur_month_date : 1;
-                        const rMoNth = data && data.recur_month_nth ? data.recur_month_nth : 1;
-                        const rMoNthDay = data && data.recur_month_nth_day ? data.recur_month_nth_day : 0;
-                        const endType = data && data.end_type ? data.end_type : 'date';
-                        const endOccur = data && data.end_occurrences ? data.end_occurrences : 10;
-                        const endDateBound = data && data.end_date_bound ? data.end_date_bound : '';
+                        const { rec, rInt, rWkDays, rMoType, rMoDate, rMoNth, rMoNthDay, endType, endOccur, endDateBound } = extractRecurrenceState(data);
 
                         const tmpl = `
                             <button type="button" class="delete-btn" style="position: absolute; right: 20px; top: 20px;" onclick="this.parentElement.remove(); renderChorePreview();">Remove</button>
@@ -1520,17 +1526,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         const st = data && data.start_time ? data.start_time : '';
                         const et = data && data.end_time ? data.end_time : '';
 
-                        const rec = data && data.recurrence ? data.recurrence : 'none';
-                        const rInt = data && data.recur_interval ? data.recur_interval : 1;
-                        const rWkDays = data && data.recur_weekdays ? data.recur_weekdays : [];
-                        const rMoType = data && data.recur_month_type ? data.recur_month_type : 'date';
-                        const rMoDate = data && data.recur_month_date ? data.recur_month_date : 1;
-                        const rMoNth = data && data.recur_month_nth ? data.recur_month_nth : 1;
-                        const rMoNthDay = data && data.recur_month_nth_day ? data.recur_month_nth_day : 0;
-
-                        const endType = data && data.end_type ? data.end_type : 'date';
-                        const endOccur = data && data.end_occurrences ? data.end_occurrences : 10;
-                        const endDateBound = data && data.end_date_bound ? data.end_date_bound : '';
+                        const { rec, rInt, rWkDays, rMoType, rMoDate, rMoNth, rMoNthDay, endType, endOccur, endDateBound } = extractRecurrenceState(data);
 
                         const tmpl = `
                             <button type="button" class="delete-btn" style="position: absolute; right: 20px; top: 20px;" onclick="this.parentElement.remove()">Remove Event</button>
