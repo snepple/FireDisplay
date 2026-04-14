@@ -49,6 +49,21 @@ if (!$isAllowed) {
     die("Error: Requested URL is not allowed.");
 }
 
+// Ensure the data directory exists
+$cacheDir = __DIR__ . '/../data';
+if (!is_dir($cacheDir)) {
+    mkdir($cacheDir, 0777, true);
+}
+
+// Check for cached calendar
+$cacheFile = $cacheDir . '/calendar_cache_' . md5($url) . '.ics';
+$cacheTime = 900; // 15 minutes
+
+if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTime) {
+    echo file_get_contents($cacheFile);
+    return;
+}
+
 // Use cURL instead of file_get_contents for better compatibility on Bluehost
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
@@ -67,6 +82,10 @@ if ($httpCode !== 200 || !$content) {
 } else {
     $content = str_replace("\r\n", "\n", $content);
     $content = str_replace("\n", "\r\n", $content);
+
+    // Save to cache
+    file_put_contents($cacheFile, $content);
+
     echo $content;
 }
 ?>
