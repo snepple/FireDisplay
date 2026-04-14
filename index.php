@@ -247,7 +247,9 @@ if (!empty($dashboardToken)) {
                 <div id="fire-danger-content">
                      <div id="danger-meter">Loading...</div>
                      <div id="danger-date"></div>
-                     <div id="danger-map-container" style="margin-top: 15px; width: 100%; flex: 1; display: none; overflow: hidden; border-radius: 4px; border: 1px solid var(--border-color); position: relative;"><iframe id="danger-map-iframe" src="about:blank" style="position: absolute; top: -50px; left: -220px; width: 250%; height: 600px; border: none; pointer-events: none;" scrolling="no"></iframe></div>
+                     <div id="danger-map-container" style="margin-top: 15px; width: 100%; display: none;">
+                         <div id="danger-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;"></div>
+                     </div>
                 </div>
             </div>
         </div>
@@ -686,7 +688,7 @@ if (!empty($dashboardToken)) {
                 const mwfUrl = `api/fetch_mainefireweather.php?nocache=${Date.now()}`;
                 const mwfResp = await fetch(mwfUrl);
                 if (mwfResp.ok) {
-                    const mwfData = await mwfResp.json();
+                    const mwfData = await mwfResp.json(); window.lastMwfData = mwfData;
                     const zone = appConfig.fire_danger_zone || '8';
 
                     if (mwfData && mwfData.classdays && mwfData.classdays[zone]) {
@@ -764,9 +766,30 @@ if (!empty($dashboardToken)) {
                 }
 
                 const mapContainer = document.getElementById('danger-map-container');
-                const mapIframe = document.getElementById('danger-map-iframe');
-                mapIframe.src = "https://mainefireweather.org/index.php";
-                mapContainer.style.display = 'block';
+                const dangerGrid = document.getElementById('danger-grid');
+                dangerGrid.innerHTML = '';
+                if (window.lastMwfData && window.lastMwfData.classdays) {
+                    const levelsMap = { 1: "Low", 2: "Moderate", 3: "High", 4: "Very High", 5: "Extreme" };
+                    for (let z = 1; z <= 12; z++) {
+                        const lvlInt = parseInt(window.lastMwfData.classdays[z]);
+                        const lvlText = levelsMap[lvlInt] || "Unknown";
+                        const cssClass = "risk-" + lvlText.toLowerCase().replace(/ /g, '-');
+
+                        const cell = document.createElement('div');
+                        cell.style.padding = "5px";
+                        cell.style.textAlign = "center";
+                        cell.style.borderRadius = "3px";
+                        cell.style.fontSize = "0.85em";
+                        cell.style.fontWeight = "bold";
+                        cell.className = cssClass;
+                        cell.innerHTML = `Zone ${z}<br>${lvlText}`;
+
+                        dangerGrid.appendChild(cell);
+                    }
+                    mapContainer.style.display = 'block';
+                } else {
+                    mapContainer.style.display = 'none';
+                }
 
                 if (meterDiv.dataset.lastLevel !== riskLevel) {
                      announceFireDanger(riskLevel);
@@ -798,6 +821,7 @@ if (!empty($dashboardToken)) {
                 let todaysPermits = [];
                 let activePermits = [];
 
+                let permitsSource = 'ics';
                 if (useEmailPermits) {
                     const fetchUrl = `api/get_permits.php?nocache=${Date.now()}`;
                     const response = await fetch(fetchUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
@@ -821,8 +845,18 @@ if (!empty($dashboardToken)) {
                         };
                     });
                     todaysPermits = activePermits;
-                } else {
-                    const calendarUrl = `${appConfig.calendar_urls?.burn_permits || 'https://calendar.google.com/calendar/ical/permitsburn@gmail.com/public/basic.ics'}?nocache=${Date.now()}`;
+
+                    if (activePermits.length > 0) {
+                        permitsSource = 'email';
+                    }
+                }
+
+                if (permitsSource === 'ics') {
+                    todaysPermits = [];
+                    activePermits = [];
+                    const calendarUrl = `${appConfig.calendar_urls?.burn_permits || 'https://calendar.google.com/calendar/ical/permitsburn@gmail.com/public/basic.ics'
+                }
+?nocache=${Date.now()}`;
                     const fetchUrl = `api/fetch_calendar.php?url=${encodeURIComponent(calendarUrl)}&_cb=${Date.now()}`;
 
                     const response = await fetch(fetchUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
@@ -864,7 +898,11 @@ if (!empty($dashboardToken)) {
                 container.innerHTML = '';
                 if (activePermits.length > 0) {
                     hasBurnPermits = true;
-                    activePermits.forEach(e => renderBurnPermitEvent(e, container));
+                    if (permitsSource === 'email') {
+                        activePermits.forEach(e => renderBurnPermitJsonEvent(e, container));
+                    } else {
+                        activePermits.forEach(e => renderBurnPermitEvent(e, container));
+                    }
                 } else {
                     hasBurnPermits = false;
                     container.innerHTML = '<p class="no-events">No active online burn permits at this time.</p>';
@@ -2058,7 +2096,7 @@ if (!empty($dashboardToken)) {
         }
 
 
-        function old_renderBurnPermitEvent(eventData, container) {
+        function renderBurnPermitEvent(eventData, container) {
             const eventDiv = document.createElement('div');
             eventDiv.classList.add('event');
 
