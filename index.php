@@ -231,11 +231,11 @@ if (!empty($dashboardToken)) {
 </head>
 <body>
 
-    <a href="admin.php" id="admin-link" title="Open Admin Dashboard" style="position: absolute; bottom: 15px; right: 15px; z-index: 10000; opacity: 0.15; color: var(--text-color); text-decoration: none; font-size: 24px; transition: opacity 0.3s;">⚙️</a>
+    <a href="admin.php" id="admin-link" title="Open Admin Dashboard" aria-label="Open Admin Dashboard" style="position: absolute; bottom: 15px; right: 15px; z-index: 10000; opacity: 0.15; color: var(--text-color); text-decoration: none; font-size: 24px; transition: opacity 0.3s;">⚙️</a>
 
     <div id="audio-toggle-wrapper" title="Toggle Audio Announcements">
         <label class="toggle-switch">
-            <input type="checkbox" id="audio-toggle-checkbox">
+            <input type="checkbox" id="audio-toggle-checkbox" aria-label="Toggle Audio Announcements">
             <span class="toggle-slider"></span>
         </label>
     </div>
@@ -266,9 +266,9 @@ if (!empty($dashboardToken)) {
         <div class="calendar-content-row">
             <div class="calendar-main-content">
                 <div style="display: flex; justify-content: center; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 5px; padding-bottom: 3px; flex-shrink: 0;">
-                    <div class="calendar-arrow" onclick="changeMonth(-1)">&#10094;</div>
+                    <button class="calendar-arrow" aria-label="Previous month" onclick="changeMonth(-1)" style="background:none;border:none;color:inherit;font:inherit;">&#10094;</button>
                     <h2 id="calendar-month-year" style="border: none; margin: 0; padding: 0;"></h2>
-                    <div class="calendar-arrow" onclick="changeMonth(1)">&#10095;</div>
+                    <button class="calendar-arrow" aria-label="Next month" onclick="changeMonth(1)" style="background:none;border:none;color:inherit;font:inherit;">&#10095;</button>
                 </div>
 
                 <div class="calendar-legend">

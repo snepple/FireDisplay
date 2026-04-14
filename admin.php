@@ -660,7 +660,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 </div>
                                 <div class="rooms-visual-list">
                                     <?php foreach($st['rooms'] as $r): ?>
-                                        <div class="room-tag"><span><?= htmlspecialchars($r) ?></span><button type="button" onclick="this.parentElement.remove()">x</button></div>
+                                        <div class="room-tag"><span><?= htmlspecialchars($r) ?></span><button type="button" aria-label="Remove" onclick="this.parentElement.remove()">x</button></div>
                                     <?php endforeach; ?>
                                 </div>
                             </div>
@@ -719,7 +719,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         const val = input.value.trim();
                         if(val !== '') {
                             const list = card.querySelector('.rooms-visual-list');
-                            list.innerHTML += `<div class="room-tag"><span>${val}</span><button type="button" onclick="this.parentElement.remove()">x</button></div>`;
+                            list.innerHTML += `<div class="room-tag"><span>${val}</span><button type="button" aria-label="Remove" onclick="this.parentElement.remove()">x</button></div>`;
                             input.value = '';
                         }
                     }
@@ -826,9 +826,9 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                 <div class="card">
                     <h2>Schedule Preview</h2>
                     <div class="admin-cal-controls">
-                        <button type="button" class="action-btn" onclick="changeAppMonth(-1)">&#10094;</button>
+                        <button type="button" class="action-btn" aria-label="Previous month" onclick="changeAppMonth(-1)">&#10094;</button>
                         <h3 id="appMonthTitle" style="margin: 0;"></h3>
-                        <button type="button" class="action-btn" onclick="changeAppMonth(1)">&#10095;</button>
+                        <button type="button" class="action-btn" aria-label="Next month" onclick="changeAppMonth(1)">&#10095;</button>
                     </div>
                     <div id="appPreviewCal" class="admin-cal-grid"></div>
                 </div>
@@ -908,9 +908,9 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         </div>
                         <div style="flex-grow: 1;">
                             <div class="admin-cal-controls" style="background: transparent; border: none; padding: 0; margin-bottom: 10px;">
-                                <button type="button" class="action-btn" onclick="changeChoreMonth(-1)">&#10094;</button>
+                                <button type="button" class="action-btn" aria-label="Previous month" onclick="changeChoreMonth(-1)">&#10094;</button>
                                 <strong id="choreMonthTitle" style="color:#1d1d1f; font-size: 1.2em;"></strong>
-                                <button type="button" class="action-btn" onclick="changeChoreMonth(1)">&#10095;</button>
+                                <button type="button" class="action-btn" aria-label="Next month" onclick="changeChoreMonth(1)">&#10095;</button>
                             </div>
                             <div id="chorePreviewCal" class="admin-cal-grid" style="font-size: 0.9em;"></div>
                         </div>
@@ -1252,9 +1252,9 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <div class="admin-cal-controls">
                         <button type="button" class="action-btn" style="margin:0;" onclick="goToday()">&#128197; Go To Today</button>
                         <div style="display:flex; align-items:center; gap: 15px;">
-                            <button type="button" id="prevBtn" onclick="changeAdminDate(-1)" class="action-btn">&#10094;</button>
+                            <button type="button" id="prevBtn" aria-label="Previous date" onclick="changeAdminDate(-1)" class="action-btn">&#10094;</button>
                             <h2 id="adminMonthTitle" style="border:none; padding:0; margin:0; min-width: 200px; text-align:center;"></h2>
-                            <button type="button" id="nextBtn" onclick="changeAdminDate(1)" class="action-btn">&#10095;</button>
+                            <button type="button" id="nextBtn" aria-label="Next date" onclick="changeAdminDate(1)" class="action-btn">&#10095;</button>
                         </div>
                         <div class="btn-group">
                             <button type="button" class="action-btn" onclick="setCalView('day')" id="btnDay">Day</button>
