@@ -402,6 +402,8 @@ if (!empty($dashboardToken)) {
         let modalCloseTimer = null;
         let permitMap = null;
         let permitMarkers = [];
+        // Cache geocoded addresses to prevent redundant Nominatim/Gemini API calls and improve performance
+        const geocodeCache = new Map();
 
         let hasFireDanger = false;
         let hasBurnPermits = false;
@@ -1994,16 +1996,24 @@ if (!empty($dashboardToken)) {
             const geocodePromises = permits.map(p => {
                 const address = p.location;
                 if (!address) return Promise.resolve(null);
+
+                if (geocodeCache.has(address)) {
+                    return Promise.resolve(geocodeCache.get(address));
+                }
+
                 const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
                 return fetch(url).then(res => res.json()).then(async (nominatimResult) => {
                     if (nominatimResult && nominatimResult.length > 0) {
+                        geocodeCache.set(address, nominatimResult);
                         return nominatimResult;
                     } else {
                         console.warn("Nominatim failed for:", address, ". Falling back to Gemini...");
                         const fallbackUrl = `api/gemini_geocode.php?address=${encodeURIComponent(address)}`;
                         return fetch(fallbackUrl).then(res => res.json()).then(geminiResult => {
                             if (geminiResult && geminiResult.lat && geminiResult.lon) {
-                                return [{ lat: geminiResult.lat, lon: geminiResult.lon }];
+                                const result = [{ lat: geminiResult.lat, lon: geminiResult.lon }];
+                                geocodeCache.set(address, result);
+                                return result;
                             }
                             return null;
                         }).catch(err => {
