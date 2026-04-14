@@ -229,6 +229,7 @@ if (!empty($dashboardToken)) {
 
         #admin-link:hover { opacity: 1 !important; }
     </style>
+    <script src="js/dateUtils.js"></script>
 </head>
 <body>
 
@@ -477,12 +478,6 @@ if (!empty($dashboardToken)) {
 
             initializeApp();
         });
-
-        function parseLocalYMD(dateStr) {
-            if (!dateStr) return new Date(0);
-            const [y, m, d] = dateStr.split('-');
-            return new Date(y, m - 1, d);
-        }
 
         function formatYMD(dateObj) {
             const year = dateObj.getFullYear();

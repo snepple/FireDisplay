@@ -435,6 +435,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
             card.querySelector('.r-monthly-opts').style.display = val === 'monthly' ? 'block' : 'none';
         }
     </script>
+    <script src="js/dateUtils.js"></script>
 </head>
 <body>
 
@@ -1206,7 +1207,6 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         buildAdminCalendar();
                     }
 
-                    function parseLocalYMD(dateStr) { const [y, m, d] = dateStr.split('-'); return new Date(y, m - 1, d); }
                     function formatYMD(dateObj) { return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`; }
 
                     function getNthWeekdayOfMonth(year, month, weekday, n) {
