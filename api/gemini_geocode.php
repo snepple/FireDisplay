@@ -23,6 +23,19 @@ if (empty($address)) {
     die();
 }
 
+// Check cache first
+$cacheFile = '../data/geocode_cache.json';
+$normalizedAddress = strtolower(trim($address));
+$cacheData = [];
+
+if (file_exists($cacheFile)) {
+    $cacheData = json_decode(file_get_contents($cacheFile), true) ?: [];
+    if (isset($cacheData[$normalizedAddress])) {
+        echo json_encode($cacheData[$normalizedAddress]);
+        die();
+    }
+}
+
 // Prepare the system instruction and prompt for Gemini
 $systemInstruction = "You are an expert geospatial routing assistant for a local fire department. Your task is to convert free-text location descriptions from burn permits into approximate latitude and longitude coordinates.
 Assume all locations are within or immediately surrounding Oakland, Maine unless explicitly stated otherwise.
@@ -71,10 +84,43 @@ $textOutput = trim(str_replace(['```json', '```'], '', $textOutput));
 $parsedJson = json_decode($textOutput, true);
 
 if ($parsedJson && isset($parsedJson['lat']) && isset($parsedJson['lon'])) {
-    echo json_encode([
+    $result = [
         'lat' => (float) $parsedJson['lat'],
         'lon' => (float) $parsedJson['lon']
-    ]);
+    ];
+
+    // Save to cache
+    if (!is_dir('../data')) {
+        mkdir('../data', 0755, true);
+    }
+
+    // Re-read cache with exclusive lock to prevent race conditions
+    $fp = fopen($cacheFile, 'c+');
+    if ($fp && flock($fp, LOCK_EX)) {
+        // Read current contents
+        fseek($fp, 0);
+        $currentData = '';
+        while (!feof($fp)) {
+            $currentData .= fread($fp, 8192);
+        }
+
+        $cacheData = json_decode($currentData, true) ?: [];
+        $cacheData[$normalizedAddress] = $result;
+
+        // Write new contents
+        ftruncate($fp, 0);
+        fseek($fp, 0);
+        fwrite($fp, json_encode($cacheData, JSON_PRETTY_PRINT));
+        fflush($fp);
+        flock($fp, LOCK_UN);
+        fclose($fp);
+    } else {
+        // Fallback if locking fails, though it shouldn't
+        $cacheData[$normalizedAddress] = $result;
+        file_put_contents($cacheFile, json_encode($cacheData, JSON_PRETTY_PRINT), LOCK_EX);
+    }
+
+    echo json_encode($result);
 } else {
     echo json_encode(null);
 }

@@ -1,1 +1,4 @@
 node_modules/
+
+# Cached geocode data
+data/geocode_cache.json
