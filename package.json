@@ -20,5 +20,8 @@
   "homepage": "https://github.com/snepple/FireDisplay#readme",
   "devDependencies": {
     "jest": "^30.3.0"
+  },
+  "dependencies": {
+    "ical.js": "^2.2.1"
   }
 }
