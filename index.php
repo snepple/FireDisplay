@@ -1915,15 +1915,28 @@ if (!empty($dashboardToken)) {
             container.appendChild(eventDiv);
         }
 
-        function showPermitDetails(detailsHtml) {
+        function showPermitDetails(detailsHtml, lat = null, lon = null) {
             pauseRotation();
             const modalOverlay = document.getElementById('permit-modal-overlay');
             const modalBody = document.getElementById('permit-modal-body');
 
             const cleanedDetailsHtml = detailsHtml.replace(/<td[^>]*>.*?DEPARTMENT OF AGRICULTURE, CONSERVATION &amp; FORESTRY<br>\s*OPEN BURNING PERMIT.*?<\/td>/s, '');
 
-            modalBody.innerHTML = `<table><tbody>${cleanedDetailsHtml}</tbody></table>`;
+            let html = `<table><tbody>${cleanedDetailsHtml}</tbody></table>`;
+            if (lat !== null && lon !== null) {
+                html += '<div id="modalMap" style="height: 200px; width: 100%; margin-top: 15px; border-radius: 4px; pointer-events: none;"></div>';
+            }
+            modalBody.innerHTML = html;
             modalOverlay.style.display = 'flex';
+
+            if (lat !== null && lon !== null) {
+                const modalMapInstance = L.map('modalMap', {zoomControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false}).setView([lat, lon], 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19
+                }).addTo(modalMapInstance);
+                L.marker([lat, lon], { icon: flameIcon }).addTo(modalMapInstance);
+                setTimeout(() => { modalMapInstance.invalidateSize(); }, 100);
+            }
 
             const modalContent = document.getElementById('permit-modal-content');
             modalContent.addEventListener('click', closePermitDetails, { once: true });
@@ -2008,6 +2021,17 @@ if (!empty($dashboardToken)) {
 
             const results = await Promise.all(geocodePromises);
             const locations = [];
+
+            const dynamicIconSize = permits.length > 5 ? 24 : 48;
+            const dynamicIconAnchor = dynamicIconSize / 2;
+            const dynamicFlameIcon = L.icon({
+                iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2Y5NzQwNiIgc3Ryb2tlPSIjZGMyNjI2IiBzdHJva2Utd2lkdGg9IjEuNSI+PHBhdGggZD0iTT EyIDJDMTIgMiA4IDYuNSA4IDExYzAgNCA0IDggNCA4czQtNCA0LThjMC00LjUtNC05LTQtOXoiLz48cGF0aCBkPSJNMTIgNGMtMS41IDEuNS0yIDQtMiA2cy41IDQuNSAyIDYiLz48cGF0aCBkPSJNMTQuNSAxM2MuNS0xLjUgMS0zLjUgMC01LjUiLz48L3N2Zz4=',
+                iconSize: [dynamicIconSize, dynamicIconSize],
+                iconAnchor: [dynamicIconAnchor, dynamicIconSize],
+                popupAnchor: [0, -dynamicIconSize],
+                tooltipAnchor: [dynamicIconAnchor, -Math.floor(dynamicIconSize * 0.6)]
+            });
+
             results.forEach((result, index) => {
                 if (result && result.length > 0) {
                     const { lat, lon } = result[0];
@@ -2015,7 +2039,7 @@ if (!empty($dashboardToken)) {
                     const address = permit.location.split(',')[0];
                     const detailsHtml = permit.description.split('Details:')[1] || '';
 
-                    const marker = L.marker([lat, lon], { icon: flameIcon }).addTo(permitMap)
+                    const marker = L.marker([lat, lon], { icon: dynamicFlameIcon }).addTo(permitMap)
                         .bindTooltip(address, {
                             permanent: true,
                             direction: 'right',
@@ -2025,7 +2049,7 @@ if (!empty($dashboardToken)) {
 
                     if (detailsHtml.trim() !== '') {
                         marker.on('click', () => {
-                            showPermitDetails(detailsHtml);
+                            showPermitDetails(detailsHtml, lat, lon);
                         });
                     }
 
@@ -2099,7 +2123,20 @@ if (!empty($dashboardToken)) {
 
             if (detailsHtml.trim() !== '') {
                 eventDiv.classList.add('clickable');
-                eventDiv.addEventListener('click', () => showPermitDetails(detailsHtml));
+                eventDiv.addEventListener('click', () => {
+                    let lat = null, lon = null;
+                    if (eventData.location) {
+                        const addr = eventData.location;
+                        if (geocodeCache.has(addr)) {
+                            const res = geocodeCache.get(addr);
+                            if (res && res.length > 0) {
+                                lat = res[0].lat;
+                                lon = res[0].lon;
+                            }
+                        }
+                    }
+                    showPermitDetails(detailsHtml, lat, lon);
+                });
             }
 
             let displayAddress = eventData.location ? eventData.location.split(',')[0].trim() : 'Address not provided';
