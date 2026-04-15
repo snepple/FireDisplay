@@ -695,7 +695,7 @@ if (!empty($dashboardToken)) {
 
                     if (mwfData && mwfData.classdays && mwfData.classdays[zone]) {
                         const levelInt = parseInt(mwfData.classdays[zone]);
-                        const levelsMap = { 1: "Low", 2: "Moderate", 3: "High", 4: "Very High", 5: "Extreme" };
+                        const levelsMap = { 1: "Snow Cover", 2: "Low", 3: "Moderate", 4: "High", 5: "Very High", 6: "Extreme" };
                         if (levelsMap[levelInt]) {
                             riskLevel = levelsMap[levelInt];
                             lastUpdateStr = mwfData.lastUpdate || "";
@@ -771,7 +771,7 @@ if (!empty($dashboardToken)) {
                 const dangerGrid = document.getElementById('danger-grid');
                 dangerGrid.innerHTML = '';
                 if (window.lastMwfData && window.lastMwfData.classdays) {
-                    const levelsMap = { 1: "Low", 2: "Moderate", 3: "High", 4: "Very High", 5: "Extreme" };
+                    const levelsMap = { 1: "Snow Cover", 2: "Low", 3: "Moderate", 4: "High", 5: "Very High", 6: "Extreme" };
                     for (let z = 1; z <= 12; z++) {
                         const lvlInt = parseInt(window.lastMwfData.classdays[z]);
                         const lvlText = levelsMap[lvlInt] || "Unknown";
