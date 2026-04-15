@@ -2,141 +2,218 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-describe('process_email.php', () => {
-  let phpServer;
-  let testConfigPath;
+const TMP_DIR = path.join(__dirname, 'tmp_email');
+const TMP_API_DIR = path.join(TMP_DIR, 'api');
+const PORT = 8003;
+const BASE_URL = `http://127.0.0.1:${PORT}`;
 
-  beforeAll((done) => {
-    testConfigPath = path.join(__dirname, '../config.json');
+let phpServer;
 
-    // Create backup of config.json if it exists
-    if (fs.existsSync(testConfigPath)) {
-        fs.copyFileSync(testConfigPath, testConfigPath + '.bak');
+beforeAll((done) => {
+    // 1. Create tmp directory structure
+    if (fs.existsSync(TMP_DIR)) {
+        fs.rmSync(TMP_DIR, { recursive: true, force: true });
     }
+    fs.mkdirSync(TMP_API_DIR, { recursive: true });
 
-    const testConfig = {
-      fire_danger_zone: '8',
-      email_integration: {
-        danger_address: 'danger',
-        permit_address: 'permit'
-      }
-    };
-    fs.writeFileSync(testConfigPath, JSON.stringify(testConfig));
+    // 2. Copy api/process_email.php to tmp/api/
+    const srcFile = path.join(__dirname, '../api/process_email.php');
+    const destFile = path.join(TMP_API_DIR, 'process_email.php');
+    fs.copyFileSync(srcFile, destFile);
 
-    // Start PHP built-in server
-    phpServer = spawn('php', ['-S', '127.0.0.1:8082', '-t', path.join(__dirname, '../')]);
-
-    // Give the server a moment to start
-    setTimeout(done, 1000);
-  });
-
-  afterAll(() => {
-    // Stop PHP built-in server
-    if (phpServer) {
-      phpServer.kill();
-    }
-
-    // Restore original config
-    if (fs.existsSync(testConfigPath + '.bak')) {
-        fs.renameSync(testConfigPath + '.bak', testConfigPath);
-    } else {
-        if (fs.existsSync(testConfigPath)) {
-            fs.unlinkSync(testConfigPath);
+    // 3. Create a mock config.json so routing logic does not fail
+    const mockConfig = {
+        fire_danger_zone: '8',
+        email_integration: {
+            danger_address: 'danger@domain.com',
+            permit_address: 'permit@domain.com'
         }
+    };
+    fs.writeFileSync(path.join(TMP_DIR, 'config.json'), JSON.stringify(mockConfig));
+
+    // 4. Spawn PHP server
+    phpServer = spawn('php', ['-S', `127.0.0.1:${PORT}`, '-t', TMP_DIR]);
+
+    // Wait for the server to start
+    setTimeout(done, 1000);
+});
+
+afterAll(() => {
+    // 1. Kill PHP server
+    if (phpServer) {
+        phpServer.kill();
     }
-  });
 
-  const sendTestEmail = async (emailContent) => {
-    const response = await fetch(`http://127.0.0.1:8082/api/process_email.php?test=true`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain',
-      },
-      body: emailContent,
-    });
+    // 2. Remove tmp directory
+    if (fs.existsSync(TMP_DIR)) {
+        fs.rmSync(TMP_DIR, { recursive: true, force: true });
+    }
+});
+
+// Helper function to extract valid JSON from PHP output that includes the CLI shebang
+async function fetchAndParse(url, options) {
+    const response = await fetch(url, options);
     const text = await response.text();
-    // Strip the CLI shebang from the response
-    const jsonStr = text.substring(text.indexOf('{'));
-    return JSON.parse(jsonStr);
-  };
+    const jsonStart = text.indexOf('{');
+    if (jsonStart !== -1) {
+        return JSON.parse(text.substring(jsonStart));
+    }
+    throw new Error('No JSON found in response');
+}
 
-  describe('extractFireDanger', () => {
+describe('process_email.php (Fire Danger)', () => {
     it('should extract Extreme fire danger level', async () => {
-      const emailContent = `To: danger@domain.com
-Subject: Fire Danger
-\r\n\r\n
-Today's fire danger for Zone 8 is Extreme.`;
+      const emailContent = `To: danger@domain.com\r\nSubject: Fire Danger\r\n\r\nToday's fire danger for Zone 8 is Extreme.`;
 
-      const result = await sendTestEmail(emailContent);
+      const result = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+          method: 'POST',
+          body: emailContent
+      });
       expect(result.type).toBe('danger');
       expect(result.data.level).toBe('Extreme');
     });
 
     it('should extract Very High fire danger level', async () => {
-      const emailContent = `To: danger@domain.com
-Subject: Fire Danger
-\n\n
-Zone 8 Forecast: Very High
-Please be careful.`;
+      const emailContent = `To: danger@domain.com\r\nSubject: Fire Danger\r\n\r\nZone 8 Forecast: Very High\nPlease be careful.`;
 
-      const result = await sendTestEmail(emailContent);
+      const result = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+          method: 'POST',
+          body: emailContent
+      });
       expect(result.type).toBe('danger');
       expect(result.data.level).toBe('Very High');
     });
 
     it('should extract High fire danger level with different formatting', async () => {
-      const emailContent = `To: danger@domain.com
-Subject: Fire Danger Update
-\r\n\r\n
-The rating for Zone 8 Fire Danger is HIGH today.`;
+      const emailContent = `To: danger@domain.com\r\nSubject: Fire Danger Update\r\n\r\nThe rating for Zone 8 Fire Danger is HIGH today.`;
 
-      const result = await sendTestEmail(emailContent);
+      const result = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+          method: 'POST',
+          body: emailContent
+      });
       expect(result.type).toBe('danger');
       expect(result.data.level).toBe('High');
     });
 
     it('should extract Moderate fire danger level with tags', async () => {
-      const emailContent = `To: danger@domain.com
-Subject: Fire Danger Update
-\n\n
-<html><body>Zone 8 <b>Moderate</b> condition</body></html>`;
+      const emailContent = `To: danger@domain.com\r\nSubject: Fire Danger Update\r\n\r\n<html><body>Zone 8 <b>Moderate</b> condition</body></html>`;
 
-      const result = await sendTestEmail(emailContent);
+      const result = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+          method: 'POST',
+          body: emailContent
+      });
       expect(result.type).toBe('danger');
       expect(result.data.level).toBe('Moderate');
     });
 
     it('should extract Low fire danger using fallback logic when regex fails', async () => {
-      const emailContent = `To: danger@domain.com
-Subject: Fire Danger
-\n\n
-The overall risk is Low today in your area.`;
+      const emailContent = `To: danger@domain.com\r\nSubject: Fire Danger\r\n\r\nThe overall risk is Low today in your area.`;
 
-      const result = await sendTestEmail(emailContent);
+      const result = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+          method: 'POST',
+          body: emailContent
+      });
       expect(result.type).toBe('danger');
       expect(result.data.level).toBe('Low');
     });
 
     it('should extract fire danger from subject if body lacks clear level', async () => {
-      const emailContent = `To: danger@domain.com
-Subject: High Fire Danger Alert
-\n\n
-Please be advised of the conditions.`;
+      const emailContent = `To: danger@domain.com\r\nSubject: High Fire Danger Alert\r\n\r\nPlease be advised of the conditions.`;
 
-      const result = await sendTestEmail(emailContent);
+      const result = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+          method: 'POST',
+          body: emailContent
+      });
       expect(result.type).toBe('danger');
       expect(result.data.level).toBe('High');
     });
 
     it('should return Unknown if no level is found', async () => {
-      const emailContent = `To: danger@domain.com
-Subject: Fire Danger Update
-\n\n
-The conditions are normal today.`;
+      const emailContent = `To: danger@domain.com\r\nSubject: Fire Danger Update\r\n\r\nThe conditions are normal today.`;
 
-      const result = await sendTestEmail(emailContent);
+      const result = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+          method: 'POST',
+          body: emailContent
+      });
       expect(result.type).toBe('danger');
       expect(result.data.level).toBe('Unknown');
     });
-  });
+});
+
+describe('process_email.php (Burn Permits)', () => {
+
+    test('extracts fully populated valid burn permit email', async () => {
+        const emailBody = `To: permit@domain.com\r\nSubject: Burn Permit\r\n\r\nPermission is hereby granted to: John Doe (DOB: 01/01/1980) 123 Main St, Oakland, ME 04963 Phone: 555-1234 -- Email: john@example.com Date/Time Permit was Issued: 04/15/2024 10:00 AM
+Address of Burn Location: 456 Fire Rd, Oakland, ME 04963 Burn Location on the Property: Backyard Municipality/Unorganized Territory: Oakland
+Burn Type: Brush Type of Item(s) to Burn: Branches and leaves Burn Requirements: Must have water source
+Burning may be conducted from 10:00 AM to 5:00 PM on 04/15/2024`;
+
+        const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+            method: 'POST',
+            body: emailBody
+        });
+
+        expect(data.type).toBe('permit');
+
+        const permit = data.data;
+        expect(permit.name).toBe('John Doe');
+        expect(permit.person_address).toBe('123 Main St, Oakland, ME 04963');
+        expect(permit.phone).toBe('555-1234');
+        expect(permit.email).toBe('john@example.com');
+        expect(permit.burn_location_address).toBe('456 Fire Rd, Oakland, ME 04963');
+        expect(permit.burn_location_property).toBe('Backyard');
+        expect(permit.burn_type).toBe('Brush');
+        expect(permit.items_to_burn).toBe('Branches and leaves');
+
+        // Expiration date check. 04/15/2024 parsed as UTC might change slightly based on timezone in PHP,
+        // but it should be close to 2024-04-15
+        expect(permit.expires.startsWith('2024-04-15')).toBe(true);
+    });
+
+    test('handles missing or malformed fields gracefully', async () => {
+        const emailBody = `To: permit@domain.com\r\nSubject: Burn Permit\r\n\r\nPermission is hereby granted to:  (DOB: unknown)  Phone:   -- Email:  Date/Time Permit was Issued:
+Address of Burn Location:  Burn Location on the Property:  Municipality/Unorganized Territory:
+Burn Type:  Type of Item(s) to Burn:  Burn Requirements: `;
+
+        const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+            method: 'POST',
+            body: emailBody
+        });
+
+        expect(data.type).toBe('permit');
+
+        const permit = data.data;
+        expect(permit.name).toBe('');
+        expect(permit.person_address).toBe('');
+        expect(permit.phone).toBe('');
+        expect(permit.email).toBe('');
+        expect(permit.burn_location_address).toBe('');
+        expect(permit.burn_location_property).toBe('');
+        expect(permit.burn_type).toBe('');
+        expect(permit.items_to_burn).toBe('');
+    });
+
+    test('provides defaults when regex fails entirely', async () => {
+        const emailBody = `To: permit@domain.com\r\nSubject: Burn Permit\r\n\r\nSome completely random email body without the expected labels.`;
+
+        const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+            method: 'POST',
+            body: emailBody
+        });
+
+        expect(data.type).toBe('permit');
+
+        const permit = data.data;
+        expect(permit.name).toBe('Unknown');
+        expect(permit.person_address).toBe('Unknown Address');
+        expect(permit.phone).toBe('Unknown Phone');
+        expect(permit.email).toBe('Unknown Email');
+        expect(permit.burn_location_address).toBe('');
+        expect(permit.burn_location_property).toBe('');
+        expect(permit.burn_type).toBe('Open Burn');
+        expect(permit.items_to_burn).toBe('');
+
+        // Expiration date should default to +1 day. Check if it's somewhat valid ISO string
+        expect(new Date(permit.expires).getTime()).not.toBeNaN();
+    });
 });
