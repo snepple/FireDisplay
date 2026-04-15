@@ -115,6 +115,7 @@ if (isset($_GET['api'])) {
     $exportData = $configData;
     unset($exportData['admin_password']);
     unset($exportData['api_integrations']['gemini_api_key']);
+    unset($exportData['api_integrations']['google_tts_api_key']);
     unset($exportData['dashboard_token']);
     echo json_encode($exportData);
     exit;
@@ -317,6 +318,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $configData['api_integrations'] = [];
         }
         $configData['api_integrations']['gemini_api_key'] = trim($_POST['gemini_api_key'] ?? '');
+        $configData['api_integrations']['google_tts_api_key'] = trim($_POST['google_tts_api_key'] ?? '');
         $success = "API Integration Settings Saved.";
     }
     elseif (isset($_POST['save_email_integration'])) {
@@ -1768,6 +1770,12 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             <label>Gemini API Key (for Geocoding fallback)</label>
                             <input type="text" name="gemini_api_key" value="<?= htmlspecialchars($configData['api_integrations']['gemini_api_key'] ?? '') ?>" placeholder="AIzaSy..." autocomplete="off">
                             <p style="font-size: 0.85em; color: #86868b; margin-top: 5px;">This key is used as a fallback to convert free-text burn permit locations into map coordinates when standard geocoding fails.</p>
+                        </div>
+
+                        <div class="input-group" style="margin-top: 15px;">
+                            <label>Google TTS API Key (for Text-to-Speech)</label>
+                            <input type="text" name="google_tts_api_key" value="<?= htmlspecialchars($configData['api_integrations']['google_tts_api_key'] ?? '') ?>" placeholder="AIzaSy..." autocomplete="off">
+                            <p style="font-size: 0.85em; color: #86868b; margin-top: 5px;">This key is used for the Text-to-Speech integration in the dashboard.</p>
                         </div>
 
                         <button type="submit" name="save_api_integration" class="save-btn" style="padding: 15px 40px; margin-top: 20px;">💾 Save API Integrations</button>

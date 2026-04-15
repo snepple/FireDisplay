@@ -1,7 +1,18 @@
 <?php
-// Step 1: Replace this with your actual Google Cloud API Key.
-// 🔒 IMPORTANT: Keep this key secure. Do not share it publicly.
-define('GOOGLE_API_KEY', 'AIzaSyAzlv1qtylNnkr6C4ErUP7c7l52bIqk914');
+// Check config for API key
+$configFile = '../config.json';
+if (!file_exists($configFile)) {
+    http_response_code(500);
+    exit('Config file missing.');
+}
+
+$configData = json_decode(file_get_contents($configFile), true);
+$apiKey = $configData['api_integrations']['google_tts_api_key'] ?? '';
+
+if (empty($apiKey)) {
+    http_response_code(500);
+    exit('TTS API Key not configured.');
+}
 
 // Step 2: Set the content type to audio/mpeg for the MP3 response.
 header('Content-Type: audio/mpeg');
@@ -46,7 +57,7 @@ $requestData = [
 
 // Step 5: Make the API call using cURL.
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, 'https://texttospeech.googleapis.com/v1/text:synthesize?key=' . GOOGLE_API_KEY);
+curl_setopt($ch, CURLOPT_URL, 'https://texttospeech.googleapis.com/v1/text:synthesize?key=' . $apiKey);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData));
