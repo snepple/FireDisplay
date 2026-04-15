@@ -188,7 +188,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $configData['department_info']['name'] = trim($_POST['dept_name']);
         $stations = [];
         if (isset($_POST['st_id'])) {
-            for ($i=0; $i<count($_POST['st_id']); $i++) {
+            $stCount = count($_POST['st_id']);
+            for ($i=0; $i<$stCount; $i++) {
                 $roomsArr = json_decode($_POST['st_rooms_json'][$i], true) ?: [];
                 $stations[] = [
                     "id" => $_POST['st_id'][$i] ?: uniqid(),
@@ -202,7 +203,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $apparatus = [];
         if (isset($_POST['app_id'])) {
-            for ($i=0; $i<count($_POST['app_id']); $i++) {
+            $appCount = count($_POST['app_id']);
+            for ($i=0; $i<$appCount; $i++) {
                 $apparatus[] = [
                     "id" => $_POST['app_id'][$i] ?: uniqid(),
                     "name" => trim($_POST['app_name'][$i]),
@@ -238,7 +240,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $configData['chore_num_indices'] = (int)$_POST['chore_num_indices'];
         $newChores = [];
         if (isset($_POST['chore_ids'])) {
-            for ($i=0; $i<count($_POST['chore_ids']); $i++) {
+            $choreCount = count($_POST['chore_ids']);
+            for ($i=0; $i<$choreCount; $i++) {
                 if (trim($_POST['chore_names'][$i]) !== '') {
                     $newChores[] = ["id" => (int)$_POST['chore_ids'][$i], "name" => trim($_POST['chore_names'][$i])];
                 }
