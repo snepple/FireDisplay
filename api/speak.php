@@ -16,6 +16,19 @@ if (empty($text)) {
     exit('No text provided.');
 }
 
+$cacheDir = __DIR__ . '/../data/tts_cache';
+if (!is_dir($cacheDir)) {
+    @mkdir($cacheDir, 0777, true);
+}
+
+$cacheKey = md5($text);
+$cacheFile = $cacheDir . '/' . $cacheKey . '.mp3';
+
+if (file_exists($cacheFile)) {
+    readfile($cacheFile);
+    die();
+}
+
 // Step 4: Prepare the request data for the Google Cloud TTS API.
 $requestData = [
     'input' => [
@@ -48,7 +61,9 @@ if ($httpcode == 200) {
     $responseData = json_decode($response, true);
     // The audio comes back base64-encoded, so we need to decode it.
     if (isset($responseData['audioContent'])) {
-        echo base64_decode($responseData['audioContent']);
+        $decodedAudio = base64_decode($responseData['audioContent']);
+        file_put_contents($cacheFile, $decodedAudio);
+        echo $decodedAudio;
     }
 } else {
     // If there was an error, log it and send an error code.
