@@ -1,0 +1,31 @@
+[Wed Apr 15 03:35:15 2026] PHP 8.3.6 Development Server (http://127.0.0.1:8000) started
+[Wed Apr 15 03:36:01 2026] 127.0.0.1:53956 Accepted
+[Wed Apr 15 03:36:01 2026] 127.0.0.1:53956 [403]: GET /index.php
+[Wed Apr 15 03:36:01 2026] 127.0.0.1:53956 Closing
+[Wed Apr 15 03:36:45 2026] 127.0.0.1:37138 Accepted
+[Wed Apr 15 03:36:45 2026] 127.0.0.1:37138 [200]: GET /index.php?token=ChangeMe456Token!
+[Wed Apr 15 03:36:45 2026] 127.0.0.1:37138 Closing
+[Wed Apr 15 03:36:45 2026] 127.0.0.1:37154 Accepted
+[Wed Apr 15 03:36:45 2026] 127.0.0.1:37154 [200]: GET /js/date_utils.js
+[Wed Apr 15 03:36:45 2026] 127.0.0.1:37154 Closing
+[Wed Apr 15 03:36:45 2026] 127.0.0.1:60286 Accepted
+[Wed Apr 15 03:36:45 2026] 127.0.0.1:60286 [200]: GET /api/get_config.php
+[Wed Apr 15 03:36:45 2026] 127.0.0.1:60286 Closing
+[Wed Apr 15 03:36:45 2026] 127.0.0.1:60294 Accepted
+[Wed Apr 15 03:36:46 2026] 127.0.0.1:60294 [200]: GET /api/fetch_calendar.php?url=https%3A%2F%2Fcalendar.google.com%2Fcalendar%2Fical%2Fc303c9aa08e0a090db126a0b15eb0bc0e8b66cc1af810aa971059b7b01b6d25a%40group.calendar.google.com%2Fpublic%2Fbasic.ics%3Fnocache%3D1776224205826&_cb=1776224205826
+[Wed Apr 15 03:36:46 2026] 127.0.0.1:60294 Closing
+[Wed Apr 15 03:36:46 2026] 127.0.0.1:60300 Accepted
+[Wed Apr 15 03:36:46 2026] 127.0.0.1:60312 Accepted
+[Wed Apr 15 03:36:46 2026] 127.0.0.1:60300 [200]: GET /api/fetch_calendar.php?url=https%3A%2F%2Fcalendars.icloud.com%2Fholidays%2Fus_en-us.ics%3Fnocache%3D1776224205849&_cb=1776224205850
+[Wed Apr 15 03:36:46 2026] 127.0.0.1:60300 Closing
+[Wed Apr 15 03:36:46 2026] 127.0.0.1:60322 Accepted
+[Wed Apr 15 03:36:47 2026] 127.0.0.1:60312 [200]: GET /api/fetch_calendar.php?url=https%3A%2F%2Fcalendar.google.com%2Fcalendar%2Fical%2Famarshall%40oaklandme.gov%2Fpublic%2Fbasic.ics%3Fnocache%3D1776224205851&_cb=1776224205851
+[Wed Apr 15 03:36:47 2026] 127.0.0.1:60312 Closing
+[Wed Apr 15 03:36:47 2026] 127.0.0.1:60322 [200]: GET /api/fetch_mainefireweather.php?nocache=1776224205852
+[Wed Apr 15 03:36:47 2026] 127.0.0.1:60322 Closing
+[Wed Apr 15 03:36:47 2026] 127.0.0.1:60324 Accepted
+[Wed Apr 15 03:36:47 2026] 127.0.0.1:60340 Accepted
+[Wed Apr 15 03:36:47 2026] 127.0.0.1:60324 [200]: GET /api/fetch_calendar.php?url=https%3A%2F%2Fcalendar.google.com%2Fcalendar%2Fical%2Fpermitsburn%40gmail.com%2Fpublic%2Fbasic.ics%3Fnocache%3D1776224207233&_cb=1776224207233
+[Wed Apr 15 03:36:47 2026] 127.0.0.1:60324 Closing
+[Wed Apr 15 03:36:47 2026] 127.0.0.1:60340 [200]: GET /assets/images/moderate.png
+[Wed Apr 15 03:36:47 2026] 127.0.0.1:60340 Closing

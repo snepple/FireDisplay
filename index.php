@@ -246,6 +246,7 @@ if (!empty($dashboardToken)) {
                 <h2>🔥 Fire Danger</h2>
                 <div id="fire-danger-content">
                      <div id="danger-meter">Loading...</div>
+                     <img id="danger-image" src="" alt="Fire Danger Level" style="display:none; max-width: 60%; height: auto; margin-bottom: 15px; border-radius: 5px;" />
                      <div id="danger-date"></div>
 
                 </div>
@@ -254,8 +255,8 @@ if (!empty($dashboardToken)) {
         <div class="container" id="combined-permits-container">
              <h2>Active Online-Issued Burn Permits</h2>
              <div id="permits-content-wrapper" style="display: flex; flex-grow: 1; min-height: 0; gap: 15px; width: 100%;">
-                 <div id="burnPermitsContainer" style="flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; min-height: 0;"></div>
-                 <div id="permitMap" style="flex: 1; border-radius: 4px;"></div>
+                 <div id="burnPermitsContainer" style="flex: 1; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; min-height: 0;"></div>
+                 <div id="permitMap" style="flex: 2; border-radius: 4px;"></div>
              </div>
         </div>
     </div>
@@ -759,6 +760,10 @@ if (!empty($dashboardToken)) {
 
                 meterDiv.textContent = riskLevel;
                 meterDiv.className = "danger-meter " + riskClass;
+
+                const imgDiv = document.getElementById('danger-image');
+                imgDiv.src = "assets/images/" + riskLevel.toLowerCase().replace(/ /g, '') + ".png";
+                imgDiv.style.display = 'block';
                 if (lastUpdateStr !== "") {
                     dateDiv.textContent = `Published by Maine Forest Service (${lastUpdateStr})`;
                 } else {
@@ -777,6 +782,8 @@ if (!empty($dashboardToken)) {
 
                 meterDiv.textContent = "Unavailable";
                 meterDiv.className = "danger-meter";
+                const imgDiv = document.getElementById('danger-image');
+                imgDiv.style.display = 'none';
                 dateDiv.textContent = "Will be available once published by the state (usually after 9a).";
 
                 delete meterDiv.dataset.lastLevel;
