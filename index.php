@@ -247,9 +247,7 @@ if (!empty($dashboardToken)) {
                 <div id="fire-danger-content">
                      <div id="danger-meter">Loading...</div>
                      <div id="danger-date"></div>
-                     <div id="danger-map-container" style="margin-top: 15px; width: 100%; display: none;">
-                         <div id="danger-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;"></div>
-                     </div>
+
                 </div>
             </div>
         </div>
@@ -767,31 +765,7 @@ if (!empty($dashboardToken)) {
                     dateDiv.textContent = "Published by Maine Forest Service";
                 }
 
-                const mapContainer = document.getElementById('danger-map-container');
-                const dangerGrid = document.getElementById('danger-grid');
-                dangerGrid.innerHTML = '';
-                if (window.lastMwfData && window.lastMwfData.classdays) {
-                    const levelsMap = { 1: "Low", 2: "Moderate", 3: "High", 4: "Very High", 5: "Extreme" };
-                    for (let z = 1; z <= 12; z++) {
-                        const lvlInt = parseInt(window.lastMwfData.classdays[z]);
-                        const lvlText = levelsMap[lvlInt] || "Unknown";
-                        const cssClass = "risk-" + lvlText.toLowerCase().replace(/ /g, '-');
 
-                        const cell = document.createElement('div');
-                        cell.style.padding = "5px";
-                        cell.style.textAlign = "center";
-                        cell.style.borderRadius = "3px";
-                        cell.style.fontSize = "0.85em";
-                        cell.style.fontWeight = "bold";
-                        cell.className = cssClass;
-                        cell.innerHTML = `Zone ${z}<br>${lvlText}`;
-
-                        dangerGrid.appendChild(cell);
-                    }
-                    mapContainer.style.display = 'block';
-                } else {
-                    mapContainer.style.display = 'none';
-                }
 
                 if (meterDiv.dataset.lastLevel !== riskLevel) {
                      announceFireDanger(riskLevel);
@@ -804,7 +778,7 @@ if (!empty($dashboardToken)) {
                 meterDiv.textContent = "Unavailable";
                 meterDiv.className = "danger-meter";
                 dateDiv.textContent = "Will be available once published by the state (usually after 9a).";
-                document.getElementById('danger-map-container').style.display = 'none';
+
                 delete meterDiv.dataset.lastLevel;
             }
         }
@@ -856,9 +830,7 @@ if (!empty($dashboardToken)) {
                 if (permitsSource === 'ics') {
                     todaysPermits = [];
                     activePermits = [];
-                    const calendarUrl = `${appConfig.calendar_urls?.burn_permits || 'https://calendar.google.com/calendar/ical/permitsburn@gmail.com/public/basic.ics'
-                }
-?nocache=${Date.now()}`;
+                    const calendarUrl = `${appConfig.calendar_urls?.burn_permits || 'https://calendar.google.com/calendar/ical/permitsburn@gmail.com/public/basic.ics'}?nocache=${Date.now()}`;
                     const fetchUrl = `api/fetch_calendar.php?url=${encodeURIComponent(calendarUrl)}&_cb=${Date.now()}`;
 
                     const response = await fetch(fetchUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
