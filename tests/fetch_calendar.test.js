@@ -5,6 +5,7 @@ const http = require('http');
 
 describe('fetch_calendar.php', () => {
   let phpServer;
+  let mockServer;
   let testConfigPath;
   let testDataDir;
 
@@ -20,7 +21,8 @@ describe('fetch_calendar.php', () => {
 
     const testConfig = {
       calendar_urls: [
-        'https://calendars.icloud.com/holidays/us_en-us.ics'
+        'http://127.0.0.1:8082/mock-calendar.ics',
+        'http://localhost:0/mock-calendar.ics' // Using invalid port/host to ensure fast curl failure without hitting network
       ]
     };
     fs.writeFileSync(testConfigPath, JSON.stringify(testConfig));
@@ -30,17 +32,34 @@ describe('fetch_calendar.php', () => {
       fs.mkdirSync(testDataDir, { recursive: true });
     }
 
+    // Start a secondary Node HTTP server to serve the mock calendar without deadlocking PHP
+    mockServer = http.createServer((req, res) => {
+      if (req.url === '/mock-calendar.ics' || req.url === '/mock-calendar.ics?test=123') {
+        res.writeHead(200, { 'Content-Type': 'text/calendar' });
+        res.end('BEGIN:VCALENDAR\nMock Calendar\nEND:VCALENDAR');
+      } else {
+        res.writeHead(404);
+        res.end();
+      }
+    });
+    mockServer.listen(8082);
+
     // Start PHP built-in server
     phpServer = spawn('php', ['-S', '127.0.0.1:8081', '-t', path.join(__dirname, '../')]);
 
-    // Give the server a moment to start
+    // Give the servers a moment to start
     setTimeout(done, 1000);
   });
 
-  afterAll(() => {
+  afterAll((done) => {
     // Stop PHP built-in server
     if (phpServer) {
       phpServer.kill();
+    }
+
+    // Stop mock server
+    if (mockServer) {
+      mockServer.close();
     }
 
     // Restore original config
@@ -51,22 +70,51 @@ describe('fetch_calendar.php', () => {
             fs.unlinkSync(testConfigPath);
         }
     }
+
+    done();
   });
 
-  it('should fetch allowed calendar URL with SSL enabled', async () => {
-    const url = 'https://calendars.icloud.com/holidays/us_en-us.ics';
+  it('should fetch allowed calendar URL and proxy the content', async () => {
+    const url = 'http://127.0.0.1:8082/mock-calendar.ics';
     const response = await fetch(`http://127.0.0.1:8081/api/fetch_calendar.php?url=${encodeURIComponent(url)}`);
 
     expect(response.status).toBe(200);
     const text = await response.text();
     expect(text).toContain('BEGIN:VCALENDAR');
-    expect(text).toContain('US Holidays');
+    expect(text).toContain('Mock Calendar');
   });
 
   it('should return 403 for disallowed URLs', async () => {
     const url = 'https://example.com/not-allowed.ics';
     const response = await fetch(`http://127.0.0.1:8081/api/fetch_calendar.php?url=${encodeURIComponent(url)}`);
 
+    expect(response.status).toBe(403);
+  });
+
+  it('should return 400 for missing URL parameter', async () => {
+    const response = await fetch(`http://127.0.0.1:8081/api/fetch_calendar.php`);
+    expect(response.status).toBe(400);
+  });
+
+  it('should fetch allowed calendar URL with query string', async () => {
+    const url = 'http://127.0.0.1:8082/mock-calendar.ics?test=123';
+    const response = await fetch(`http://127.0.0.1:8081/api/fetch_calendar.php?url=${encodeURIComponent(url)}`);
+    expect(response.status).toBe(200);
+    const text = await response.text();
+    expect(text).toContain('BEGIN:VCALENDAR');
+    expect(text).toContain('Mock Calendar');
+  });
+
+  it('should return 200 for allowed calendar URL from hardcoded list, ignoring external fetch results', async () => {
+    const url = 'https://calendar.google.com/calendar/ical/permitsburn@gmail.com/public/basic.ics';
+    const response = await fetch(`http://127.0.0.1:8081/api/fetch_calendar.php?url=${encodeURIComponent(url)}`);
+    expect(response.status).toBe(200);
+  });
+
+  it('should return 403 for disallowed URL that attempts to spoof an allowed one via query string', async () => {
+    // The requested URL is disallowed, but its query string contains an allowed URL.
+    const url = 'https://example.com/malicious.ics?fake=http://127.0.0.1:8082/mock-calendar.ics';
+    const response = await fetch(`http://127.0.0.1:8081/api/fetch_calendar.php?url=${encodeURIComponent(url)}`);
     expect(response.status).toBe(403);
   });
 });
