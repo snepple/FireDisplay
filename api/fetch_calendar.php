@@ -55,8 +55,27 @@ if (!is_dir($cacheDir)) {
     mkdir($cacheDir, 0777, true);
 }
 
+// Remove nocache parameter to avoid cache busting the backend cache
+$cacheUrl = preg_replace('/([?&])nocache=[^&]+(&|$)/', '$1', $url);
+$cacheUrl = rtrim($cacheUrl, '?&');
+
 // Check for cached calendar
-$cacheFile = $cacheDir . '/calendar_cache_' . md5($url) . '.ics';
+$cacheFile = $cacheDir . '/calendar_cache_' . md5($cacheUrl) . '.ics';
+
+// Background cleanup of old cache files
+register_shutdown_function(function() use ($cacheDir) {
+    if (rand(1, 20) === 1) { // 5% chance
+        $files = glob($cacheDir . '/calendar_cache_*.ics');
+        $now = time();
+        if ($files) {
+            foreach ($files as $f) {
+                if (is_file($f) && ($now - filemtime($f)) > 86400) { // older than 24 hours
+                    @unlink($f);
+                }
+            }
+        }
+    }
+});
 $cacheTime = 900; // 15 minutes
 
 if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTime) {
