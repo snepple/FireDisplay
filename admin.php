@@ -4,7 +4,7 @@ $configFile = 'config.json';
 
 // --- DEFAULT CONFIGURATION ---
 $defaultConfig = [
-    "admin_password" => "$2y$10$OdIhGvKsJVEAXe.ZA49dEunbChz4k/DiVCUZ3IL5szyvGkA89XrIG",
+    "admin_password" => '$2y$10$OdIhGvKsJVEAXe.ZA49dEunbChz4k/DiVCUZ3IL5szyvGkA89XrIG',
     "dashboard_settings" => [
         "theme" => "dark",
         "pages" => [
@@ -175,6 +175,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'chores'    => ['enabled' => isset($_POST['page_chores_enabled']),    'duration' => max(1, (int)($_POST['page_chores_duration'] ?? 15))]
         ];
         $configData['dashboard_settings']['pages'] = $pagesConfig;
+        $configData['dashboard_settings']['audio_enabled'] = isset($_POST['audio_enabled']);
+        $configData['dashboard_settings']['tts_enabled'] = isset($_POST['tts_enabled']);
+
+        $audioDir = __DIR__ . '/assets/audio/';
+        if (!is_dir($audioDir)) {
+            @mkdir($audioDir, 0777, true);
+        }
+
+        $allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/x-wav'];
+        $allowedExts = ['mp3', 'wav'];
+
+        foreach (['alert_audio_fire', 'alert_audio_permit'] as $fileKey) {
+            if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                $tmpName = $_FILES[$fileKey]['tmp_name'];
+                $name = basename($_FILES[$fileKey]['name']);
+                $type = mime_content_type($tmpName);
+                $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+
+                if (in_array($type, $allowedTypes) || in_array($ext, $allowedExts)) {
+                    $safeName = $fileKey . '_' . time() . '.' . $ext;
+                    $dest = $audioDir . $safeName;
+                    if (move_uploaded_file($tmpName, $dest)) {
+                        // Delete old file if exists
+                        if (!empty($configData['dashboard_settings'][$fileKey])) {
+                            $oldPath = __DIR__ . '/' . $configData['dashboard_settings'][$fileKey];
+                            if (file_exists($oldPath) && is_file($oldPath)) {
+                                @unlink($oldPath);
+                            }
+                        }
+                        $configData['dashboard_settings'][$fileKey] = 'assets/audio/' . $safeName;
+                    }
+                }
+            }
+        }
+
         $configData['dashboard_token'] = $_POST['dashboard_token'];
         $configData['fire_danger_zone'] = $_POST['fire_danger_zone'] ?? '8';
 
@@ -582,6 +617,41 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         <label>Fire Danger Zone</label>
                         <p class="help">The zone number used to extract the correct fire danger level from daily emails.</p>
                         <input type="text" name="fire_danger_zone" value="<?= htmlspecialchars($configData['fire_danger_zone'] ?? '8') ?>" placeholder="e.g., 8" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h2>Audio & Alerts</h2>
+                    <p class="help">Configure global audio settings and custom alert sounds.</p>
+                    <div style="margin-top: 15px;">
+                        <label style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
+                            <input type="checkbox" name="audio_enabled" <?= !empty($configData['dashboard_settings']['audio_enabled']) ? 'checked' : '' ?> style="transform: scale(1.2);">
+                            Enable Audio Announcements
+                        </label>
+                        <p class="help" style="margin-bottom: 15px;">If enabled, the dashboard will attempt to play audio for alerts.</p>
+
+                        <label style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
+                            <input type="checkbox" name="tts_enabled" <?= !empty($configData['dashboard_settings']['tts_enabled']) ? 'checked' : '' ?> style="transform: scale(1.2);">
+                            Enable Text-to-Speech (TTS)
+                        </label>
+                        <p class="help" style="margin-bottom: 20px;">If enabled, Google TTS or browser fallback will read alerts aloud.</p>
+
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 250px;">
+                                <label style="font-weight: bold;">Fire Danger Alert Audio</label>
+                                <?php if (!empty($configData['dashboard_settings']['alert_audio_fire'])): ?>
+                                    <p style="font-size: 0.9em; color: var(--success-color);">Current: <?= htmlspecialchars(basename($configData['dashboard_settings']['alert_audio_fire'])) ?></p>
+                                <?php endif; ?>
+                                <input type="file" name="alert_audio_fire" accept=".mp3,.wav" style="margin-top: 5px;">
+                            </div>
+                            <div style="flex: 1; min-width: 250px;">
+                                <label style="font-weight: bold;">New Permit Alert Audio</label>
+                                <?php if (!empty($configData['dashboard_settings']['alert_audio_permit'])): ?>
+                                    <p style="font-size: 0.9em; color: var(--success-color);">Current: <?= htmlspecialchars(basename($configData['dashboard_settings']['alert_audio_permit'])) ?></p>
+                                <?php endif; ?>
+                                <input type="file" name="alert_audio_permit" accept=".mp3,.wav" style="margin-top: 5px;">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1765,7 +1835,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <h1>API Integrations</h1>
                     <p style="color: #86868b; margin-top: -10px; margin-bottom: 30px;">Manage third-party API keys and services used by the Fire Display dashboard.</p>
 
-                    <form method="POST">
+                    <form method="POST" enctype="multipart/form-data">
                         <div class="input-group">
                             <label>Gemini API Key (for Geocoding fallback)</label>
                             <input type="text" name="gemini_api_key" value="<?= htmlspecialchars($configData['api_integrations']['gemini_api_key'] ?? '') ?>" placeholder="AIzaSy..." autocomplete="off">

@@ -212,8 +212,8 @@ if (!empty($dashboardToken)) {
         #permit-modal-body td:first-child { color: var(--muted-text); width: 30%; font-weight: bold; }
         #permit-modal-body strong { color: #ffc107; font-weight: 500; }
 
-        #audio-toggle-wrapper { display: none; position: absolute; top: 15px; left: 15px; z-index: 10000; opacity: 0.25; transition: opacity 0.3s ease; }
-        #audio-toggle-wrapper:hover { opacity: 1; }
+
+
         .toggle-switch { position: relative; display: inline-block; width: 32px; height: 18px; margin: 0; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-color); transition: .4s; border-radius: 18px; border: 1px solid #555; }
@@ -230,15 +230,14 @@ if (!empty($dashboardToken)) {
     </style>
 </head>
 <body>
+    <div id="audio-unlock-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); color: white; z-index: 100000; align-items: center; justify-content: center; font-size: 3rem; cursor: pointer;">
+        Click anywhere to enable audio for this session
+    </div>
+
 
     <a href="admin.php" id="admin-link" title="Open Admin Dashboard" aria-label="Open Admin Dashboard" style="position: absolute; bottom: 15px; right: 15px; z-index: 10000; opacity: 0.15; color: var(--text-color); text-decoration: none; font-size: 24px; transition: opacity 0.3s;">⚙️</a>
 
-    <div id="audio-toggle-wrapper" title="Toggle Audio Announcements">
-        <label class="toggle-switch">
-            <input type="checkbox" id="audio-toggle-checkbox" aria-label="Toggle Audio Announcements">
-            <span class="toggle-slider"></span>
-        </label>
-    </div>
+
 
     <div id="page-dashboard" class="page-container">
         <div class="main-layout" id="top-section">
@@ -455,7 +454,7 @@ if (!empty($dashboardToken)) {
 
         let hasFireDanger = false;
         let hasBurnPermits = false;
-        let audioEnabled = false;
+
 
         let currentFireEvents = [];
         let currentTownMeetings = [];
@@ -610,6 +609,17 @@ if (!empty($dashboardToken)) {
                 appConfig = await configResponse.json();
 
                 applyTheme();
+
+                // Play silent audio on user interaction to unlock audio context
+                document.body.addEventListener('click', function unlockAudio() {
+                    if (appConfig.dashboard_settings && appConfig.dashboard_settings.audio_enabled) {
+                        alertPlayer.play().catch(e => {});
+                        voicePlayer.play().catch(e => {});
+                        document.body.removeEventListener('click', unlockAudio);
+                        const overlay = document.getElementById('audio-unlock-overlay');
+                        if (overlay) overlay.style.display = 'none';
+                    }
+                }, { once: true });
 
                 if (appConfig.headers && appConfig.headers.length === 7) {
                     const headerDivs = document.querySelectorAll('.chores-header div');
@@ -960,7 +970,8 @@ if (!empty($dashboardToken)) {
 
     <script>
         async function playGoogleTTS(textToRead) {
-            if (!audioEnabled) return;
+            const settings = appConfig?.dashboard_settings || {};
+            if (!settings.audio_enabled || !settings.tts_enabled) return;
             try {
                 const response = await fetch('api/speak.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: textToRead }) });
                 if (!response.ok) { fallbackTTS(textToRead); return; }
@@ -973,7 +984,8 @@ if (!empty($dashboardToken)) {
         }
 
         function fallbackTTS(textToRead) {
-            if (!audioEnabled || !window.speechSynthesis) return;
+            const settings = appConfig?.dashboard_settings || {};
+            if (!settings.audio_enabled || !settings.tts_enabled || !window.speechSynthesis) return;
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(textToRead);
             utterance.lang = 'en-US';
@@ -982,22 +994,42 @@ if (!empty($dashboardToken)) {
         }
 
         function announceFireDanger(level) {
-            if (!audioEnabled) return;
+            const settings = appConfig?.dashboard_settings || {};
+            if (!settings.audio_enabled) return;
             try {
-                alertPlayer.src = 'https://cdn.freesound.org/previews/219/219244_4032688-lq.mp3';
+                alertPlayer.src = settings.alert_audio_fire || 'https://cdn.freesound.org/previews/219/219244_4032688-lq.mp3';
                 alertPlayer.volume = 0.5;
-                alertPlayer.play().catch(e => {});
-                alertPlayer.onended = () => { playGoogleTTS(`Today's Fire Danger is: ${level}`); };
+                alertPlayer.play().catch(e => {
+                    if (e.name === 'NotAllowedError') {
+                        const overlay = document.getElementById('audio-unlock-overlay');
+                        if (overlay) overlay.style.display = 'flex';
+                    }
+                });
+                alertPlayer.onended = () => {
+                    if (settings.tts_enabled) {
+                        playGoogleTTS(`Today's Fire Danger is: ${level}`);
+                    }
+                };
             } catch (e) { console.error(e); }
         }
 
         function announceNewBurnPermit(address) {
-            if (!audioEnabled) return;
+            const settings = appConfig?.dashboard_settings || {};
+            if (!settings.audio_enabled) return;
             try {
-                alertPlayer.src = 'https://cdn.freesound.org/previews/415/415763_6142149-lq.mp3';
+                alertPlayer.src = settings.alert_audio_permit || 'https://cdn.freesound.org/previews/415/415763_6142149-lq.mp3';
                 alertPlayer.volume = 0.6;
-                alertPlayer.play().catch(e => {});
-                alertPlayer.onended = () => { playGoogleTTS(`New Permit Issued for ${address}`); };
+                alertPlayer.play().catch(e => {
+                    if (e.name === 'NotAllowedError') {
+                        const overlay = document.getElementById('audio-unlock-overlay');
+                        if (overlay) overlay.style.display = 'flex';
+                    }
+                });
+                alertPlayer.onended = () => {
+                    if (settings.tts_enabled) {
+                        playGoogleTTS(`New Permit Issued for ${address}`);
+                    }
+                };
             } catch (e) { console.error(e); }
         }
 
