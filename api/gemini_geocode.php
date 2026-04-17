@@ -107,6 +107,11 @@ if ($parsedJson && isset($parsedJson['lat']) && isset($parsedJson['lon'])) {
         $cacheData = json_decode($currentData, true) ?: [];
         $cacheData[$normalizedAddress] = $result;
 
+        // Limit cache size to 1000 items
+        if (count($cacheData) > 1000) {
+            $cacheData = array_slice($cacheData, -1000, null, true);
+        }
+
         // Write new contents
         ftruncate($fp, 0);
         fseek($fp, 0);
@@ -117,6 +122,9 @@ if ($parsedJson && isset($parsedJson['lat']) && isset($parsedJson['lon'])) {
     } else {
         // Fallback if locking fails, though it shouldn't
         $cacheData[$normalizedAddress] = $result;
+        if (count($cacheData) > 1000) {
+            $cacheData = array_slice($cacheData, -1000, null, true);
+        }
         file_put_contents($cacheFile, json_encode($cacheData, JSON_PRETTY_PRINT), LOCK_EX);
     }
 
