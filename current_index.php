@@ -519,6 +519,15 @@ if (!empty($dashboardToken)) {
             initializeApp();
         });
 
+        function escapeHtml(unsafe) {
+            return (unsafe || "").toString()
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
         function parseLocalYMD(dateStr) {
             if (!dateStr) return new Date(0);
             const [y, m, d] = dateStr.split('-');
@@ -2076,10 +2085,10 @@ if (!empty($dashboardToken)) {
 
             eventDiv.innerHTML = `
                 <div class="permit-details">
-                    <div class="permit-address">${address}</div>
+                    <div class="permit-address">${escapeHtml(address)}</div>
                     <div class="permit-burn-info">
-                        <span class="permit-type">${type}</span>
-                        <span class="permit-time">Expires: ${timeStr}</span>
+                        <span class="permit-type">${escapeHtml(type)}</span>
+                        <span class="permit-time">Expires: ${escapeHtml(timeStr)}</span>
                     </div>
                 </div>
             `;
@@ -2094,10 +2103,10 @@ if (!empty($dashboardToken)) {
             const tableHTML = `
                 <table>
                     <tbody>
-                        <tr><td>Address:</td><td><strong>${permitData.address}</strong></td></tr>
-                        <tr><td>Type:</td><td><strong>${permitData.type}</strong></td></tr>
-                        <tr><td>Expires:</td><td><strong>${new Date(permitData.expires).toLocaleString()}</strong></td></tr>
-                        <tr><td>Details:</td><td>${(permitData.details || '').replace(/\n/g, '<br>')}</td></tr>
+                        <tr><td>Address:</td><td><strong>${escapeHtml(permitData.address)}</strong></td></tr>
+                        <tr><td>Type:</td><td><strong>${escapeHtml(permitData.type)}</strong></td></tr>
+                        <tr><td>Expires:</td><td><strong>${escapeHtml(new Date(permitData.expires).toLocaleString())}</strong></td></tr>
+                        <tr><td>Details:</td><td>${escapeHtml(permitData.details || '').replace(/\n/g, '<br>')}</td></tr>
                     </tbody>
                 </table>
             `;
@@ -2139,11 +2148,11 @@ if (!empty($dashboardToken)) {
 
             eventDiv.innerHTML = `
                 <div class="permit-details">
-                    <div class="permit-address">${displayAddress}</div>
+                    <div class="permit-address">${escapeHtml(displayAddress)}</div>
                     <div class="permit-burn-info">
-                        <span class="permit-type">${burnType}</span>
+                        <span class="permit-type">${escapeHtml(burnType)}</span>
                     </div>
-                    <div class="permit-time">${startTime} - ${endTime}</div>
+                    <div class="permit-time">${escapeHtml(startTime)} - ${escapeHtml(endTime)}</div>
                 </div>
             `;
 
