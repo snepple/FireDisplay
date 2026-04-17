@@ -358,6 +358,55 @@ if (!empty($dashboardToken)) {
         const originalFetch = window.fetch;
         const fetchPromises = new Map();
 
+        function hideIamRespondingTitleBar() {
+            try {
+                if (window.parent && window.parent !== window) {
+                    const parentDoc = window.parent.document;
+                    const tileNames = parentDoc.querySelectorAll('.tile-name');
+                    tileNames.forEach(tileName => {
+                        if (tileName.textContent.trim() === 'Third-Party Website') {
+                            const titleActions = tileName.closest('.title-actions');
+                            if (titleActions && !titleActions.dataset.modifiedByFireDisplay) {
+                                titleActions.style.background = 'transparent';
+                                titleActions.style.position = 'absolute';
+                                titleActions.style.top = '0';
+                                titleActions.style.left = '0';
+                                titleActions.style.width = '100%';
+                                titleActions.style.height = '0';
+                                titleActions.style.zIndex = '1000';
+
+                                tileName.style.display = 'none';
+
+                                const rightSide = titleActions.querySelector('.right-side');
+                                if (rightSide) {
+                                    rightSide.style.position = 'absolute';
+                                    rightSide.style.top = '5px';
+                                    rightSide.style.right = '5px';
+                                    rightSide.style.background = 'rgba(0, 0, 0, 0.5)';
+                                    rightSide.style.padding = '2px';
+                                    rightSide.style.borderRadius = '5px';
+                                }
+
+                                const gridItem = titleActions.closest('.react-grid-item');
+                                if (gridItem) {
+                                    const tileBody = gridItem.querySelector('.tile-body');
+                                    if (tileBody) {
+                                        tileBody.style.height = '100%';
+                                    }
+                                }
+
+                                titleActions.dataset.modifiedByFireDisplay = 'true';
+                            }
+                        }
+                    });
+                }
+            } catch (e) {
+                // Cross-origin or other error
+            }
+        }
+        setInterval(hideIamRespondingTitleBar, 1000);
+
+
         window.fetch = function(...args) {
             const url = typeof args[0] === 'string' ? args[0] : (args[0] instanceof Request ? args[0].url : '');
 

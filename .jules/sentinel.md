@@ -7,3 +7,8 @@
 **Vulnerability:** Burn permit details derived from unauthenticated, parsed emails were rendered directly into the DOM using `.innerHTML` without HTML escaping in `index.php` and `current_index.php`.
 **Learning:** Input from external sources (like piped emails from cPanel) cannot be implicitly trusted and must always be sanitized before display, especially when inserted into the DOM via `.innerHTML`.
 **Prevention:** Added a JavaScript `escapeHtml()` utility function to explicitly sanitize variables such as `address`, `type`, and `details` before injecting them into HTML templates.
+
+## 2026-04-17 - [DOM Modification for Embedded Contexts]
+**Observation:** Added logic in `index.php` and `current_index.php` to actively traverse and modify the parent document (`window.parent.document`) to alter the appearance of a third-party embedding framework (IamResponding).
+**Learning:** Cross-origin constraints generally prevent scripts inside an iframe from modifying their parent document. However, if both the parent and iframe share the exact same origin, or if they explicitly configure `document.domain` identically, this is permitted. It's crucial to wrap such logic in `try/catch` blocks to gracefully fail and prevent breaking the application when accessed directly or hosted on a different origin than the parent frame.
+**Prevention:** Ensured the DOM traversal and modification code (`hideIamRespondingTitleBar`) is wrapped in a `try/catch` and gracefully handles errors without breaking the rest of the JavaScript execution on the page.
