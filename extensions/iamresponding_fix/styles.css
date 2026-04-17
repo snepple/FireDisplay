@@ -1,0 +1,8 @@
+.iar-agency-name {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+[data-cy="Agency-Name"] {
+  white-space: nowrap;
+}

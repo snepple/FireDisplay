@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "IamResponding Agency Name Fix",
+  "version": "1.0",
+  "description": "Adjusts the font size of the agency name on the IamResponding dashboard to prevent truncation.",
+  "content_scripts": [
+    {
+      "matches": ["*://dashboard.iamresponding.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ]
+}
