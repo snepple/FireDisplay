@@ -1,5 +1,16 @@
 <?php
 session_start();
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// CSRF Validation for all POST requests
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die('CSRF token validation failed. Please refresh the page and try again.');
+    }
+}
+
 $configFile = 'config.json';
 
 // --- DEFAULT CONFIGURATION ---
@@ -152,7 +163,8 @@ if (isset($_GET['logout'])) {
 // --- SECURE AREA ---
 if (!isset($_SESSION['admin_logged_in'])) {
     echo "<!DOCTYPE html><html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'></head><body style='font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif; background: #f5f5f7; color: #1d1d1f; display: flex; justify-content: center; align-items: center; height: 100vh; margin:0;'>";
-    echo "<form method='POST' style='background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); width: 100%; max-width: 320px;'>";
+    echo "<form method='POST' data-login='1' style='background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); width: 100%; max-width: 320px;'>";
+    echo "<input type='hidden' name='csrf_token' value='" . htmlspecialchars($_SESSION['csrf_token'] ?? '') . "'>";
     echo "<h2 style='margin-top:0; color: #1d1d1f; text-align: center; font-weight: 600;'>Admin Login</h2>";
     if (isset($error)) echo "<p style='color: #ff3b30; font-weight: bold; text-align: center; font-size: 0.9em;'>$error</p>";
     echo "<input type='password' name='password' placeholder='Password' required style='padding: 12px; margin-bottom: 20px; width: 100%; box-sizing: border-box; background: #fff; border: 1px solid #d2d2d7; color: #1d1d1f; border-radius: 8px; font-size: 16px;'><br>";
@@ -584,6 +596,8 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
     <div class="content">
         <form method="POST" id="mainConfigForm" onsubmit="runPreSubmitHooks()">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+
             <div class="header-bar">
                 <h1 style="text-transform: capitalize;"><?= str_replace('_', ' ', $page) ?></h1>
                 <button type="submit" name="save_<?= explode('_', $page)[0] ?>" class="save-btn">Save Changes</button>
@@ -1836,6 +1850,8 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <p style="color: #86868b; margin-top: -10px; margin-bottom: 30px;">Manage third-party API keys and services used by the Fire Display dashboard.</p>
 
                     <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+
                         <div class="input-group">
                             <label>Gemini API Key (for Geocoding fallback)</label>
                             <input type="text" name="gemini_api_key" value="<?= htmlspecialchars($configData['api_integrations']['gemini_api_key'] ?? '') ?>" placeholder="AIzaSy..." autocomplete="off">
@@ -1859,6 +1875,8 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                 <div class="card">
                     <form method="post">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+
                         <div class="form-group">
                             <label>Fire Danger Email Address / Prefix</label>
                             <input type="text" name="danger_address" value="<?= htmlspecialchars($configData['email_integration']['danger_address'] ?? '') ?>" placeholder="e.g. danger@yourdomain.com" autocomplete="off">
@@ -2013,15 +2031,18 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
         <?php if ($page === 'archived_chores'): ?>
             <?php foreach($archived_chores as $evt): ?>
-                <form id="delFormChore_<?= $evt['id'] ?>" method="POST"><input type="hidden" name="delete_id" value="<?= $evt['id'] ?>"></form>
+                <form id="delFormChore_<?= $evt['id'] ?>" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>"><input type="hidden" name="delete_id" value="<?= $evt['id'] ?>"></form>
             <?php endforeach; ?>
         <?php elseif ($page === 'archived_events'): ?>
             <?php foreach($archived_events as $evt): ?>
-                <form id="delFormEvt_<?= $evt['id'] ?>" method="POST"><input type="hidden" name="delete_id" value="<?= $evt['id'] ?>"></form>
+                <form id="delFormEvt_<?= $evt['id'] ?>" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>"><input type="hidden" name="delete_id" value="<?= $evt['id'] ?>"></form>
             <?php endforeach; ?>
         <?php elseif ($page === 'archived_anns'): ?>
             <?php foreach($archived_announcements as $ann): ?>
-                <form id="delFormAnn_<?= $ann['id'] ?>" method="POST"><input type="hidden" name="delete_id" value="<?= $ann['id'] ?>"></form>
+                <form id="delFormAnn_<?= $ann['id'] ?>" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>"><input type="hidden" name="delete_id" value="<?= $ann['id'] ?>"></form>
             <?php endforeach; ?>
         <?php endif; ?>
 

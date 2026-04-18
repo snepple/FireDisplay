@@ -12,3 +12,8 @@
 **Observation:** Added logic in `index.php` and `current_index.php` to actively traverse and modify the parent document (`window.parent.document`) to alter the appearance of a third-party embedding framework (IamResponding).
 **Learning:** Cross-origin constraints generally prevent scripts inside an iframe from modifying their parent document. However, if both the parent and iframe share the exact same origin, or if they explicitly configure `document.domain` identically, this is permitted. It's crucial to wrap such logic in `try/catch` blocks to gracefully fail and prevent breaking the application when accessed directly or hosted on a different origin than the parent frame.
 **Prevention:** Ensured the DOM traversal and modification code (`hideIamRespondingTitleBar`) is wrapped in a `try/catch` and gracefully handles errors without breaking the rest of the JavaScript execution on the page.
+
+## $(date +%Y-%m-%d) - [Admin CSRF Vulnerability]
+**Vulnerability:** The admin dashboard (`admin.php`) was entirely missing Cross-Site Request Forgery (CSRF) protection on all POST forms, including critical state-changing actions like password resets and configuration changes.
+**Learning:** Legacy PHP systems sometimes forget to implement CSRF validation across all endpoints or forms, leaving administrative functions vulnerable to forced execution if the user clicks a malicious link.
+**Prevention:** Implement a global CSRF token generation during session creation and uniformly apply validation at the ingress point for all POST requests. Ensure every HTML form includes the hidden token.
