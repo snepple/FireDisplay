@@ -31,7 +31,7 @@ if (!empty($dashboardToken)) {
             --bg-color: #10141a;
             --card-bg: #1C212B;
             --text-color: #fff;
-            --muted-text: #aeb6c1;
+            --muted-text: #cbd5e1;
             --border-color: #30363d;
             --event-hover: #30363d;
             --today-bg: #004085;
@@ -44,7 +44,7 @@ if (!empty($dashboardToken)) {
             --bg-color: #f5f5f7;
             --card-bg: #ffffff;
             --text-color: #1d1d1f;
-            --muted-text: #86868b;
+            --muted-text: #475569;
             --border-color: #d2d2d7;
             --event-hover: #f0f0f5;
             --today-bg: #e6f2ff;
@@ -56,6 +56,17 @@ if (!empty($dashboardToken)) {
             height: 100%;
             margin: 0;
             overflow: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
         }
 
         body {
@@ -66,14 +77,10 @@ if (!empty($dashboardToken)) {
             flex-direction: column;
             align-items: center;
             padding: 10px;
-            font-size: 625%;
+            font-size: clamp(30px, 4vh, 60px);
             box-sizing: border-box;
             transition: background-color 0.5s, color 0.5s;
         }
-        @media (max-width: 1600px) { body { font-size: 500%; } }
-        @media (max-width: 1300px) { body { font-size: 400%; } }
-        @media (max-width: 1000px) { body { font-size: 300%; } }
-        @media (max-width: 700px)  { body { font-size: 220%; } }
 
         .page-container {
             width: 100%;
@@ -94,43 +101,59 @@ if (!empty($dashboardToken)) {
             text-transform: uppercase;
             text-align: center;
             color: var(--muted-text);
-            border-bottom: 1px solid var(--border-color);
+
             padding-bottom: 3px;
             margin-top: 0;
             margin-bottom: 5px;
-            font-size: 0.25em;
+            font-size: 0.6em;
             letter-spacing: 1.5px;
             flex-shrink: 0;
         }
+        .event:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        body.light-theme .event:nth-child(even) { background-color: rgba(0, 0, 0, 0.03); }
         .event {
             display: flex;
             justify-content: space-between;
             align-items: center;
             background-color: var(--card-bg);
             padding: 9px 18px;
-            border-bottom: 1px solid var(--border-color);
+
             flex-shrink: 0;
             border-radius: 4px;
         }
         .event.clickable { cursor: pointer; }
         .event.clickable:hover { background-color: var(--event-hover); }
-        .event-left { text-align: left; overflow: hidden; }
+        .event-left { text-align: left; overflow: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        } }
         .event-right { text-align: right; flex-shrink: 0; padding-left: 10px;}
-        .event-name { font-size: 0.23em; font-weight: 500; color: var(--text-color); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
-        .event-role { font-size: 0.15em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; margin-top: 1px; letter-spacing: 0.5px; }
-        .event-until { font-size: 0.22em; color: var(--muted-text); font-weight: 400; }
+        .event-name { font-size: 0.5em; font-weight: 500; color: var(--text-color); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }}
+        .event-role { font-size: 0.7em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; margin-top: 1px; letter-spacing: 0.5px; }
+        .event-until { font-size: 0.45em; color: var(--muted-text); font-weight: 400; }
 
         .permit-details { display: flex; flex-direction: column; width: 100%; gap: 4px; }
-        .permit-address { font-size: 0.23em; font-weight: 500; color: var(--text-color); white-space: normal; }
+        .permit-address { font-size: 0.5em; font-weight: 500; color: var(--text-color); white-space: normal; }
         .permit-burn-info { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .permit-type { font-size: 0.15em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; }
-        .permit-time { font-size: 0.18em; color: var(--muted-text); font-weight: 400; }
+        .permit-type { font-size: 0.7em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; }
+        .permit-time { font-size: 0.4em; color: var(--muted-text); font-weight: 400; }
 
-        .no-events { text-align: center; color: var(--muted-text); padding: 15px; background-color: var(--card-bg); font-size: 0.23em; flex-shrink: 0; }
+        .no-events { text-align: center; color: var(--muted-text); padding: 15px; background-color: var(--card-bg); font-size: 0.5em; flex-shrink: 0; }
 
         #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 4px; padding: 10px;}
-        #danger-meter { width: 60%; min-height: 60px; height: auto; padding: 10px; box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 0.4em; font-weight: 700; text-transform: uppercase; }
-        #danger-date { font-size: 0.12em; color: var(--muted-text); margin-top: 5px; }
+        #danger-meter { width: 60%; min-height: 60px; height: auto; padding: 10px; box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; font-weight: 700; text-transform: uppercase; }
+        #danger-date { font-size: 0.3em; color: var(--muted-text); margin-top: 5px; }
         .risk-snow-cover { background-color: #ffffff; color: #000 !important; border-color:#000 !important;}
         .risk-low { background-color: #28a745; color:#fff;}
         .risk-moderate { background-color: #007bff; color:#fff;}
@@ -139,17 +162,38 @@ if (!empty($dashboardToken)) {
         .risk-extreme { background-color: #dc3545; color:#fff;}
 
         #permitMap { height: 100%; width: 100%; border-radius: 4px; }
-        .permit-tooltip { background-color: rgba(255, 255, 255, 0.9); border: 1px solid #888; border-radius: 3px; color: #333; font-weight: bold; padding: 4px 8px; font-size: 0.16em; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        .permit-tooltip { background-color: rgba(255, 255, 255, 0.9); border: 1px solid #888; border-radius: 3px; color: #333; font-weight: bold; padding: 4px 8px; font-size: 0.4em; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
         .flame-marker-icon { filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.7)); }
 
         #page-calendar { display: none; flex-direction: column; gap: 15px; }
-        .calendar-content-row { display: flex; flex: 1; gap: 15px; min-height: 0; margin-top: 15px; overflow: hidden; }
+        .calendar-content-row { display: flex; flex: 1; gap: 15px; min-height: 0; margin-top: 15px; overflow: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        } }
         .calendar-main-content { flex: 5; display: flex; flex-direction: column; min-height: 0; }
-        .calendar-sidebar { flex: 1; background-color: var(--card-bg); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
-        .calendar-sidebar h3 { font-size: 0.22em; text-align: center; margin: 0 0 10px 0; color: var(--muted-text); border-bottom: 1px solid var(--border-color); padding-bottom: 5px; flex-shrink: 0; }
+        .calendar-sidebar { flex: 1; background-color: var(--card-bg); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; overflow: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        } min-height: 0; }
+        .calendar-sidebar h3 { font-size: 0.45em; text-align: center; margin: 0 0 10px 0; color: var(--muted-text);  padding-bottom: 5px; flex-shrink: 0; }
 
         #open-shifts-section { display: flex; flex-direction: column; flex-grow: 1; min-height: 0; }
-        #open-shifts-list { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; min-height: 0; padding-top: 5px; }
+        #open-shifts-list { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        } min-height: 0; padding-top: 5px; }
 
         .open-shift-link, .open-shift-link:visited { text-decoration: none; color: inherit; display: block; }
 
@@ -162,7 +206,14 @@ if (!empty($dashboardToken)) {
         .open-shift-item:hover { background-color: var(--event-hover); }
         .open-shift-date { font-weight: 600; font-size: 1.1em; color: var(--text-color); white-space: nowrap; flex-shrink: 0; }
         .open-shift-right { display: flex; flex-direction: column; align-items: flex-end; min-width: 0; flex-shrink: 1; }
-        .open-shift-role { font-weight: 800; color: #ff6b6b; font-size: 0.95em; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+        .open-shift-role { font-weight: 800; color: #ff6b6b; font-size: 0.95em; line-height: 1.2; white-space: nowrap; overflow: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        } text-overflow: ellipsis; max-width: 100%; }
         .open-shift-time { font-size: 0.8em; color: var(--muted-text); font-weight: 500; white-space: nowrap; }
 
         .calendar-arrow { opacity: 0.15; cursor: pointer; transition: opacity 0.3s ease; user-select: none; padding: 0 15px; font-size: 24px; }
@@ -172,9 +223,16 @@ if (!empty($dashboardToken)) {
 
         .chores-header, .calendar-header { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; margin-bottom: 5px; }
         .chores-header { font-size: 12pt; color: #ffc107; font-weight: bold; }
-        .calendar-header { font-size: 0.22em; color: var(--muted-text); }
+        .calendar-header { font-size: 0.45em; color: var(--muted-text); }
 
-        .calendar-day { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 5px; font-size: 0.16em; display: flex; flex-direction: column; overflow: hidden; min-height: 0; min-width: 0; border-radius: 4px;}
+        .calendar-day { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 5px; font-size: 0.4em; display: flex; flex-direction: column; overflow: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        } min-height: 0; min-width: 0; border-radius: 4px;}
         .calendar-day.is-today { background-color: var(--today-bg); border-color: var(--today-border); }
         .calendar-day.other-month { opacity: 0.3; }
 
@@ -184,7 +242,16 @@ if (!empty($dashboardToken)) {
         .chore-number { font-size: 0.7em; font-weight: normal; color: #ffc107; background-color: rgba(255, 255, 255, 0.1); border-radius: 50%; width: 1.5em; height: 1.5em; display: inline-flex; align-items: center; justify-content: center; }
         body.light-theme .chore-number { background-color: rgba(0,0,0,0.05); }
 
-        .calendar-event { font-size: clamp(6px, 1.2vh, 10pt); padding: 1px 4px; border-radius: 3px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: 1px solid transparent; line-height: 1.2; flex-shrink: 1; min-height: 0; }
+        .calendar.event:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
+        body.light-theme .event:nth-child(even) { background-color: rgba(0, 0, 0, 0.03); }
+        .event { font-size: clamp(6px, 1.2vh, 10pt); padding: 1px 4px; border-radius: 3px; margin-bottom: 2px; white-space: nowrap; overflow: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        } text-overflow: ellipsis; border: 1px solid transparent; line-height: 1.2; flex-shrink: 1; min-height: 0; }
 
         .calendar-event.event-open { background-color: transparent; background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(128,128,128,0.2) 4px, rgba(128,128,128,0.2) 8px); color: var(--text-color); border: 1px dashed var(--muted-text); }
         .event-career { background-color: #6f42c1; color: white; }
@@ -197,17 +264,24 @@ if (!empty($dashboardToken)) {
         .calendar-legend { display: flex; justify-content: center; gap: 25px; margin-bottom: 10px; font-size: 11pt; color: var(--muted-text); flex-shrink: 0; }
         .legend-item { display: flex; align-items: center; gap: 8px; }
         .legend-color-box { width: 20px; height: 20px; border-radius: 4px; }
-        .chore-item { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 25px 40px; border-radius: 8px; text-align: center; overflow: hidden; min-height: 0; }
+        .chore-item { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 25px 40px; border-radius: 8px; text-align: center; overflow: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        } min-height: 0; }
         .chore-list { list-style-type: none; padding: 0; margin: 0; font-size: 28pt; font-weight: 700; line-height: 1.5; color: var(--text-color); }
         .national-day { font-size: 18pt; color: var(--muted-text); font-style: italic; margin-top: 20px; }
         #debug-log { display: none; }
 
         #permit-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 10000; justify-content: center; align-items: center; padding: 10px; box-sizing: border-box; }
-        #permit-modal-content { background-color: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--muted-text); width: 100%; max-width: 900px; color: var(--text-color); font-size: 0.22em; cursor: pointer; display: flex; flex-direction: column; }
-        #permit-modal-header h2 { margin-top: 0; margin-bottom: 5px; font-size: 0.22em; color: #ffc107; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
+        #permit-modal-content { background-color: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--muted-text); width: 100%; max-width: 900px; color: var(--text-color); font-size: 0.45em; cursor: pointer; display: flex; flex-direction: column; }
+        #permit-modal-header h2 { margin-top: 0; margin-bottom: 5px; font-size: 0.45em; color: #ffc107;  white-space: nowrap; }
         #permit-modal-body { max-height: 70vh; overflow-y: auto; line-height: 1.4; }
         #permit-modal-body table { width: 100%; border-collapse: collapse; font-size: 11pt; }
-        #permit-modal-body td { padding: 5px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+        #permit-modal-body td { padding: 5px;  vertical-align: top; }
         #permit-modal-body tr:last-child td { border-bottom: none; }
         #permit-modal-body td:first-child { color: var(--muted-text); width: 30%; font-weight: bold; }
         #permit-modal-body strong { color: #ffc107; font-weight: 500; }
@@ -256,7 +330,14 @@ if (!empty($dashboardToken)) {
         <div class="container" id="combined-permits-container">
              <h2>Active Online-Issued Burn Permits</h2>
              <div id="permits-content-wrapper" style="display: flex; flex-grow: 1; min-height: 0; gap: 15px; width: 100%;">
-                 <div id="burnPermitsContainer" style="flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; min-height: 0;"></div>
+                 <div id="burnPermitsContainer" style="flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        } min-height: 0;"></div>
                  <div id="permitMap" style="flex: 1; border-radius: 4px;"></div>
              </div>
         </div>
@@ -265,7 +346,7 @@ if (!empty($dashboardToken)) {
     <div id="page-calendar" class="page-container">
         <div class="calendar-content-row">
             <div class="calendar-main-content">
-                <div style="display: flex; justify-content: center; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 5px; padding-bottom: 3px; flex-shrink: 0;">
+                <div style="display: flex; justify-content: center; align-items: center;  margin-bottom: 5px; padding-bottom: 3px; flex-shrink: 0;">
                     <button class="calendar-arrow" aria-label="Previous month" onclick="changeMonth(-1)" style="background:none;border:none;color:inherit;font:inherit;">&#10094;</button>
                     <h2 id="calendar-month-year" style="border: none; margin: 0; padding: 0;"></h2>
                     <button class="calendar-arrow" aria-label="Next month" onclick="changeMonth(1)" style="background:none;border:none;color:inherit;font:inherit;">&#10095;</button>
@@ -283,7 +364,7 @@ if (!empty($dashboardToken)) {
                 </div>
                 <div class="calendar-header"><div>Sunday</div><div>Monday</div><div>Tuesday</div><div>Wednesday</div><div>Thursday</div><div>Friday</div><div>Saturday</div></div>
                 <div id="calendar-grid"></div>
-                <div id="schedule-published-text" style="font-size: 0.16em; color: var(--muted-text); text-align: center; margin-top: 5px; flex-shrink: 0;"></div>
+                <div id="schedule-published-text" style="font-size: 0.4em; color: var(--muted-text); text-align: center; margin-top: 5px; flex-shrink: 0;"></div>
             </div>
             <div class="calendar-sidebar">
                 <div id="open-shifts-section">
@@ -302,36 +383,50 @@ if (!empty($dashboardToken)) {
             <div id="chores-duties-column" style="flex: 1.5; display: flex; flex-direction: column; gap: 15px; min-width: 0; min-height: 0;">
 
                 <div class="chore-item" id="announcements-wrapper" style="display: none; flex-direction: column; padding: 10px;">
-                    <h2 style="font-size: 0.35em; border: none; padding: 0; margin: 0 0 5px 0; color: #ffc107;">📢 Announcements</h2>
-                    <div id="announcements-container" style="display: flex; flex-direction: column; overflow: hidden;"></div>
+                    <h2 style="font-size: 0.7em; border: none; padding: 0; margin: 0 0 5px 0; color: #ffc107;">📢 Announcements</h2>
+                    <div id="announcements-container" style="display: flex; flex-direction: column; overflow: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }"></div>
                 </div>
 
                 <div class="chore-item" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding: 10px;">
-                    <h2 style="font-size: 0.35em; border: none; padding: 0; margin: 0 0 5px 0;">Today's Station Duties</h2>
+                    <h2 style="font-size: 0.7em; border: none; padding: 0; margin: 0 0 5px 0;">Today's Station Duties</h2>
                     <ul id="chore-list" class="chore-list"></ul>
                     <div id="holiday-container" style="display: none;"><p id="national-day" class="national-day"></p></div>
                 </div>
             </div>
 
             <div id="chores-staff-column" style="flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0;">
-                 <div class="chore-item" style="height: 100%; box-sizing: border-box; display: flex; flex-direction: column; padding: 10px; overflow: hidden; min-height: 0;">
+                 <div class="chore-item" style="height: 100%; box-sizing: border-box; display: flex; flex-direction: column; padding: 10px; overflow: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        } min-height: 0;">
 
                      <div id="dept-events-container" style="display: none; margin-bottom: 15px; flex-shrink: 0;">
-                         <h2 style="font-size: 0.35em; border: none; padding: 0; margin: 0 0 5px 0;">📅 Department Events</h2>
+                         <h2 style="font-size: 0.7em; border: none; padding: 0; margin: 0 0 5px 0;">📅 Department Events</h2>
                          <div id="dept-events-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
                      </div>
 
                      <div id="town-meetings-container" style="display: none; margin-bottom: 15px; flex-shrink: 0;">
-                         <h2 style="font-size: 0.35em; border: none; padding: 0; margin: 0 0 5px 0;">🏛️ Town Meetings Here</h2>
+                         <h2 style="font-size: 0.7em; border: none; padding: 0; margin: 0 0 5px 0;">🏛️ Town Meetings Here</h2>
                          <div id="town-meetings-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
                      </div>
 
                      <div id="chores-on-duty-now-wrapper" style="flex-shrink: 0;">
-                          <h2 style="font-size: 0.35em; border: none; padding: 0; margin: 0 0 5px 0;">🧑‍🚒 On Duty</h2>
+                          <h2 style="font-size: 0.7em; border: none; padding: 0; margin: 0 0 5px 0;">🧑‍🚒 On Duty</h2>
                           <div id="chores-on-duty-container"></div>
                      </div>
                      <div id="chores-on-duty-later-wrapper" style="margin-top: 15px; flex-shrink: 0;">
-                          <h2 style="font-size: 0.35em; border: none; padding: 0; margin: 0 0 5px 0;">🗓️ On Duty Later Today</h2>
+                          <h2 style="font-size: 0.7em; border: none; padding: 0; margin: 0 0 5px 0;">🗓️ On Duty Later Today</h2>
                           <div id="chores-on-duty-later-container"></div>
                      </div>
                  </div>
@@ -1744,7 +1839,7 @@ if (!empty($dashboardToken)) {
                 });
                 openShiftsList.innerHTML = openShiftsHtml;
             } else {
-                openShiftsList.innerHTML = '<p class="no-events" style="font-size: 0.16em;">No open shifts found.</p>';
+                openShiftsList.innerHTML = '<p class="no-events" style="font-size: 0.4em;">No open shifts found.</p>';
             }
         }
 
@@ -2027,7 +2122,8 @@ if (!empty($dashboardToken)) {
             if (permitMap) return;
             try {
                 permitMap = L.map('permitMap').setView([44.5445, -69.7262], 12);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                const tileUrl = document.body.classList.contains('light-theme') ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+                L.tileLayer(tileUrl, {
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                     maxZoom: 19
                 }).addTo(permitMap);
