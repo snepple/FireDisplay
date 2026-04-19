@@ -26,7 +26,8 @@ beforeAll((done) => {
         email_integration: {
             danger_address: 'danger@domain.com',
             permit_address: 'permit@domain.com'
-        }
+        },
+        fire_danger_zone: '8'
     };
     fs.writeFileSync(path.join(TMP_DIR, 'config.json'), JSON.stringify(mockConfig));
 
@@ -135,5 +136,67 @@ Burn Type:  Type of Item(s) to Burn:  Burn Requirements: `;
 
         // Expiration date should default to +1 day. Check if it's somewhat valid ISO string
         expect(new Date(permit.expires).getTime()).not.toBeNaN();
+    });
+});
+
+describe('process_email.php (Fire Danger)', () => {
+    test('extracts fire danger from primary regex match', async () => {
+        const emailBody = `To: danger@domain.com\r\nSubject: Daily Fire Danger\r\n\r\nZone 8 Forecast Fire Danger Extreme today.\r\nSome other text.`;
+
+        const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+            method: 'POST',
+            body: emailBody
+        });
+
+        expect(data.type).toBe('danger');
+        expect(data.data.level).toBe('Extreme');
+    });
+
+    test('extracts fire danger from secondary regex match', async () => {
+        const emailBody = `To: danger@domain.com\r\nSubject: Daily Fire Danger\r\n\r\nZone 8 Moderate.\r\nSome other text.`;
+
+        const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+            method: 'POST',
+            body: emailBody
+        });
+
+        expect(data.type).toBe('danger');
+        expect(data.data.level).toBe('Moderate');
+    });
+
+    test('extracts fire danger using fallback mechanism (body match)', async () => {
+        const emailBody = `To: danger@domain.com\r\nSubject: Daily Update\r\n\r\nThe danger level for our area is Very High today. Please be careful.`;
+
+        const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+            method: 'POST',
+            body: emailBody
+        });
+
+        expect(data.type).toBe('danger');
+        expect(data.data.level).toBe('Very High');
+    });
+
+    test('extracts fire danger using fallback mechanism (subject match)', async () => {
+        const emailBody = `To: danger@domain.com\r\nSubject: Fire Danger is Low\r\n\r\nHere is the daily report.`;
+
+        const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+            method: 'POST',
+            body: emailBody
+        });
+
+        expect(data.type).toBe('danger');
+        expect(data.data.level).toBe('Low');
+    });
+
+    test('returns Unknown when no level matches', async () => {
+        const emailBody = `To: danger@domain.com\r\nSubject: Daily Update\r\n\r\nNo information is available today.`;
+
+        const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+            method: 'POST',
+            body: emailBody
+        });
+
+        expect(data.type).toBe('danger');
+        expect(data.data.level).toBe('Unknown');
     });
 });
