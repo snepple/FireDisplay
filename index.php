@@ -2226,7 +2226,6 @@ if (!empty($dashboardToken)) {
                 popupAnchor: [0, -dynamicIconSize],
                 tooltipAnchor: [dynamicIconAnchor, -Math.floor(dynamicIconSize * 0.6)]
             }); */
-            });
 
             results.forEach((result, index) => {
                 if (result && result.length > 0) {
