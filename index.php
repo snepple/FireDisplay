@@ -272,7 +272,7 @@ if (!empty($dashboardToken)) {
         ::-webkit-scrollbar {
             display: none;
         } min-height: 0; }
-        .chore-list { list-style-type: none; padding: 0; margin: 0; font-size: 28pt; font-weight: 700; line-height: 1.5; color: var(--text-color); }
+        .chore-list { list-style-type: none; padding: 0; margin: 0; font-size: clamp(20px, 3.5vh, 45px); font-weight: 700; line-height: 1.5; color: var(--text-color); }
         .national-day { font-size: 18pt; color: var(--muted-text); font-style: italic; margin-top: 20px; }
         #debug-log { display: none; }
 
@@ -301,6 +301,9 @@ if (!empty($dashboardToken)) {
         .announcement-card { background: var(--item-bg); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 10px; text-align: left;}
 
         #admin-link:hover { opacity: 1 !important; }
+
+        #page-chores h2 { font-size: 0.8em; }
+        #page-chores .event { font-size: clamp(16px, 2.5vh, 35px); padding: 15px 25px; margin-bottom: 8px; }
     </style>
 </head>
 <body>
