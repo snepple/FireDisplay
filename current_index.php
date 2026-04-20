@@ -1280,13 +1280,18 @@ if (!empty($dashboardToken)) {
 
         function createMeetingEventHtml(meeting, isDeptEvent=false) {
             let summary = meeting.summary || 'Meeting';
+            let location = meeting.location || '';
 
             if (isDeptEvent && meeting.eventType) {
                 if (meeting.eventType === 'Room Rental') {
-                    summary = `Room Rental${meeting.location ? ' (' + meeting.location + ')' : ''} - ${summary}`;
+                    summary = `Room Rental${location ? ' (' + escapeHtml(location) + ')' : ''} - ${escapeHtml(summary)}`;
                 } else if (meeting.eventType !== 'Training') {
-                    summary = `${summary}${meeting.location ? ' - ' + meeting.location : ''}`;
+                    summary = `${escapeHtml(summary)}${location ? ' - ' + escapeHtml(location) : ''}`;
+                } else {
+                    summary = escapeHtml(summary);
                 }
+            } else {
+                summary = escapeHtml(summary);
             }
 
             let timeStr = 'All Day';
@@ -1356,7 +1361,7 @@ if (!empty($dashboardToken)) {
                 appConfig.announcements.forEach(ann => {
                     if (ann.start_date <= todayStr && ann.end_date >= todayStr) {
                         hasAnn = true;
-                        annCont.innerHTML += `<div class="announcement-card announcement-content">${ann.content}</div>`;
+                        annCont.innerHTML += `<div class="announcement-card announcement-content">${escapeHtml(ann.content)}</div>`;
                     }
                 });
                 annWrap.style.display = hasAnn ? 'flex' : 'none';
@@ -1778,7 +1783,7 @@ if (!empty($dashboardToken)) {
                         if(!evt.allDay && (evt.startDate.getHours() !== 0 || evt.startDate.getMinutes() !== 0)) {
                             timeStr = evt.startDate.toLocaleTimeString([], { hour: 'numeric', minute:'2-digit' }).replace(' AM','a').replace(' PM','p') + " - ";
                         }
-                        dayHtml += `<div class="calendar-event event-dept" title="${evt.summary}">${timeStr}${evt.summary}</div>`;
+                        dayHtml += `<div class="calendar-event event-dept" title="${escapeHtml(evt.summary)}">${escapeHtml(timeStr)}${escapeHtml(evt.summary)}</div>`;
                     });
                 }
 
