@@ -551,6 +551,7 @@ if (!empty($dashboardToken)) {
         let permitMarkers = [];
         let mapLocationMarkers = [];
         let mapLocationsData = [];
+        let parcelLayer = null;
         // Cache geocoded addresses to prevent redundant Nominatim/Gemini API calls and improve performance
         const geocodeCache = new Map();
 
@@ -654,16 +655,18 @@ if (!empty($dashboardToken)) {
             if (toggleWrapper) toggleWrapper.style.display = 'block';
 
             const toggleCheckbox = document.getElementById('audio-toggle-checkbox');
-            toggleCheckbox.addEventListener('change', function(e) {
-                audioEnabled = e.target.checked;
-                if (audioEnabled) {
-                    const silentStr = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
-                    alertPlayer.src = silentStr;
-                    alertPlayer.play().catch(err => {});
-                    voicePlayer.src = silentStr;
-                    voicePlayer.play().catch(err => {});
-                }
-            });
+            if (toggleCheckbox) {
+                toggleCheckbox.addEventListener('change', function(e) {
+                    audioEnabled = e.target.checked;
+                    if (audioEnabled) {
+                        const silentStr = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+                        alertPlayer.src = silentStr;
+                        alertPlayer.play().catch(err => {});
+                        voicePlayer.src = silentStr;
+                        voicePlayer.play().catch(err => {});
+                    }
+                });
+            }
 
             initializeApp();
         });
@@ -2123,6 +2126,64 @@ if (!empty($dashboardToken)) {
             }
         }
 
+
+        function loadParcelsInBounds() {
+            if (!permitMap) return;
+            const currentZoom = permitMap.getZoom();
+
+            if (currentZoom >= 15) {
+                const bounds = permitMap.getBounds();
+                const xmin = bounds.getWest();
+                const ymin = bounds.getSouth();
+                const xmax = bounds.getEast();
+                const ymax = bounds.getNorth();
+
+                const envelope = `${xmin},${ymin},${xmax},${ymax}`;
+
+                const url = `https://services1.arcgis.com/ymRuOiGrZIWWY3H2/ArcGIS/rest/services/Oak_Parcels_Publish/FeatureServer/0/query?geometryType=esriGeometryEnvelope&geometry=${encodeURIComponent(envelope)}&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OWNER_S_NAME,LOCATION_ADDRESS,MAP_LOT_1&outSR=4326&f=geojson`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (parcelLayer) {
+                            permitMap.removeLayer(parcelLayer);
+                        }
+
+                        parcelLayer = L.geoJSON(data, {
+                            style: {
+                                color: '#2b8cbe',
+                                weight: 1.5,
+                                opacity: 0.7,
+                                fillOpacity: 0.1
+                            },
+                            onEachFeature: function (feature, layer) {
+                                if (feature.properties) {
+                                    const owner = feature.properties.OWNER_S_NAME || 'Unknown Owner';
+                                    const address = feature.properties.LOCATION_ADDRESS || 'No Address';
+                                    const mapLot = feature.properties.MAP_LOT_1 || 'N/A';
+
+                                    const popupContent = `
+                                        <div style="font-size: 14px; font-family: sans-serif;">
+                                            <strong>${owner}</strong><br/>
+                                            ${address}<br/>
+                                            <span style="color: #666; font-size: 12px;">Map/Lot: ${mapLot}</span>
+                                        </div>
+                                    `;
+                                    layer.bindPopup(popupContent);
+                                }
+                            }
+                        });
+                        parcelLayer.addTo(permitMap);
+                    })
+                    .catch(err => console.error("Error loading parcels:", err));
+            } else {
+                if (parcelLayer) {
+                    permitMap.removeLayer(parcelLayer);
+                    parcelLayer = null;
+                }
+            }
+        }
+
         function initPermitMap() {
             if (permitMap) return;
             try {
@@ -2133,6 +2194,26 @@ if (!empty($dashboardToken)) {
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                     maxZoom: 19
                 }).addTo(permitMap);
+
+                // Load Town Boundary
+                fetch("https://services1.arcgis.com/ymRuOiGrZIWWY3H2/ArcGIS/rest/services/OaklandState/FeatureServer/6/query?where=TOWN='Oakland'&outFields=*&outSR=4326&f=geojson")
+                    .then(response => response.json())
+                    .then(data => {
+                        L.geoJSON(data, {
+                            style: {
+                                color: '#ff7800',
+                                weight: 3,
+                                opacity: 0.8,
+                                fillOpacity: 0.05
+                            },
+                            interactive: false // don't block clicks to underlying map/parcels
+                        }).addTo(permitMap);
+                    })
+                    .catch(err => console.error("Error loading town boundary:", err));
+
+                permitMap.on('moveend', loadParcelsInBounds);
+                // Also load initially if zoom is right
+                loadParcelsInBounds();
             } catch (e) {
                 console.error("Could not initialize permit map.", e);
                 document.getElementById('permitMap').innerHTML = "Map service unavailable.";
