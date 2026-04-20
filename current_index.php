@@ -545,7 +545,12 @@ if (!empty($dashboardToken)) {
         let currentPageIndex = 0;
         let modalCloseTimer = null;
         let permitMap = null;
+        let permitMapLayerControl = null;
+        let staticLocationsLayerGroup = null;
+        let permitsLayerGroup = null;
         let permitMarkers = [];
+        let mapLocationMarkers = [];
+        let mapLocationsData = [];
         // Cache geocoded addresses to prevent redundant Nominatim/Gemini API calls and improve performance
         const geocodeCache = new Map();
 
@@ -2122,6 +2127,7 @@ if (!empty($dashboardToken)) {
             if (permitMap) return;
             try {
                 permitMap = L.map('permitMap').setView([44.5445, -69.7262], 12);
+                permitMapLayerControl = L.control.layers(null, null, {position: 'topright'}).addTo(permitMap);
                 const tileUrl = document.body.classList.contains('light-theme') ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
                 L.tileLayer(tileUrl, {
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -2130,6 +2136,47 @@ if (!empty($dashboardToken)) {
             } catch (e) {
                 console.error("Could not initialize permit map.", e);
                 document.getElementById('permitMap').innerHTML = "Map service unavailable.";
+            }
+        }
+
+
+        async function fetchAndRenderMapLocations() {
+            if (!permitMap) return;
+            try {
+                const res = await fetch('api/get_locations.php');
+                const locations = await res.json();
+
+                if (staticLocationsLayerGroup) {
+                    staticLocationsLayerGroup.clearLayers();
+                } else {
+                    staticLocationsLayerGroup = L.layerGroup().addTo(permitMap);
+                    if(permitMapLayerControl) permitMapLayerControl.addOverlay(staticLocationsLayerGroup, 'Map Locations');
+                }
+
+                locations.forEach(loc => {
+                    if (loc.lat && loc.lon) {
+                        let color = '#3388ff';
+                        let radius = 5;
+
+                        if (loc.type === 'Hydrant' || loc.type === 'Dry Hydrant') { color = '#007bff'; radius = 4; }
+                        else if (loc.type === 'Fire Station') { color = '#dc3545'; radius = 6; }
+                        else if (loc.type === 'Pump House') { color = '#28a745'; radius = 4; }
+
+                        const marker = L.circleMarker([loc.lat, loc.lon], {
+                            radius: radius,
+                            fillColor: color,
+                            color: '#fff',
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        });
+
+                        marker.bindPopup(`<strong>${loc.type || 'Location'}</strong><br>${loc.address}`);
+                        marker.addTo(staticLocationsLayerGroup);
+                    }
+                });
+            } catch (e) {
+                console.error("Failed to load map locations", e);
             }
         }
 
@@ -2204,6 +2251,8 @@ if (!empty($dashboardToken)) {
                         });
                     }
 
+                    if(!permitsLayerGroup) { permitsLayerGroup = L.layerGroup().addTo(permitMap); permitMapLayerControl.addOverlay(permitsLayerGroup, 'Burn Permits'); }
+                    marker.addTo(permitsLayerGroup);
                     permitMarkers.push(marker);
                     locations.push([lat, lon]);
                 }
@@ -2212,6 +2261,7 @@ if (!empty($dashboardToken)) {
             if (locations.length > 0) {
                 const bounds = L.latLngBounds(locations);
                 permitMap.fitBounds(bounds, { padding: [75, 75] });
+                fetchAndRenderMapLocations();
 
                 setTimeout(() => permitMap.invalidateSize(), 100);
             }
