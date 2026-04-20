@@ -17,3 +17,8 @@
 **Vulnerability:** The admin configuration page (`admin.php`) lacked Cross-Site Request Forgery (CSRF) protection on multiple state-changing actions, including login, configuration updates, and deleting entries. Although a `generate_csrf.php` file existed to manage tokens, the tokens were neither embedded in the forms nor verified on POST requests.
 **Learning:** Having CSRF token generation logic is meaningless if the application does not enforce token verification on state-changing requests. Attackers could theoretically craft malicious pages to trick authenticated administrators into performing unintended actions.
 **Prevention:** Always verify CSRF tokens on all POST requests that change state, and ensure the token is included as a hidden field in every corresponding form. Using `hash_equals` is important to prevent timing attacks during token comparison.
+
+## 2026-04-20 - [XSS in Meeting Event and Chore Rendering]
+**Vulnerability:** User-controlled data from external calendar feeds (ICS) and `config.json` (announcements, chores) was rendered directly into the DOM using `.innerHTML` without HTML escaping in `index.php`.
+**Learning:** Any data originating from external sources or configuration files that can be modified by users must be treated as untrusted and sanitized before being injected into the DOM to prevent Cross-Site Scripting (XSS) attacks.
+**Prevention:** Consistently applied the `escapeHtml()` utility function to all variables injected into HTML templates via `.innerHTML` within the `createMeetingEventHtml`, `renderChoresPage`, `renderNumberedChores`, `renderSpecialChores`, and `renderEverydayChores` functions.
