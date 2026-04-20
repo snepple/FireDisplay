@@ -1290,13 +1290,14 @@ if (!empty($dashboardToken)) {
         }
 
         function createMeetingEventHtml(meeting, isDeptEvent=false) {
-            let summary = meeting.summary || 'Meeting';
+            let summary = escapeHtml(meeting.summary || 'Meeting');
 
             if (isDeptEvent && meeting.eventType) {
+                const loc = escapeHtml(meeting.location || '');
                 if (meeting.eventType === 'Room Rental') {
-                    summary = `Room Rental${meeting.location ? ' (' + meeting.location + ')' : ''} - ${summary}`;
+                    summary = `Room Rental${loc ? ' (' + loc + ')' : ''} - ${summary}`;
                 } else if (meeting.eventType !== 'Training') {
-                    summary = `${summary}${meeting.location ? ' - ' + meeting.location : ''}`;
+                    summary = `${summary}${loc ? ' - ' + loc : ''}`;
                 }
             }
 
@@ -1317,7 +1318,7 @@ if (!empty($dashboardToken)) {
             const dotColor = isDeptEvent ? '#20c997' : '#007bff';
             return `<div class="event" style="padding: 15px 18px; border-left: 4px solid ${dotColor};">
                 <div class="event-left"><div class="event-name" style="font-size:1em;">${summary}</div></div>
-                <div class="event-right"><div class="event-until" style="font-size:0.9em;">${timeStr}</div></div>
+                <div class="event-right"><div class="event-until" style="font-size:0.9em;">${escapeHtml(timeStr)}</div></div>
             </div>`;
         }
 
@@ -1367,7 +1368,7 @@ if (!empty($dashboardToken)) {
                 appConfig.announcements.forEach(ann => {
                     if (ann.start_date <= todayStr && ann.end_date >= todayStr) {
                         hasAnn = true;
-                        annCont.innerHTML += `<div class="announcement-card announcement-content">${ann.content}</div>`;
+                        annCont.innerHTML += `<div class="announcement-card announcement-content">${escapeHtml(ann.content)}</div>`;
                     }
                 });
                 annWrap.style.display = hasAnn ? 'flex' : 'none';
@@ -1524,7 +1525,7 @@ if (!empty($dashboardToken)) {
             const choreNum = getChoreNumber(now);
             const todaysChores = appConfig.chores ? appConfig.chores.filter(c => c.id == choreNum) : [];
             if (todaysChores.length > 0) {
-                todaysChores.forEach(c => { choreList.innerHTML += `<li>Clean ${c.name} (#${choreNum})</li>`; });
+                todaysChores.forEach(c => { choreList.innerHTML += `<li>Clean ${escapeHtml(c.name)} (#${choreNum})</li>`; });
             } else {
                  choreList.innerHTML += `<li>Clean (#${choreNum})</li>`;
             }
@@ -1533,13 +1534,13 @@ if (!empty($dashboardToken)) {
         function renderSpecialChores(now, choreList) {
             const todaysSpecialChores = getTodaysSpecialChores(now);
             todaysSpecialChores.forEach(scName => {
-                choreList.innerHTML += `<li style="color:#20c997;">${scName}</li>`;
+                choreList.innerHTML += `<li style="color:#20c997;">${escapeHtml(scName)}</li>`;
             });
         }
 
         function renderEverydayChores(choreList) {
             const everyDayTasks = appConfig.everyday_chores || ["Clean Bathrooms", "Empty Trash Cans", "Wash Coffee Pot and Dishes"];
-            everyDayTasks.forEach(task => { choreList.innerHTML += `<li>${task}</li>`; });
+            everyDayTasks.forEach(task => { choreList.innerHTML += `<li>${escapeHtml(task)}</li>`; });
         }
 
         function combineConsecutiveShifts(eventList) {
