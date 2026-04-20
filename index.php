@@ -132,7 +132,7 @@ if (!empty($dashboardToken)) {
             display: none;
         } }
         .event-right { text-align: right; flex-shrink: 0; padding-left: 10px;}
-        .event-name { font-size: 0.5em; font-weight: 500; color: var(--text-color); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;
+        .event-name { font-size: 1.2em; font-weight: 500; color: var(--text-color); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
@@ -140,16 +140,16 @@ if (!empty($dashboardToken)) {
         ::-webkit-scrollbar {
             display: none;
         }}
-        .event-role { font-size: 0.7em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; margin-top: 1px; letter-spacing: 0.5px; }
-        .event-until { font-size: 0.45em; color: var(--muted-text); font-weight: 400; }
+        .event-role { font-size: 1.0em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; margin-top: 1px; letter-spacing: 0.5px; }
+        .event-until { font-size: 0.9em; color: var(--muted-text); font-weight: 400; }
 
         .permit-details { display: flex; flex-direction: column; width: 100%; gap: 4px; }
-        .permit-address { font-size: 0.5em; font-weight: 500; color: var(--text-color); white-space: normal; }
+        .permit-address { font-size: 1.2em; font-weight: 500; color: var(--text-color); white-space: normal; }
         .permit-burn-info { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .permit-type { font-size: 0.7em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; }
-        .permit-time { font-size: 0.4em; color: var(--muted-text); font-weight: 400; }
+        .permit-type { font-size: 1.0em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; }
+        .permit-time { font-size: 0.9em; color: var(--muted-text); font-weight: 400; }
 
-        .no-events { text-align: center; color: var(--muted-text); padding: 15px; background-color: var(--card-bg); font-size: 0.5em; flex-shrink: 0; }
+        .no-events { text-align: center; color: var(--muted-text); padding: 15px; background-color: var(--card-bg); font-size: 1.2em; flex-shrink: 0; }
 
         #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 4px; padding: 10px;}
         #danger-meter { width: 60%; min-height: 60px; height: auto; padding: 10px; box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; font-weight: 700; text-transform: uppercase; }
@@ -162,7 +162,7 @@ if (!empty($dashboardToken)) {
         .risk-extreme { background-color: #dc3545; color:#fff;}
 
         #permitMap { height: 100%; width: 100%; border-radius: 4px; }
-        .permit-tooltip { background-color: rgba(255, 255, 255, 0.9); border: 1px solid #888; border-radius: 3px; color: #333; font-weight: bold; padding: 4px 8px; font-size: 0.4em; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        .permit-tooltip { background-color: rgba(255, 255, 255, 0.9); border: 1px solid #888; border-radius: 3px; color: #333; font-weight: bold; padding: 4px 8px; font-size: 0.9em; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
         .flame-marker-icon { filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.7)); }
 
         #page-calendar { display: none; flex-direction: column; gap: 15px; }
@@ -183,7 +183,7 @@ if (!empty($dashboardToken)) {
         ::-webkit-scrollbar {
             display: none;
         } min-height: 0; }
-        .calendar-sidebar h3 { font-size: 0.45em; text-align: center; margin: 0 0 10px 0; color: var(--muted-text);  padding-bottom: 5px; flex-shrink: 0; }
+        .calendar-sidebar h3 { font-size: 0.9em; text-align: center; margin: 0 0 10px 0; color: var(--muted-text);  padding-bottom: 5px; flex-shrink: 0; }
 
         #open-shifts-section { display: flex; flex-direction: column; flex-grow: 1; min-height: 0; }
         #open-shifts-list { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden;
@@ -223,9 +223,9 @@ if (!empty($dashboardToken)) {
 
         .chores-header, .calendar-header { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; margin-bottom: 5px; }
         .chores-header { font-size: 12pt; color: #ffc107; font-weight: bold; }
-        .calendar-header { font-size: 0.45em; color: var(--muted-text); }
+        .calendar-header { font-size: 0.9em; color: var(--muted-text); }
 
-        .calendar-day { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 5px; font-size: 0.4em; display: flex; flex-direction: column; overflow: hidden;
+        .calendar-day { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 5px; font-size: 0.9em; display: flex; flex-direction: column; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
@@ -239,7 +239,7 @@ if (!empty($dashboardToken)) {
         .day-number { display: flex; justify-content: space-between; align-items: center; color: var(--muted-text); margin-bottom: 5px; font-weight: 700; flex-shrink: 0; }
         .calendar-day.new-month { border-top: 2px solid #ffc107; }
         .calendar-day.new-month .day-number { color: #ffc107; }
-        .chore-number { font-size: 0.7em; font-weight: normal; color: #ffc107; background-color: rgba(255, 255, 255, 0.1); border-radius: 50%; width: 1.5em; height: 1.5em; display: inline-flex; align-items: center; justify-content: center; }
+        .chore-number { font-size: 1.0em; font-weight: normal; color: #ffc107; background-color: rgba(255, 255, 255, 0.1); border-radius: 50%; width: 1.5em; height: 1.5em; display: inline-flex; align-items: center; justify-content: center; }
         body.light-theme .chore-number { background-color: rgba(0,0,0,0.05); }
 
         .calendar.event:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
@@ -277,8 +277,8 @@ if (!empty($dashboardToken)) {
         #debug-log { display: none; }
 
         #permit-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 10000; justify-content: center; align-items: center; padding: 10px; box-sizing: border-box; }
-        #permit-modal-content { background-color: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--muted-text); width: 100%; max-width: 900px; color: var(--text-color); font-size: 0.45em; cursor: pointer; display: flex; flex-direction: column; }
-        #permit-modal-header h2 { margin-top: 0; margin-bottom: 5px; font-size: 0.45em; color: #ffc107;  white-space: nowrap; }
+        #permit-modal-content { background-color: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--muted-text); width: 100%; max-width: 900px; color: var(--text-color); font-size: 0.9em; cursor: pointer; display: flex; flex-direction: column; }
+        #permit-modal-header h2 { margin-top: 0; margin-bottom: 5px; font-size: 0.9em; color: #ffc107;  white-space: nowrap; }
         #permit-modal-body { max-height: 70vh; overflow-y: auto; line-height: 1.4; }
         #permit-modal-body table { width: 100%; border-collapse: collapse; font-size: 11pt; }
         #permit-modal-body td { padding: 5px;  vertical-align: top; }
@@ -367,7 +367,7 @@ if (!empty($dashboardToken)) {
                 </div>
                 <div class="calendar-header"><div>Sunday</div><div>Monday</div><div>Tuesday</div><div>Wednesday</div><div>Thursday</div><div>Friday</div><div>Saturday</div></div>
                 <div id="calendar-grid"></div>
-                <div id="schedule-published-text" style="font-size: 0.4em; color: var(--muted-text); text-align: center; margin-top: 5px; flex-shrink: 0;"></div>
+                <div id="schedule-published-text" style="font-size: 0.9em; color: var(--muted-text); text-align: center; margin-top: 5px; flex-shrink: 0;"></div>
             </div>
             <div class="calendar-sidebar">
                 <div id="open-shifts-section">
@@ -386,7 +386,7 @@ if (!empty($dashboardToken)) {
             <div id="chores-duties-column" style="flex: 1.5; display: flex; flex-direction: column; gap: 15px; min-width: 0; min-height: 0;">
 
                 <div class="chore-item" id="announcements-wrapper" style="display: none; flex-direction: column; padding: 10px;">
-                    <h2 style="font-size: 0.7em; border: none; padding: 0; margin: 0 0 5px 0; color: #ffc107;">📢 Announcements</h2>
+                    <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 5px 0; color: #ffc107;">📢 Announcements</h2>
                     <div id="announcements-container" style="display: flex; flex-direction: column; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
@@ -398,7 +398,7 @@ if (!empty($dashboardToken)) {
                 </div>
 
                 <div class="chore-item" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding: 10px;">
-                    <h2 style="font-size: 0.7em; border: none; padding: 0; margin: 0 0 5px 0;">Today's Station Duties</h2>
+                    <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 5px 0;">Today's Station Duties</h2>
                     <ul id="chore-list" class="chore-list"></ul>
                     <div id="holiday-container" style="display: none;"><p id="national-day" class="national-day"></p></div>
                 </div>
@@ -415,21 +415,21 @@ if (!empty($dashboardToken)) {
         } min-height: 0;">
 
                      <div id="dept-events-container" style="display: none; margin-bottom: 15px; flex-shrink: 0;">
-                         <h2 style="font-size: 0.7em; border: none; padding: 0; margin: 0 0 5px 0;">📅 Department Events</h2>
+                         <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 5px 0;">📅 Department Events</h2>
                          <div id="dept-events-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
                      </div>
 
                      <div id="town-meetings-container" style="display: none; margin-bottom: 15px; flex-shrink: 0;">
-                         <h2 style="font-size: 0.7em; border: none; padding: 0; margin: 0 0 5px 0;">🏛️ Town Meetings Here</h2>
+                         <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 5px 0;">🏛️ Town Meetings Here</h2>
                          <div id="town-meetings-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
                      </div>
 
                      <div id="chores-on-duty-now-wrapper" style="flex-shrink: 0;">
-                          <h2 style="font-size: 0.7em; border: none; padding: 0; margin: 0 0 5px 0;">🧑‍🚒 On Duty</h2>
+                          <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 5px 0;">🧑‍🚒 On Duty</h2>
                           <div id="chores-on-duty-container"></div>
                      </div>
                      <div id="chores-on-duty-later-wrapper" style="margin-top: 15px; flex-shrink: 0;">
-                          <h2 style="font-size: 0.7em; border: none; padding: 0; margin: 0 0 5px 0;">🗓️ On Duty Later Today</h2>
+                          <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 5px 0;">🗓️ On Duty Later Today</h2>
                           <div id="chores-on-duty-later-container"></div>
                      </div>
                  </div>
@@ -1864,7 +1864,7 @@ if (!empty($dashboardToken)) {
                 });
                 openShiftsList.innerHTML = openShiftsHtml;
             } else {
-                openShiftsList.innerHTML = '<p class="no-events" style="font-size: 0.4em;">No open shifts found.</p>';
+                openShiftsList.innerHTML = '<p class="no-events" style="font-size: 0.9em;">No open shifts found.</p>';
             }
         }
 
@@ -2130,7 +2130,7 @@ if (!empty($dashboardToken)) {
 
             if (lat !== null && lon !== null) {
                 const modalMapInstance = L.map('modalMap', {zoomControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false}).setView([lat, lon], 15);
-                const tileUrl = document.body.classList.contains('light-theme') ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+                const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
                 L.tileLayer(tileUrl, {
                     maxZoom: 19
                 }).addTo(modalMapInstance);
@@ -2220,7 +2220,7 @@ if (!empty($dashboardToken)) {
             try {
                 permitMap = L.map('permitMap').setView([44.5445, -69.7262], 12);
                 permitMapLayerControl = L.control.layers(null, null, {position: 'topright'}).addTo(permitMap);
-                const tileUrl = document.body.classList.contains('light-theme') ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+                const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
                 L.tileLayer(tileUrl, {
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                     maxZoom: 19
