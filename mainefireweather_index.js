@@ -28,6 +28,12 @@ var JS = {
 	hasTouch: ('ontouchstart' in document.documentElement),
 	geoJSON: null,
 	client: 1,
+	isFireSeason: function() {
+		var month = new Date().getMonth();
+		// Spring (March) through Autumn (November)
+		// 0 = Jan, 1 = Feb, 2 = Mar, ..., 10 = Nov, 11 = Dec
+		return (month >= 2 && month <= 10);
+	},
 	onReady : async function() {
 		console.log("yes, onReady!")
 		/*
@@ -304,6 +310,10 @@ var JS = {
 	},
 
 	addStationMarkers: async function() {
+		if(!JS.isFireSeason()) {
+			console.log("Not fire season - station markers not added.");
+			return "Not fire season";
+		}
         //console.log("add station markers",JS.stations);
 		const mymarkers = {};
 		//const baseUrl = window.location.origin+window.location.pathname;
@@ -543,30 +553,7 @@ var JS = {
 	},
 
 	linkMarkers : function() {
-		var mOptions = {}, latlon, station, thisMarker;
-		/*
-						for(var sta in JS.stations) {
-								station = JS.stations[sta];
-								var latlon = new google.maps.LatLng(station.latitude, station.longitude, false);
-								mOptions = {
-										map: JS.map,
-										position: latlon,
-										cursor: "pointer",
-										title: station.weatherpage,
-										icon: "images/icon_stationmap.png",
-										url: "station.php?station=" + sta,
-										optimized: false,
-										clickable:true,
-										zIndex: 11000000
-								};
-								thisMarker = new google.maps.Marker(mOptions);
-								google.maps.event.addListener(thisMarker, 'click', function() {
-										// go to station page
-										console.log("click!\n");
-										window.location.href = this.url;
-								});
-						}
-		*/
+		JS.addStationMarkers();
 	},
 
 	// Parse the next KML
@@ -579,7 +566,7 @@ var JS = {
 			JS.progressBar.updateBar(1);
 			JS.progressBar.hide();
 			// TODO hide station icons until spring
-			// JS.linkMarkers();
+			JS.linkMarkers();
 
 			return;
 		}
