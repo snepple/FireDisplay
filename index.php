@@ -307,9 +307,14 @@ if (!empty($dashboardToken)) {
     <div id="audio-unlock-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); color: white; z-index: 100000; align-items: center; justify-content: center; font-size: 3rem; cursor: pointer;">
         Click anywhere to enable audio for this session
     </div>
-
-
     <a href="admin.php" id="admin-link" title="Open Admin Dashboard" aria-label="Open Admin Dashboard" style="position: absolute; bottom: 15px; right: 15px; z-index: 10000; opacity: 0.15; color: var(--text-color); text-decoration: none; font-size: 24px; transition: opacity 0.3s;">⚙️</a>
+
+    <div id="audio-toggle-wrapper" title="Toggle Audio Announcements">
+        <label class="toggle-switch">
+            <input type="checkbox" id="audio-toggle-checkbox" aria-label="Toggle Audio Announcements">
+            <span class="toggle-slider"></span>
+        </label>
+    </div>
 
 
 
