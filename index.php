@@ -174,8 +174,8 @@ if (!empty($dashboardToken)) {
         ::-webkit-scrollbar {
             display: none;
         } }
-        .calendar-main-content { flex: 5; display: flex; flex-direction: column; min-height: 0; }
-        .calendar-sidebar { flex: 1; background-color: var(--card-bg); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; overflow: hidden;
+        .calendar-main-content { flex: 85; width: 85%; display: flex; flex-direction: column; min-height: 0; }
+        .calendar-sidebar { flex: 15; width: 15%; background-color: var(--card-bg); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
