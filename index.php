@@ -144,15 +144,15 @@ if (!empty($dashboardToken)) {
         .event-until { font-size: 0.9em; color: var(--muted-text); font-weight: 400; }
 
         .permit-details { display: flex; flex-direction: column; width: 100%; gap: 4px; }
-        .permit-address { font-size: 1.2em; font-weight: 500; color: var(--text-color); white-space: normal; }
+        .permit-address { font-size: 2.4em; font-weight: 500; color: var(--text-color); white-space: normal; }
         .permit-burn-info { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .permit-type { font-size: 1.0em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; }
-        .permit-time { font-size: 0.9em; color: var(--muted-text); font-weight: 400; }
+        .permit-type { font-size: 2.0em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; }
+        .permit-time { font-size: 1.8em; color: var(--muted-text); font-weight: 400; }
 
         .no-events { text-align: center; color: var(--muted-text); padding: 15px; background-color: var(--card-bg); font-size: 1.2em; flex-shrink: 0; }
 
         #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 4px; padding: 10px;}
-        #danger-meter { width: 60%; min-height: 60px; height: auto; padding: 10px; box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; font-weight: 700; text-transform: uppercase; }
+        #danger-meter { width: 60%; min-height: 60px; height: auto; padding: 10px; box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 2.4em; font-weight: 700; text-transform: uppercase; }
         #danger-date { font-size: 0.3em; color: var(--muted-text); margin-top: 5px; }
         .risk-snow-cover { background-color: #ffffff; color: #000 !important; border-color:#000 !important;}
         .risk-low { background-color: #28a745; color:#fff;}
