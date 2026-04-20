@@ -588,6 +588,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                 </ul>
             </li>
             <li><a href="?page=email_integration" class="<?= isPage('email_integration', $page) ?>">Email Integration</a></li>
+            <li><a href="?page=map_locations" class="<?= isPage('map_locations', $page) ?>">Map Locations</a></li>
             <li><a href="?page=api_integrations" class="<?= isPage('api_integrations', $page) ?>">API Integrations</a></li>
             <li><a href="?page=password" class="<?= isPage('password', $page) ?>">Change Password</a></li>
         </ul>
