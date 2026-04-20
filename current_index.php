@@ -56,13 +56,6 @@ if (!empty($dashboardToken)) {
             height: 100%;
             margin: 0;
             overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        }
 
         ::-webkit-scrollbar {
             display: none;
@@ -123,23 +116,9 @@ if (!empty($dashboardToken)) {
         }
         .event.clickable { cursor: pointer; }
         .event.clickable:hover { background-color: var(--event-hover); }
-        .event-left { text-align: left; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } }
+        .event-left { text-align: left; overflow: hidden; }
         .event-right { text-align: right; flex-shrink: 0; padding-left: 10px;}
-        .event-name { font-size: 1.2em; font-weight: 500; color: var(--text-color); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        }}
+        .event-name { font-size: 1.2em; font-weight: 500; color: var(--text-color); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
         .event-role { font-size: 1.0em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; margin-top: 1px; letter-spacing: 0.5px; }
         .event-until { font-size: 1.0em; color: var(--muted-text); font-weight: 400; }
 
@@ -166,34 +145,13 @@ if (!empty($dashboardToken)) {
         .flame-marker-icon { filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.7)); }
 
         #page-calendar { display: none; flex-direction: column; gap: 15px; }
-        .calendar-content-row { display: flex; flex: 1; gap: 15px; min-height: 0; margin-top: 15px; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } }
+        .calendar-content-row { display: flex; flex: 1; gap: 15px; min-height: 0; margin-top: 15px; overflow: hidden; }
         .calendar-main-content { flex: 85; width: 85%; display: flex; flex-direction: column; min-height: 0; }
-        .calendar-sidebar { flex: 15; width: 15%; background-color: var(--card-bg); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } min-height: 0; }
+        .calendar-sidebar { flex: 15; width: 15%; background-color: var(--card-bg); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
         .calendar-sidebar h3 { font-size: 1.0em; text-align: center; margin: 0 0 10px 0; color: var(--muted-text);  padding-bottom: 5px; flex-shrink: 0; }
 
         #open-shifts-section { display: flex; flex-direction: column; flex-grow: 1; min-height: 0; }
-        #open-shifts-list { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } min-height: 0; padding-top: 5px; }
+        #open-shifts-list { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; min-height: 0; padding-top: 5px; }
 
         .open-shift-link, .open-shift-link:visited { text-decoration: none; color: inherit; display: block; }
 
@@ -206,14 +164,7 @@ if (!empty($dashboardToken)) {
         .open-shift-item:hover { background-color: var(--event-hover); }
         .open-shift-date { font-weight: 600; font-size: 1.1em; color: var(--text-color); white-space: nowrap; flex-shrink: 0; }
         .open-shift-right { display: flex; flex-direction: column; align-items: flex-end; min-width: 0; flex-shrink: 1; }
-        .open-shift-role { font-weight: 800; color: #ff6b6b; font-size: 0.95em; line-height: 1.2; white-space: nowrap; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } text-overflow: ellipsis; max-width: 100%; }
+        .open-shift-role { font-weight: 800; color: #ff6b6b; font-size: 0.95em; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
         .open-shift-time { font-size: 1.2em; color: var(--muted-text); font-weight: 500; white-space: nowrap; }
 
         .calendar-arrow { opacity: 0.15; cursor: pointer; transition: opacity 0.3s ease; user-select: none; padding: 0 15px; font-size: 24px; }
@@ -225,14 +176,7 @@ if (!empty($dashboardToken)) {
         .chores-header { font-size: 12pt; color: #ffc107; font-weight: bold; }
         .calendar-header { font-size: 1.0em; color: var(--muted-text); }
 
-        .calendar-day { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 5px; font-size: 0.9em; display: flex; flex-direction: column; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } min-height: 0; min-width: 0; border-radius: 4px;}
+        .calendar-day { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 5px; font-size: 0.9em; display: flex; flex-direction: column; overflow: hidden; min-height: 0; min-width: 0; border-radius: 4px;}
         .calendar-day.is-today { background-color: var(--today-bg); border-color: var(--today-border); }
         .calendar-day.other-month { opacity: 0.3; }
 
@@ -244,14 +188,7 @@ if (!empty($dashboardToken)) {
 
         .calendar.event:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
         body.light-theme .event:nth-child(even) { background-color: rgba(0, 0, 0, 0.03); }
-        .event { font-size: clamp(6px, 1.2vh, 10pt); padding: 1px 4px; border-radius: 3px; margin-bottom: 2px; white-space: nowrap; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } text-overflow: ellipsis; border: 1px solid transparent; line-height: 1.2; flex-shrink: 1; min-height: 0; }
+        .event { font-size: clamp(6px, 1.2vh, 10pt); padding: 1px 4px; border-radius: 3px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: 1px solid transparent; line-height: 1.2; flex-shrink: 1; min-height: 0; }
 
         .calendar-event.event-open { background-color: transparent; background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(128,128,128,0.2) 4px, rgba(128,128,128,0.2) 8px); color: var(--text-color); border: 1px dashed var(--muted-text); }
         .event-career { background-color: #6f42c1; color: white; }
@@ -264,14 +201,7 @@ if (!empty($dashboardToken)) {
         .calendar-legend { display: flex; justify-content: center; gap: 25px; margin-bottom: 10px; font-size: 11pt; color: var(--muted-text); flex-shrink: 0; }
         .legend-item { display: flex; align-items: center; gap: 8px; }
         .legend-color-box { width: 20px; height: 20px; border-radius: 4px; }
-        .chore-item { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 25px 40px; border-radius: 8px; text-align: center; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } min-height: 0; }
+        .chore-item { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 25px 40px; border-radius: 8px; text-align: center; overflow: hidden; min-height: 0; }
         .chore-list { list-style-type: none; padding: 0; margin: 0; font-size: clamp(20px, 3.5vh, 45px); font-weight: 700; line-height: 1.5; color: var(--text-color); }
         .national-day { font-size: 18pt; color: var(--muted-text); font-style: italic; margin-top: 20px; }
         #debug-log { display: none; }
@@ -333,14 +263,7 @@ if (!empty($dashboardToken)) {
         <div class="container" id="combined-permits-container">
              <h2>Active Online-Issued Burn Permits</h2>
              <div id="permits-content-wrapper" style="display: flex; flex-grow: 1; min-height: 0; gap: 15px; width: 100%;">
-                 <div id="burnPermitsContainer" style="flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } min-height: 0;"></div>
+                 <div id="burnPermitsContainer" style="flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; min-height: 0;"></div>
                  <div id="permitMap" style="flex: 1; border-radius: 4px;"></div>
              </div>
         </div>
@@ -387,14 +310,7 @@ if (!empty($dashboardToken)) {
 
                 <div class="chore-item" id="announcements-wrapper" style="display: none; flex-direction: column; padding: 10px;">
                     <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 5px 0; color: #ffc107;">📢 Announcements</h2>
-                    <div id="announcements-container" style="display: flex; flex-direction: column; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        }"></div>
+                    <div id="announcements-container" style="display: flex; flex-direction: column; overflow: hidden;"></div>
                 </div>
 
                 <div class="chore-item" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding: 10px;">
@@ -405,14 +321,7 @@ if (!empty($dashboardToken)) {
             </div>
 
             <div id="chores-staff-column" style="flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0;">
-                 <div class="chore-item" style="height: 100%; box-sizing: border-box; display: flex; flex-direction: column; padding: 10px; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } min-height: 0;">
+                 <div class="chore-item" style="height: 100%; box-sizing: border-box; display: flex; flex-direction: column; padding: 10px; overflow: hidden; min-height: 0;">
 
                      <div id="dept-events-container" style="display: none; margin-bottom: 15px; flex-shrink: 0;">
                          <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 5px 0;">📅 Department Events</h2>
