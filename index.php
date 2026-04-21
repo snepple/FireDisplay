@@ -300,10 +300,10 @@ if (!empty($dashboardToken)) {
         #admin-link:hover { opacity: 1 !important; }
 
         #page-chores h2 { font-size: 0.8em; }
-        #page-chores .event { font-size: clamp(16px, 2.5vh, 35px); padding: 15px 25px; margin-bottom: 8px; }
-        #page-chores .event-name { font-size: 1.6em; }
-        #page-chores .event-role { font-size: 1.3em; }
-        #page-chores .event-until { font-size: 1.2em; }
+        #page-chores .event { font-size: clamp(12px, 2.5vh, 35px); padding: 10px 15px; margin-bottom: 5px; }
+        #page-chores .event-name { font-size: 1.2em; }
+        #page-chores .event-role { font-size: 1em; }
+        #page-chores .event-until { font-size: 1em; }
     </style>
 </head>
 <body>
@@ -428,11 +428,11 @@ if (!empty($dashboardToken)) {
                      </div>
 
                      <div id="chores-on-duty-now-wrapper" style="flex-shrink: 0;">
-                          <h2 style="font-size: 4.5em; border: none; padding: 0; margin: 0 0 5px 0;">🧑‍🚒 On Duty</h2>
+                          <h2 style="font-size: clamp(24px, 3vh, 45px); border: none; padding: 0; margin: 0 0 5px 0;">🧑‍🚒 On Duty</h2>
                           <div id="chores-on-duty-container"></div>
                      </div>
                      <div id="chores-on-duty-later-wrapper" style="margin-top: 15px; flex-shrink: 0;">
-                          <h2 style="font-size: 4.5em; border: none; padding: 0; margin: 0 0 5px 0;">🗓️ On Duty Later Today</h2>
+                          <h2 style="font-size: clamp(24px, 3vh, 45px); border: none; padding: 0; margin: 0 0 5px 0;">🗓️ On Duty Later Today</h2>
                           <div id="chores-on-duty-later-container"></div>
                      </div>
                  </div>
