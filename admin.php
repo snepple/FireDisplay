@@ -16,7 +16,7 @@ $defaultConfig = [
             "chores" => ["enabled" => true, "duration" => 15]
         ]
     ],
-    "fire_danger_zone" => "8",
+    "fire_danger_zone" => "7",
     "department_info" => [
         "name" => "Oakland Fire Department",
         "stations" => [
@@ -649,7 +649,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <div style="max-width: 400px; margin-top: 15px;">
                         <label>Fire Danger Zone</label>
                         <p class="help">The zone number used to extract the correct fire danger level from daily emails.</p>
-                        <input type="text" name="fire_danger_zone" value="<?= htmlspecialchars($configData['fire_danger_zone'] ?? '8') ?>" placeholder="e.g., 8" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        <input type="text" name="fire_danger_zone" value="<?= htmlspecialchars($configData['fire_danger_zone'] ?? '7') ?>" placeholder="e.g., 7" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
                 </div>
 

@@ -3,7 +3,7 @@
     "dashboard_settings": {
         "theme": "auto"
     },
-    "fire_danger_zone": "8",
+    "fire_danger_zone": "7",
     "department_info": {
         "name": "Oakland Fire Department",
         "stations": [

@@ -264,7 +264,7 @@ if (!empty($dashboardToken)) {
             display: none;
         } min-height: 0; }
         .chore-list { list-style-type: none; padding: 0; margin: 0; font-size: clamp(30px, 5vh, 70px); font-weight: 700; line-height: 1.5; color: var(--text-color); }
-        #page-chores .chore-list li { font-size: clamp(45px, 10vh, 120px); line-height: 1.5; list-style-type: none; margin-bottom: 15px; }
+        #page-chores .chore-list li { font-size: clamp(30px, 6.5vh, 80px); line-height: 1.2; list-style-type: none; margin-bottom: 10px; }
         .national-day { font-size: 18pt; color: var(--muted-text); font-style: italic; margin-top: 20px; }
         #debug-log { display: none; }
 
@@ -423,11 +423,11 @@ if (!empty($dashboardToken)) {
                      </div>
 
                      <div id="chores-on-duty-now-wrapper" style="flex-shrink: 0;">
-                          <h2 style="font-size: 1.5em; border: none; padding: 0; margin: 0 0 5px 0;">🧑‍🚒 On Duty</h2>
+                          <h2 style="font-size: 4.5em; border: none; padding: 0; margin: 0 0 5px 0;">🧑‍🚒 On Duty</h2>
                           <div id="chores-on-duty-container"></div>
                      </div>
                      <div id="chores-on-duty-later-wrapper" style="margin-top: 15px; flex-shrink: 0;">
-                          <h2 style="font-size: 1.5em; border: none; padding: 0; margin: 0 0 5px 0;">🗓️ On Duty Later Today</h2>
+                          <h2 style="font-size: 4.5em; border: none; padding: 0; margin: 0 0 5px 0;">🗓️ On Duty Later Today</h2>
                           <div id="chores-on-duty-later-container"></div>
                      </div>
                  </div>
@@ -864,7 +864,7 @@ if (!empty($dashboardToken)) {
                 const mwfResp = await fetch(mwfUrl);
                 if (mwfResp.ok) {
                     const mwfData = await mwfResp.json(); window.lastMwfData = mwfData;
-                    const zone = appConfig.fire_danger_zone || '8';
+                    const zone = appConfig.fire_danger_zone || '7';
 
                     if (mwfData && mwfData.classdays && mwfData.classdays[zone]) {
                         const levelInt = parseInt(mwfData.classdays[zone]);

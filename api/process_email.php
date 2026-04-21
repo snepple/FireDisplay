@@ -64,7 +64,7 @@ if (strpos($to, $danger_addr) !== false || strpos($subject, 'Fire Danger') !== f
 }
 
 function extractFireDanger($body, $subject, $config) {
-    $zone = isset($config['fire_danger_zone']) ? $config['fire_danger_zone'] : '8';
+    $zone = isset($config['fire_danger_zone']) ? $config['fire_danger_zone'] : '7';
     $level = "Unknown";
     $levels = ['Extreme', 'Very High', 'High', 'Moderate', 'Low'];
 
