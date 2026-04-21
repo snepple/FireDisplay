@@ -159,7 +159,7 @@ if (!empty($dashboardToken)) {
         #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 4px; padding: 10px;}
         #danger-meter { width: 60%; min-height: 60px; height: auto; padding: 10px; box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 2.4em; font-weight: 700; text-transform: uppercase; }
         #danger-date { font-size: 0.3em; color: var(--muted-text); margin-top: 5px; }
-        .risk-snow-cover { background-color: #ffffff; color: #000 !important; border-color:#000 !important;}
+        .risk-snow-cover { background-color: var(--card-bg); color: var(--text-color); border: 2px solid var(--border-color); }
         .risk-low { background-color: #28a745; color:#fff;}
         .risk-moderate { background-color: #007bff; color:#fff;}
         .risk-high { background-color: #ffc107; color: #000 !important; }
@@ -167,7 +167,7 @@ if (!empty($dashboardToken)) {
         .risk-extreme { background-color: #dc3545; color:#fff;}
 
         #permitMap { height: 100%; width: 100%; border-radius: 4px; }
-        .permit-tooltip { background-color: rgba(255, 255, 255, 0.9); border: 1px solid #888; border-radius: 3px; color: #333; font-weight: bold; padding: 4px 8px; font-size: 0.9em; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        .permit-tooltip { background-color: rgba(255, 255, 255, 0.9); border: 1px solid #888; border-radius: 3px; color: var(--text-color); font-weight: bold; padding: 4px 8px; font-size: 0.9em; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
         .flame-marker-icon { filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.7)); }
 
         #page-calendar { display: none; flex-direction: column; gap: 15px; }
@@ -254,7 +254,7 @@ if (!empty($dashboardToken)) {
         .event-per-diem { background-color: #e83e8c; color: white; }
         .event-night-duty { background-color: #fd7e14; color: white; }
         .event-town-meeting { background-color: #007bff; color: white; }
-        .event-dept { background-color: #20c997; color: #000; }
+        .event-dept { background-color: #20c997; color: var(--text-color); }
         .event-unpublished { background-color: transparent; color: var(--muted-text); text-align: center; border: 1px dashed var(--border-color); font-style: italic; padding: 4px; margin-top: 5px; white-space: normal; }
 
         .calendar-legend { display: flex; justify-content: center; gap: 25px; margin-bottom: 10px; font-size: 11pt; color: var(--muted-text); flex-shrink: 0; }
@@ -290,7 +290,7 @@ if (!empty($dashboardToken)) {
         .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-color); transition: .4s; border-radius: 18px; border: 1px solid #555; }
         .toggle-slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 2px; bottom: 2px; background-color: var(--muted-text); transition: .4s; border-radius: 50%; }
         .toggle-switch input:checked + .toggle-slider { background-color: #28a745; border-color: #28a745; }
-        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(14px); background-color: #fff; }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(14px); background-color: var(--card-bg); }
 
         .announcement-content p { font-size: 16pt; line-height: 1.4; margin: 0 0 10px 0; color: var(--text-color); }
         .announcement-content h1, .announcement-content h2, .announcement-content h3 { color: #ffc107; margin-top:0; border:none; padding:0; text-align: left; }
@@ -299,15 +299,15 @@ if (!empty($dashboardToken)) {
 
         #admin-link:hover { opacity: 1 !important; }
 
-        #page-chores h2 { font-size: 0.8em; }
-        #page-chores .event { font-size: clamp(12px, 2.5vh, 35px); padding: 10px 15px; margin-bottom: 5px; }
-        #page-chores .event-name { font-size: 1.2em; }
-        #page-chores .event-role { font-size: 1em; }
-        #page-chores .event-until { font-size: 1em; }
+        #page-chores h2 { font-size: 1.5em; }
+        #page-chores .event { font-size: clamp(16px, 2.5vh, 35px); padding: 15px 25px; margin-bottom: 8px; }
+        #page-chores .event-name { font-size: 1.6em; }
+        #page-chores .event-role { font-size: 1.3em; }
+        #page-chores .event-until { font-size: 1.2em; }
     </style>
 </head>
 <body>
-    <div id="audio-unlock-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); color: white; z-index: 100000; align-items: center; justify-content: center; font-size: 3rem; cursor: pointer;">
+    <div id="audio-unlock-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); color: #fff; z-index: 100000; align-items: center; justify-content: center; font-size: 3rem; cursor: pointer;">
         Click anywhere to enable audio for this session
     </div>
     <a href="admin.php" id="admin-link" title="Open Admin Dashboard" aria-label="Open Admin Dashboard" style="position: absolute; bottom: 15px; right: 15px; z-index: 10000; opacity: 0.15; color: var(--text-color); text-decoration: none; font-size: 24px; transition: opacity 0.3s;">⚙️</a>
@@ -389,7 +389,7 @@ if (!empty($dashboardToken)) {
             <div id="chores-duties-column" style="flex: 1.5; display: flex; flex-direction: column; gap: 15px; min-width: 0; min-height: 0;">
 
                 <div class="chore-item" id="announcements-wrapper" style="display: none; flex-direction: column; padding: 10px;">
-                    <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 5px 0; color: #ffc107;">📢 Announcements</h2>
+                    <h2 style="font-size: 1.5em; border: none; padding: 0; margin: 0 0 5px 0; color: #ffc107;">📢 Announcements</h2>
                     <div id="announcements-container" style="display: flex; flex-direction: column; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
@@ -418,12 +418,12 @@ if (!empty($dashboardToken)) {
         } min-height: 0;">
 
                      <div id="dept-events-container" style="display: none; margin-bottom: 15px; flex-shrink: 0;">
-                         <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 5px 0;">📅 Department Events</h2>
+                         <h2 style="font-size: 1.5em; border: none; padding: 0; margin: 0 0 5px 0;">📅 Department Events</h2>
                          <div id="dept-events-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
                      </div>
 
                      <div id="town-meetings-container" style="display: none; margin-bottom: 15px; flex-shrink: 0;">
-                         <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 5px 0;">🏛️ Town Meetings Here</h2>
+                         <h2 style="font-size: 1.5em; border: none; padding: 0; margin: 0 0 5px 0;">🏛️ Town Meetings Here</h2>
                          <div id="town-meetings-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
                      </div>
 
