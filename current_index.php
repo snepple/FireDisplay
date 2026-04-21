@@ -105,7 +105,7 @@ if (!empty($dashboardToken)) {
             padding-bottom: 3px;
             margin-top: 0;
             margin-bottom: 5px;
-            font-size: 1.5em;
+            font-size: 0.9em;
             letter-spacing: 1.5px;
             flex-shrink: 0;
         }
@@ -154,7 +154,7 @@ if (!empty($dashboardToken)) {
         #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 4px; padding: 10px;}
         #danger-meter { width: 60%; min-height: 60px; height: auto; padding: 10px; box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 3.6em; font-weight: 700; text-transform: uppercase; }
         #danger-date { font-size: 0.3em; color: var(--muted-text); margin-top: 5px; }
-        .risk-snow-cover { background-color: var(--card-bg); color: var(--text-color) !important; border-color: var(--border-color) !important;}
+        .risk-snow-cover { background-color: var(--card-bg); color: var(--text-color); border: 2px solid var(--border-color); }
         .risk-low { background-color: #28a745; color:#fff;}
         .risk-moderate { background-color: #007bff; color:#fff;}
         .risk-high { background-color: #ffc107; color: #000 !important; }
@@ -162,7 +162,7 @@ if (!empty($dashboardToken)) {
         .risk-extreme { background-color: #dc3545; color:#fff;}
 
         #permitMap { height: 100%; width: 100%; border-radius: 4px; }
-        .permit-tooltip { background-color: var(--card-bg); border: 1px solid #888; border-radius: 3px; color: var(--text-color); font-weight: bold; padding: 4px 8px; font-size: 0.9em; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        .permit-tooltip { background-color: rgba(255, 255, 255, 0.9); border: 1px solid #888; border-radius: 3px; color: var(--text-color); font-weight: bold; padding: 4px 8px; font-size: 0.9em; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
         .flame-marker-icon { filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.7)); }
 
         #page-calendar { display: none; flex-direction: column; gap: 15px; }
@@ -254,11 +254,11 @@ if (!empty($dashboardToken)) {
         } text-overflow: ellipsis; border: 1px solid transparent; line-height: 1.2; flex-shrink: 1; min-height: 0; }
 
         .calendar-event.event-open { background-color: transparent; background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(128,128,128,0.2) 4px, rgba(128,128,128,0.2) 8px); color: var(--text-color); border: 1px dashed var(--muted-text); }
-        .event-career { background-color: #6f42c1; color: #fff; }
-        .event-per-diem { background-color: #e83e8c; color: #fff; }
-        .event-night-duty { background-color: #fd7e14; color: #fff; }
-        .event-town-meeting { background-color: #007bff; color: #fff; }
-        .event-dept { background-color: #20c997; color: #000; }
+        .event-career { background-color: #6f42c1; color: white; }
+        .event-per-diem { background-color: #e83e8c; color: white; }
+        .event-night-duty { background-color: #fd7e14; color: white; }
+        .event-town-meeting { background-color: #007bff; color: white; }
+        .event-dept { background-color: #20c997; color: var(--text-color); }
         .event-unpublished { background-color: transparent; color: var(--muted-text); text-align: center; border: 1px dashed var(--border-color); font-style: italic; padding: 4px; margin-top: 5px; white-space: normal; }
 
         .calendar-legend { display: flex; justify-content: center; gap: 25px; margin-bottom: 10px; font-size: 11pt; color: var(--muted-text); flex-shrink: 0; }
@@ -370,7 +370,7 @@ if (!empty($dashboardToken)) {
                 </div>
                 <div class="calendar-header"><div>Sunday</div><div>Monday</div><div>Tuesday</div><div>Wednesday</div><div>Thursday</div><div>Friday</div><div>Saturday</div></div>
                 <div id="calendar-grid"></div>
-                <div id="schedule-published-text" style="font-size: 1.5em; color: var(--muted-text); text-align: center; margin-top: 5px; flex-shrink: 0;"></div>
+                <div id="schedule-published-text" style="font-size: 0.9em; color: var(--muted-text); text-align: center; margin-top: 5px; flex-shrink: 0;"></div>
             </div>
             <div class="calendar-sidebar">
                 <div id="open-shifts-section">
