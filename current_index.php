@@ -850,7 +850,7 @@ if (!empty($dashboardToken)) {
                 const mwfResp = await fetch(mwfUrl);
                 if (mwfResp.ok) {
                     const mwfData = await mwfResp.json(); window.lastMwfData = mwfData;
-                    const zone = appConfig.fire_danger_zone || '8';
+                    const zone = appConfig.fire_danger_zone || '7';
 
                     if (mwfData && mwfData.classdays && mwfData.classdays[zone]) {
                         const levelInt = parseInt(mwfData.classdays[zone]);
