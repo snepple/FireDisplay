@@ -151,6 +151,11 @@ if (!empty($dashboardToken)) {
 
         .no-events { text-align: center; color: var(--muted-text); padding: 15px; background-color: var(--card-bg); font-size: 1.2em; flex-shrink: 0; }
 
+        .no-burn-permits { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 20px; box-sizing: border-box; }
+        .no-burn-permits img { max-width: 400px; width: 50%; height: auto; margin-bottom: 30px; }
+        .no-burn-permits p { font-size: clamp(3em, 4vw, 5em); font-weight: 700; color: var(--text-color); margin: 0; line-height: 1.2; }
+
+
         #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 4px; padding: 10px;}
         #danger-meter { width: 60%; min-height: 60px; height: auto; padding: 10px; box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 3.6em; font-weight: 700; text-transform: uppercase; }
         #danger-date { font-size: 0.3em; color: var(--muted-text); margin-top: 5px; }
@@ -167,33 +172,24 @@ if (!empty($dashboardToken)) {
 
         #page-calendar { display: none; flex-direction: column; gap: 15px; }
         .calendar-content-row { display: flex; flex: 1; gap: 15px; min-height: 0; margin-top: 15px; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } }
-        .calendar-main-content { flex: 85; width: 85%; display: flex; flex-direction: column; min-height: 0; }
-        .calendar-sidebar { flex: 15; width: 15%; background-color: var(--card-bg); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+        .calendar-content-row::-webkit-scrollbar { display: none; }
+        .calendar-main-content { flex: 0 0 calc(85% - 7.5px); max-width: calc(85% - 7.5px); box-sizing: border-box; display: flex; flex-direction: column; min-height: 0; }
+        .calendar-sidebar { flex: 0 0 calc(15% - 7.5px); max-width: calc(15% - 7.5px); box-sizing: border-box; background-color: var(--card-bg); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; overflow: hidden;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } min-height: 0; }
+        .calendar-sidebar::-webkit-scrollbar { display: none; }
         .calendar-sidebar h3 { font-size: 1.0em; text-align: center; margin: 0 0 10px 0; color: var(--muted-text);  padding-bottom: 5px; flex-shrink: 0; }
 
         #open-shifts-section { display: flex; flex-direction: column; flex-grow: 1; min-height: 0; }
-        #open-shifts-list { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+        #open-shifts-list { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; padding-top: 5px; min-height: 0;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } min-height: 0; padding-top: 5px; }
+        #open-shifts-list::-webkit-scrollbar { display: none; }
 
         .open-shift-link, .open-shift-link:visited { text-decoration: none; color: inherit; display: block; }
 
@@ -273,6 +269,7 @@ if (!empty($dashboardToken)) {
             display: none;
         } min-height: 0; }
         .chore-list { list-style-type: none; padding: 0; margin: 0; font-size: clamp(30px, 5vh, 70px); font-weight: 700; line-height: 1.5; color: var(--text-color); }
+        #page-chores .chore-list li { font-size: clamp(30px, 6.5vh, 80px); line-height: 1.2; list-style-type: none; margin-bottom: 10px; }
         .national-day { font-size: 18pt; color: var(--muted-text); font-style: italic; margin-top: 20px; }
         #debug-log { display: none; }
 
@@ -428,11 +425,11 @@ if (!empty($dashboardToken)) {
                      </div>
 
                      <div id="chores-on-duty-now-wrapper" style="flex-shrink: 0;">
-                          <h2 style="font-size: 1.5em; border: none; padding: 0; margin: 0 0 5px 0;">🧑‍🚒 On Duty</h2>
+                          <h2 style="font-size: clamp(24px, 3vh, 45px); border: none; padding: 0; margin: 0 0 5px 0;">🧑‍🚒 On Duty</h2>
                           <div id="chores-on-duty-container"></div>
                      </div>
                      <div id="chores-on-duty-later-wrapper" style="margin-top: 15px; flex-shrink: 0;">
-                          <h2 style="font-size: 1.5em; border: none; padding: 0; margin: 0 0 5px 0;">🗓️ On Duty Later Today</h2>
+                          <h2 style="font-size: clamp(24px, 3vh, 45px); border: none; padding: 0; margin: 0 0 5px 0;">🗓️ On Duty Later Today</h2>
                           <div id="chores-on-duty-later-container"></div>
                      </div>
                  </div>
@@ -858,7 +855,7 @@ if (!empty($dashboardToken)) {
                 const mwfResp = await fetch(mwfUrl);
                 if (mwfResp.ok) {
                     const mwfData = await mwfResp.json(); window.lastMwfData = mwfData;
-                    const zone = appConfig.fire_danger_zone || '8';
+                    const zone = appConfig.fire_danger_zone || '7';
 
                     if (mwfData && mwfData.classdays && mwfData.classdays[zone]) {
                         const levelInt = parseInt(mwfData.classdays[zone]);
@@ -1074,7 +1071,7 @@ if (!empty($dashboardToken)) {
                     }
                 } else {
                     hasBurnPermits = false;
-                    container.innerHTML = '<p class="no-events">No active online burn permits at this time.</p>';
+                    container.innerHTML = '<div class="no-burn-permits"><img src="assets/images/no_burn_permits.png" alt="No Burn Permits"><p>No active online burn permits at this time.</p></div>';
                 }
 
                 updatePermitMap(activePermits);

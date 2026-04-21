@@ -27,7 +27,7 @@ beforeAll((done) => {
             danger_address: 'danger@domain.com',
             permit_address: 'permit@domain.com'
         },
-        fire_danger_zone: '8'
+        fire_danger_zone: '7'
     };
     fs.writeFileSync(path.join(TMP_DIR, 'config.json'), JSON.stringify(mockConfig));
 
@@ -141,7 +141,7 @@ Burn Type:  Type of Item(s) to Burn:  Burn Requirements: `;
 
 describe('process_email.php (Fire Danger)', () => {
     test('extracts fire danger from primary regex match', async () => {
-        const emailBody = `To: danger@domain.com\r\nSubject: Daily Fire Danger\r\n\r\nZone 8 Forecast Fire Danger Extreme today.\r\nSome other text.`;
+        const emailBody = `To: danger@domain.com\r\nSubject: Daily Fire Danger\r\n\r\nZone 7 Forecast Fire Danger Extreme today.\r\nSome other text.`;
 
         const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
             method: 'POST',
@@ -153,7 +153,7 @@ describe('process_email.php (Fire Danger)', () => {
     });
 
     test('extracts fire danger from secondary regex match', async () => {
-        const emailBody = `To: danger@domain.com\r\nSubject: Daily Fire Danger\r\n\r\nZone 8 Moderate.\r\nSome other text.`;
+        const emailBody = `To: danger@domain.com\r\nSubject: Daily Fire Danger\r\n\r\nZone 7 Moderate.\r\nSome other text.`;
 
         const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
             method: 'POST',

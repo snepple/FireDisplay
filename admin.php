@@ -16,7 +16,7 @@ $defaultConfig = [
             "chores" => ["enabled" => true, "duration" => 15]
         ]
     ],
-    "fire_danger_zone" => "8",
+    "fire_danger_zone" => "7",
     "department_info" => [
         "name" => "Oakland Fire Department",
         "stations" => [
@@ -223,7 +223,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $configData['dashboard_token'] = $_POST['dashboard_token'];
-        $configData['fire_danger_zone'] = $_POST['fire_danger_zone'] ?? '8';
+
+        $oldZone = $configData['fire_danger_zone'] ?? '8';
+        $newZone = $_POST['fire_danger_zone'] ?? '8';
+        $configData['fire_danger_zone'] = $newZone;
+
+        if ($oldZone !== $newZone) {
+            $ctx = stream_context_create(['http' => ['timeout' => 5]]);
+            $classDaysJson = @file_get_contents('https://mainefireweather.org/admin/php/get-content.php?content=class-days&which=map', false, $ctx);
+            if ($classDaysJson) {
+                $data = json_decode($classDaysJson, true);
+                if (isset($data['classdays'][$newZone])) {
+                    $levelInt = (int)$data['classdays'][$newZone];
+                    $levelsMap = [1 => "Snow Cover", 2 => "Low", 3 => "Moderate", 4 => "High", 5 => "Very High", 6 => "Extreme"];
+                    if (isset($levelsMap[$levelInt])) {
+                        $dangerData = ['level' => $levelsMap[$levelInt], 'updated_at' => date('c')];
+                        file_put_contents(__DIR__ . '/data/fire_danger.json', json_encode($dangerData));
+                    }
+                }
+            }
+        }
 
         $configData['calendar_urls']['main'] = $_POST['cal_main'] ?? '';
         $configData['calendar_urls']['burn_permits'] = $_POST['cal_burn_permits'] ?? '';
@@ -630,7 +649,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <div style="max-width: 400px; margin-top: 15px;">
                         <label>Fire Danger Zone</label>
                         <p class="help">The zone number used to extract the correct fire danger level from daily emails.</p>
-                        <input type="text" name="fire_danger_zone" value="<?= htmlspecialchars($configData['fire_danger_zone'] ?? '8') ?>" placeholder="e.g., 8" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        <input type="text" name="fire_danger_zone" value="<?= htmlspecialchars($configData['fire_danger_zone'] ?? '7') ?>" placeholder="e.g., 7" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
                 </div>
 
