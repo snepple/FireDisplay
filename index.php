@@ -603,7 +603,7 @@ if (!empty($dashboardToken)) {
             const container = document.getElementById('burnPermitsContainer');
             if (!container) return;
             if (container.clientHeight === 0) return;
-            while (container.scrollHeight > container.clientHeight + 2 && container.children.length > 0) {
+            while (container.scrollHeight > container.clientHeight + 2 && container.children.length > 1) {
                 container.removeChild(container.lastElementChild);
             }
         }
