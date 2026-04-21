@@ -1,0 +1,9 @@
+1. Copy the uploaded image to `assets/images/no_burn_permits.png`.
+2. Update `index.php`:
+   - Change the `.no-events` fallback message for burn permits to include the image and text with appropriately sized font.
+   - We might need a specific class for this fallback to ensure the font size is appropriate for digital signage (10-20' visibility). E.g., `font-size: 3em;`.
+3. Update `current_index.php` with the same changes as `index.php`.
+4. Create a CSS class, for instance `.no-burn-permits`, to control the layout and size of the image and text.
+5. Apply the changes.
+6. Verify visually using `verify_ui.py`.
+7. Pre-commit checks.
