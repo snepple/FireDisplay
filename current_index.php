@@ -264,7 +264,7 @@ if (!empty($dashboardToken)) {
             display: none;
         } min-height: 0; }
         .chore-list { list-style-type: none; padding: 0; margin: 0; font-size: clamp(30px, 5vh, 70px); font-weight: 700; line-height: 1.5; color: var(--text-color); }
-        #page-chores .chore-list li { font-size: clamp(45px, 10vh, 120px); line-height: 1.5; list-style-type: none; margin-bottom: 15px; }
+        #page-chores .chore-list li { font-size: clamp(30px, 6.5vh, 80px); line-height: 1.2; list-style-type: none; margin-bottom: 10px; }
         .national-day { font-size: 18pt; color: var(--muted-text); font-style: italic; margin-top: 20px; }
         #debug-log { display: none; }
 
