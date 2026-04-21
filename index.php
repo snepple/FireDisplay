@@ -167,33 +167,24 @@ if (!empty($dashboardToken)) {
 
         #page-calendar { display: none; flex-direction: column; gap: 15px; }
         .calendar-content-row { display: flex; flex: 1; gap: 15px; min-height: 0; margin-top: 15px; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } }
-        .calendar-main-content { flex: 85; width: 85%; display: flex; flex-direction: column; min-height: 0; }
-        .calendar-sidebar { flex: 15; width: 15%; background-color: var(--card-bg); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+        .calendar-content-row::-webkit-scrollbar { display: none; }
+        .calendar-main-content { flex: 0 0 calc(85% - 7.5px); max-width: calc(85% - 7.5px); box-sizing: border-box; display: flex; flex-direction: column; min-height: 0; }
+        .calendar-sidebar { flex: 0 0 calc(15% - 7.5px); max-width: calc(15% - 7.5px); box-sizing: border-box; background-color: var(--card-bg); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; overflow: hidden;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } min-height: 0; }
+        .calendar-sidebar::-webkit-scrollbar { display: none; }
         .calendar-sidebar h3 { font-size: 0.9em; text-align: center; margin: 0 0 10px 0; color: var(--muted-text);  padding-bottom: 5px; flex-shrink: 0; }
 
         #open-shifts-section { display: flex; flex-direction: column; flex-grow: 1; min-height: 0; }
-        #open-shifts-list { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+        #open-shifts-list { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; padding-top: 5px; min-height: 0;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } min-height: 0; padding-top: 5px; }
+        #open-shifts-list::-webkit-scrollbar { display: none; }
 
         .open-shift-link, .open-shift-link:visited { text-decoration: none; color: inherit; display: block; }
 
