@@ -1,5 +1,7 @@
-git add assets/images/no_burn_permits.png index.php current_index.php
-git commit -m "Update fallback UI for active online burn permits
+git add index.php current_index.php
+git commit -m "feat: add town boundary and parcel search layers to permit map
 
-Replaces the simple text fallback with an image and styled text
-when there are no active online burn permits."
+- Added an Oakland town boundary layer to the permit map using Esri FeatureService via GeoJSON
+- Implemented a zoom-dependent parcel layer that automatically loads Oakland parcels when zoomed in (>= 15) to maintain map performance and avoid clutter
+- Parcels are interactive and display owner, address, and map/lot info on click
+- Modified both index.php and current_index.php for feature parity"
