@@ -151,6 +151,11 @@ if (!empty($dashboardToken)) {
 
         .no-events { text-align: center; color: var(--muted-text); padding: 15px; background-color: var(--card-bg); font-size: 1.2em; flex-shrink: 0; }
 
+        .no-burn-permits { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 20px; box-sizing: border-box; }
+        .no-burn-permits img { max-width: 400px; width: 50%; height: auto; margin-bottom: 30px; }
+        .no-burn-permits p { font-size: clamp(3em, 4vw, 5em); font-weight: 700; color: var(--text-color); margin: 0; line-height: 1.2; }
+
+
         #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 4px; padding: 10px;}
         #danger-meter { width: 60%; min-height: 60px; height: auto; padding: 10px; box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 3.6em; font-weight: 700; text-transform: uppercase; }
         #danger-date { font-size: 0.3em; color: var(--muted-text); margin-top: 5px; }
@@ -1066,7 +1071,7 @@ if (!empty($dashboardToken)) {
                     }
                 } else {
                     hasBurnPermits = false;
-                    container.innerHTML = '<p class="no-events">No active online burn permits at this time.</p>';
+                    container.innerHTML = '<div class="no-burn-permits"><img src="assets/images/no_burn_permits.png" alt="No Burn Permits"><p>No active online burn permits at this time.</p></div>';
                 }
 
                 updatePermitMap(activePermits);
