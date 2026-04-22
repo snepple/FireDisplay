@@ -288,7 +288,7 @@ if (!empty($dashboardToken)) {
 
     <a href="admin.php" id="admin-link" title="Open Admin Dashboard" aria-label="Open Admin Dashboard" style="position: absolute; bottom: 15px; right: 15px; z-index: 10000; opacity: 0.15; color: var(--text-color); text-decoration: none; font-size: 24px; transition: opacity 0.3s;">⚙️</a>
 
-    <div id="audio-toggle-wrapper" title="Toggle Audio Announcements">
+    <div id="audio-toggle-wrapper" title="Toggle Audio Announcements" style="display: none;">
         <label class="toggle-switch">
             <input type="checkbox" id="audio-toggle-checkbox" aria-label="Toggle Audio Announcements">
             <span class="toggle-slider"></span>
@@ -660,7 +660,7 @@ if (!empty($dashboardToken)) {
 
         window.addEventListener('load', function() {
             const toggleWrapper = document.getElementById('audio-toggle-wrapper');
-            if (toggleWrapper) toggleWrapper.style.display = 'block';
+            if (toggleWrapper) toggleWrapper.style.display = 'none';
 
             const toggleCheckbox = document.getElementById('audio-toggle-checkbox');
             if (toggleCheckbox) {
