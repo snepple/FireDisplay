@@ -298,23 +298,29 @@ if (!empty($dashboardToken)) {
     <div id="page-dashboard" class="page-container">
         <div class="main-layout" id="top-section">
             <div class="container">
-                <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">🔥 Fire Danger</h2>
-                <div id="fire-danger-content">
+                <div id="fire-danger-content" style="justify-content: flex-start; padding-top: clamp(10px, 1.5vh, 20px);">
+                     <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(5px, 1vh, 15px); width: 100%;">🔥 Fire Danger</h2>
+                     <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
                      <div id="danger-meter">Loading...</div>
                      <div id="danger-date"></div>
                      <div id="danger-map-container" style="margin-top: clamp(5px, 1.5vh, 15px); width: 100%; display: none;">
                          <div id="danger-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(2px, 0.5vh, 5px);"></div>
                      </div>
+                     </div>
+
                 </div>
             </div>
         </div>
         <div class="container" id="combined-permits-container">
-             <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">Active Online-Issued Burn Permits</h2>
              <div id="permits-content-wrapper" style="display: flex; flex-grow: 1; min-height: 0; gap: clamp(2px, 1vh, 15px); width: 100%;">
                  <div id="burnPermitsContainer" style="flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden;
+            display: flex; flex-direction: column;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
-            min-height: 0;"></div>
+            min-height: 0;">
+                     <h2 style="font-size: clamp(24px, 3vh, 45px); margin: clamp(10px, 1.5vh, 20px) 0 clamp(5px, 1vh, 15px) 0; flex-shrink: 0; width: 100%;">Active Online-Issued Burn Permits</h2>
+                     <div id="burnPermitsList" style="flex-grow: 1; overflow-y: auto; min-height: 0;"></div>
+                 </div>
                  <div id="permitMap" style="flex: 1; border-radius: 4px;"></div>
              </div>
         </div>
@@ -561,7 +567,7 @@ if (!empty($dashboardToken)) {
         }
 
         function pruneDashboard() {
-            const container = document.getElementById('burnPermitsContainer');
+            const container = document.getElementById('burnPermitsList');
             if (!container) return;
             if (container.clientHeight === 0) return;
             while (container.scrollHeight > container.clientHeight + 2 && container.children.length > 0) {
@@ -977,7 +983,7 @@ if (!empty($dashboardToken)) {
                 announcedPermitUIDs.clear();
                 permitCheckDate = today;
             }
-            const container = document.getElementById('burnPermitsContainer');
+            const container = document.getElementById('burnPermitsList');
 
             const useEmailPermits = appConfig.email_integration && appConfig.email_integration.permit_address && appConfig.email_integration.permit_address.trim() !== '';
 
