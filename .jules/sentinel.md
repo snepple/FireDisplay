@@ -24,3 +24,4 @@
 **Prevention:** Consistently applied the `escapeHtml()` utility function to all variables injected into HTML templates via `.innerHTML` within the `createMeetingEventHtml`, `renderChoresPage`, `renderNumberedChores`, `renderSpecialChores`, and `renderEverydayChores` functions.
 
 - Learned that if a grid container overflows, you can dynamically hide past items (like calendar weeks) by setting `display: none` on the children and decreasing the container's `grid-template-rows` count iteratively while checking `scrollHeight > clientHeight` to fit the content cleanly into the available space without scrollbars.
+- Integrated Gemini API into `api/process_email.php` as a fallback parser for unstructured emails when strict regular expressions fail, increasing resilience to format variations.
