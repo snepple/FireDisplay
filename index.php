@@ -353,7 +353,7 @@ if (!empty($dashboardToken)) {
             </div>
             <div class="calendar-sidebar">
                 <div id="open-shifts-section">
-                    <h3 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">Upcoming Open Shifts</h3>
+                    <h2 style="font-size: clamp(24px, 3vh, 45px); border: none; padding: 0; margin: 0 0 clamp(1px, 0.5vh, 5px) 0;">Upcoming Open Shifts</h2>
                     <div id="open-shifts-list"></div>
                 </div>
             </div>
