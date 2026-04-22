@@ -28,7 +28,7 @@ if (!empty($dashboardToken)) {
 
         /* Default Dark Theme Variables */
         :root {
-            --bg-color: #10141a;
+            --bg-color: #1c1c1c;
             --card-bg: #1C212B;
             --text-color: #fff;
             --muted-text: #cbd5e1;
@@ -64,11 +64,6 @@ if (!empty($dashboardToken)) {
             display: none;
         }
 
-        ::-webkit-scrollbar {
-            display: none;
-        }
-        }
-
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -100,7 +95,7 @@ if (!empty($dashboardToken)) {
             font-family: 'Agency FB', sans-serif;
             text-transform: uppercase;
             text-align: center;
-            color: var(--muted-text);
+            color: var(--text-color);
 
             padding-bottom: 3px;
             margin-top: 0;
