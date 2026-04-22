@@ -827,7 +827,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         const val = input.value.trim();
                         if(val !== '') {
                             const list = card.querySelector('.rooms-visual-list');
-                            list.innerHTML += `<div class="room-tag"><span>${val}</span><button type="button" aria-label="Remove" onclick="this.parentElement.remove()">x</button></div>`;
+                            list.insertAdjacentHTML('beforeend', `<div class="room-tag"><span>${val}</span><button type="button" aria-label="Remove" onclick="this.parentElement.remove()">x</button></div>`);
                             input.value = '';
                         }
                     }
@@ -1589,16 +1589,20 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                             // Render Employee Shifts as text blocks
                             if (employeeShifts[dateStr]) {
+                                let shiftHtml = "";
                                 employeeShifts[dateStr].forEach(sh => {
-                                    div.innerHTML += `<div class="cal-shift-block ${sh.class}" title="${sh.text}">${sh.text}</div>`;
+                                    shiftHtml += `<div class="cal-shift-block ${sh.class}" title="${sh.text}">${sh.text}</div>`;
                                 });
+                                if (shiftHtml) div.insertAdjacentHTML('beforeend', shiftHtml);
                             }
 
                             // Render Manual Events
                             if (eventsByDate[dateStr]) {
+                                let evtHtml = "";
                                 eventsByDate[dateStr].forEach(t => {
-                                    div.innerHTML += `<div class="cal-evt-pill">${t}</div>`;
+                                    evtHtml += `<div class="cal-evt-pill">${t}</div>`;
                                 });
+                                if (evtHtml) div.insertAdjacentHTML('beforeend', evtHtml);
                             }
 
                             div.onclick = () => {

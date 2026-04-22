@@ -1415,12 +1415,14 @@ if (!empty($dashboardToken)) {
             if (annWrap && annCont && appConfig.announcements) {
                 annCont.innerHTML = '';
                 let hasAnn = false;
+                let annHtml = "";
                 appConfig.announcements.forEach(ann => {
                     if (ann.start_date <= todayStr && ann.end_date >= todayStr) {
                         hasAnn = true;
-                        annCont.innerHTML += `<div class="announcement-card announcement-content">${escapeHtml(ann.content)}</div>`;
+                        annHtml += `<div class="announcement-card announcement-content">${escapeHtml(ann.content)}</div>`;
                     }
                 });
+                if(annHtml) annCont.insertAdjacentHTML('beforeend', annHtml);
                 annWrap.style.display = hasAnn ? 'flex' : 'none';
             }
 
@@ -1437,9 +1439,11 @@ if (!empty($dashboardToken)) {
                     });
                     if (todaysMeetings.length > 0) {
                         todaysMeetings.sort((a, b) => a.startDate.toJSDate() - b.startDate.toJSDate());
+                        let meetingHtml = "";
                         todaysMeetings.forEach(meeting => {
-                            townListDiv.innerHTML += createMeetingEventHtml(meeting, false);
+                            meetingHtml += createMeetingEventHtml(meeting, false);
                         });
+                        townListDiv.insertAdjacentHTML('beforeend', meetingHtml);
                         townContainer.style.display = 'flex';
                     }
                 }
@@ -1454,9 +1458,11 @@ if (!empty($dashboardToken)) {
                 const todaysDeptEvents = getManualEvents(startOfToday, endOfToday);
                 if (todaysDeptEvents.length > 0) {
                     todaysDeptEvents.sort((a, b) => a.startDate - b.startDate);
+                    let deptHtml = "";
                     todaysDeptEvents.forEach(meeting => {
-                        deptListDiv.innerHTML += createMeetingEventHtml(meeting, true);
+                        deptHtml += createMeetingEventHtml(meeting, true);
                     });
+                    deptListDiv.insertAdjacentHTML('beforeend', deptHtml);
                     deptContainer.style.display = 'flex';
                 }
             }
@@ -1566,31 +1572,37 @@ if (!empty($dashboardToken)) {
             if(isTruckCheckWeek(now)) vehicleTasks.push("Check " + rawHeaders[dayOfWeek]);
             if(isTruckWashWeek(now)) vehicleTasks.push("Wash " + rawHeaders[dayOfWeek]);
             if(vehicleTasks.length > 0) {
-                choreList.innerHTML += `<li>${vehicleTasks.join(' & ')}</li>`;
+                choreList.insertAdjacentHTML('beforeend', `<li>${vehicleTasks.join(' & ')}</li>`);
             }
-            if (dayOfWeek === 5) { choreList.innerHTML += `<li>Complete Medication Logs</li>`; }
+            if (dayOfWeek === 5) { choreList.insertAdjacentHTML('beforeend', `<li>Complete Medication Logs</li>`); }
         }
 
         function renderNumberedChores(now, choreList) {
             const choreNum = getChoreNumber(now);
             const todaysChores = appConfig.chores ? appConfig.chores.filter(c => c.id == choreNum) : [];
             if (todaysChores.length > 0) {
-                todaysChores.forEach(c => { choreList.innerHTML += `<li>Clean ${escapeHtml(c.name)} (#${choreNum})</li>`; });
+                let choresHtml = "";
+                todaysChores.forEach(c => { choresHtml += `<li>Clean ${escapeHtml(c.name)} (#${choreNum})</li>`; });
+                choreList.insertAdjacentHTML('beforeend', choresHtml);
             } else {
-                 choreList.innerHTML += `<li>Clean (#${choreNum})</li>`;
+                 choreList.insertAdjacentHTML('beforeend', `<li>Clean (#${choreNum})</li>`);
             }
         }
 
         function renderSpecialChores(now, choreList) {
             const todaysSpecialChores = getTodaysSpecialChores(now);
+            let spHtml = "";
             todaysSpecialChores.forEach(scName => {
-                choreList.innerHTML += `<li style="color:#20c997;">${escapeHtml(scName)}</li>`;
+                spHtml += `<li style="color:#20c997;">${escapeHtml(scName)}</li>`;
             });
+            if(spHtml) choreList.insertAdjacentHTML('beforeend', spHtml);
         }
 
         function renderEverydayChores(choreList) {
             const everyDayTasks = appConfig.everyday_chores || ["Clean Bathrooms", "Empty Trash Cans", "Wash Coffee Pot and Dishes"];
-            everyDayTasks.forEach(task => { choreList.innerHTML += `<li>${escapeHtml(task)}</li>`; });
+            let html = "";
+            everyDayTasks.forEach(task => { html += `<li>${escapeHtml(task)}</li>`; });
+            if(html) choreList.insertAdjacentHTML('beforeend', html);
         }
 
         function combineConsecutiveShifts(eventList) {
