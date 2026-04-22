@@ -1465,8 +1465,13 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                                 if (vevent.isRecurring()) {
                                     const iterator = vevent.iterator();
+                                    const duration = vevent.duration;
                                     let next;
-                                    while ((next = iterator.next()) && next.toJSDate() < parseDate) { processOccurrence(vevent.getOccurrenceDetails(next)); }
+                                    while ((next = iterator.next()) && next.toJSDate() < parseDate) {
+                                        const endDate = next.clone();
+                                        endDate.addDuration(duration);
+                                        processOccurrence({ startDate: next, endDate: endDate, item: vevent });
+                                    }
                                 } else {
                                     if (vevent.startDate.toJSDate() < parseDate) { processOccurrence(vevent); }
                                 }
