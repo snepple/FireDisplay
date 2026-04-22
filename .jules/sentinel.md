@@ -22,3 +22,5 @@
 **Vulnerability:** User-controlled data from external calendar feeds (ICS) and `config.json` (announcements, chores) was rendered directly into the DOM using `.innerHTML` without HTML escaping in `index.php`.
 **Learning:** Any data originating from external sources or configuration files that can be modified by users must be treated as untrusted and sanitized before being injected into the DOM to prevent Cross-Site Scripting (XSS) attacks.
 **Prevention:** Consistently applied the `escapeHtml()` utility function to all variables injected into HTML templates via `.innerHTML` within the `createMeetingEventHtml`, `renderChoresPage`, `renderNumberedChores`, `renderSpecialChores`, and `renderEverydayChores` functions.
+
+- Learned that if a grid container overflows, you can dynamically hide past items (like calendar weeks) by setting `display: none` on the children and decreasing the container's `grid-template-rows` count iteratively while checking `scrollHeight > clientHeight` to fit the content cleanly into the available space without scrollbars.

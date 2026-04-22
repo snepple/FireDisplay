@@ -28,7 +28,7 @@ if (!empty($dashboardToken)) {
 
         /* Default Dark Theme Variables */
         :root {
-            --bg-color: #10141a;
+            --bg-color: #1c1c1c;
             --card-bg: #1C212B;
             --text-color: #fff;
             --muted-text: #cbd5e1;
@@ -62,7 +62,9 @@ if (!empty($dashboardToken)) {
 
         ::-webkit-scrollbar {
             display: none;
-        } body {
+        }
+
+        body {
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: 'Inter', sans-serif;
@@ -93,7 +95,7 @@ if (!empty($dashboardToken)) {
             font-family: 'Agency FB', sans-serif;
             text-transform: uppercase;
             text-align: center;
-            color: var(--muted-text);
+            color: var(--text-color);
 
             padding-bottom: 3px;
             margin-top: 0;
@@ -269,7 +271,7 @@ if (!empty($dashboardToken)) {
 
         #admin-link:hover { opacity: 1 !important; }
 
-        #page-chores h2 { font-size: 0.8em; }
+        #page-chores h2 { font-size: clamp(24px, 3vh, 45px); }
         #page-chores .event { font-size: clamp(12px, 2.5vh, 35px); padding: clamp(4px, 1vh, 10px) clamp(6px, 1vw, 15px); margin-bottom: clamp(1px, 0.5vh, 5px); }
         #page-chores .event-name { font-size: 1.2em; }
         #page-chores .event-role { font-size: 1em; }
@@ -294,7 +296,7 @@ if (!empty($dashboardToken)) {
     <div id="page-dashboard" class="page-container">
         <div class="main-layout" id="top-section">
             <div class="container">
-                <h2>🔥 Fire Danger</h2>
+                <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">🔥 Fire Danger</h2>
                 <div id="fire-danger-content">
                      <div id="danger-meter">Loading...</div>
                      <div id="danger-date"></div>
@@ -305,7 +307,7 @@ if (!empty($dashboardToken)) {
             </div>
         </div>
         <div class="container" id="combined-permits-container">
-             <h2>Active Online-Issued Burn Permits</h2>
+             <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">Active Online-Issued Burn Permits</h2>
              <div id="permits-content-wrapper" style="display: flex; flex-grow: 1; min-height: 0; gap: clamp(2px, 1vh, 15px); width: 100%;">
                  <div id="burnPermitsContainer" style="flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
@@ -341,7 +343,7 @@ if (!empty($dashboardToken)) {
             </div>
             <div class="calendar-sidebar">
                 <div id="open-shifts-section">
-                    <h3>Upcoming Open Shifts</h3>
+                    <h3 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">Upcoming Open Shifts</h3>
                     <div id="open-shifts-list"></div>
                 </div>
             </div>
@@ -349,7 +351,7 @@ if (!empty($dashboardToken)) {
     </div>
 
     <div id="page-chores" class="page-container">
-        <h2 style="margin-bottom: clamp(1px, 0.5vh, 5px);">Today's Overview</h2>
+        <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">Today's Overview</h2>
 
         <div id="chores-layout" style="display: flex; width: 100%; height: 100%; gap: clamp(2px, 1vh, 15px); min-height: 0;">
 
@@ -568,6 +570,40 @@ if (!empty($dashboardToken)) {
         }
 
         function pruneCalendar() {
+            const pageCalendar = document.getElementById('page-calendar');
+            const grid = document.getElementById('calendar-grid');
+            if (pageCalendar && grid && pageCalendar.clientHeight > 0) {
+                const days = grid.querySelectorAll('.calendar-day');
+                if (days.length > 0) {
+                    let todayIndex = -1;
+                    for (let i = 0; i < days.length; i++) {
+                        if (days[i].classList.contains('is-today')) {
+                            todayIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (todayIndex >= 7) {
+                        let currentWeekIndex = Math.floor(todayIndex / 7);
+                        let hiddenRows = 0;
+
+                        while (pageCalendar.scrollHeight > pageCalendar.clientHeight + 2 && hiddenRows < currentWeekIndex) {
+                            const startIndex = hiddenRows * 7;
+                            for (let i = 0; i < 7; i++) {
+                                if (days[startIndex + i]) {
+                                    days[startIndex + i].style.display = 'none';
+                                }
+                            }
+                            hiddenRows++;
+
+                            const totalWeeks = days.length / 7;
+                            const remainingWeeks = totalWeeks - hiddenRows;
+                            grid.style.gridTemplateRows = `repeat(${remainingWeeks}, minmax(0, 1fr))`;
+                        }
+                    }
+                }
+            }
+
             const sidebar = document.querySelector('.calendar-sidebar');
             const list = document.getElementById('open-shifts-list');
             if (sidebar && list) {
