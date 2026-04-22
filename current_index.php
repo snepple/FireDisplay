@@ -678,6 +678,25 @@ if (!empty($dashboardToken)) {
             initializeApp();
         });
 
+        function formatAddressTitleCase(str) {
+            if (!str) return str;
+            let lowerStr = str.toLowerCase();
+            let words = lowerStr.split(/( |\-)/);
+            for (let i = 0; i < words.length; i++) {
+                if (words[i].length > 0 && words[i] !== ' ' && words[i] !== '-') {
+                    words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+                }
+            }
+            let titleStr = words.join('');
+            titleStr = titleStr.replace(/\b(Nw|Ne|Sw|Se)\b/g, (match) => match.toUpperCase());
+            titleStr = titleStr.replace(/\bMc([a-zA-Z])/gi, (match, p1) => 'Mc' + p1.toUpperCase());
+            titleStr = titleStr.replace(/\bMac([a-zA-Z])/gi, (match, p1) => 'Mac' + p1.toUpperCase());
+            titleStr = titleStr.replace(/\b(\d+)(St|Nd|Rd|Th)\b/gi, (match, num, suffix) => num + suffix.toLowerCase());
+            titleStr = titleStr.replace(/\bMe\b/g, 'ME');
+            titleStr = titleStr.replace(/\bPo Box\b/gi, 'PO Box');
+            return titleStr;
+        }
+
         function escapeHtml(unsafe) {
             return (unsafe || "").toString()
                  .replace(/&/g, "&amp;")
@@ -1057,7 +1076,7 @@ if (!empty($dashboardToken)) {
 
                 todaysPermits.forEach(permit => {
                     if (permit.uid && !announcedPermitUIDs.has(permit.uid)) {
-                        let address = permit.location ? permit.location.split(',')[0].trim() : 'Address not provided';
+                        let address = permit.location ? formatAddressTitleCase(permit.location.split(',')[0].trim()) : 'Address not provided';
                         announceNewBurnPermit(address);
                         announcedPermitUIDs.add(permit.uid);
                     }
@@ -2384,7 +2403,7 @@ if (!empty($dashboardToken)) {
             eventDiv.classList.add('event');
 
             const uid = eventData.uid || '';
-            let address = eventData.address ? eventData.address.split(',')[0].trim() : 'Unknown Address'; if (address !== 'Unknown Address') { address = address.replace(/\b(?:Oakland(?:\s+Maine|\s+ME)?|Maine|ME)\b/gi, '').trim(); }
+            let address = eventData.address ? formatAddressTitleCase(eventData.address.split(',')[0].trim()) : 'Unknown Address'; if (address !== 'Unknown Address') { address = address.replace(/\b(?:Oakland(?:\s+Maine|\s+ME)?|Maine|ME)\b/gi, '').trim(); address = formatAddressTitleCase(address); }
             const type = eventData.type || 'Open Burn';
 
             const expDate = new Date(eventData.expires);
@@ -2439,7 +2458,7 @@ if (!empty($dashboardToken)) {
                 eventDiv.addEventListener('click', () => showPermitDetails(detailsHtml));
             }
 
-            let displayAddress = eventData.location ? eventData.location.split(',')[0].trim() : 'Address not provided'; if (displayAddress !== 'Address not provided') { displayAddress = displayAddress.replace(/\b(?:Oakland(?:\s+Maine|\s+ME)?|Maine|ME)\b/gi, '').trim(); }
+            let displayAddress = eventData.location ? formatAddressTitleCase(eventData.location.split(',')[0].trim()) : 'Address not provided'; if (displayAddress !== 'Address not provided') { displayAddress = displayAddress.replace(/\b(?:Oakland(?:\s+Maine|\s+ME)?|Maine|ME)\b/gi, '').trim(); displayAddress = formatAddressTitleCase(displayAddress); }
             let burnType = 'Type not specified';
             if (eventData.description) {
                 const descriptionParts = eventData.description.split('Details:');
