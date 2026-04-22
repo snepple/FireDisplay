@@ -22,7 +22,9 @@ if (file_exists($cacheFile)) {
     }
 }
 
-if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTime) {
+$forceRefresh = isset($_GET['force']) && $_GET['force'] == '1';
+
+if (!$forceRefresh && file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTime) {
     echo file_get_contents($cacheFile);
     return;
 }
