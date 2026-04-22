@@ -353,8 +353,6 @@ if (!empty($dashboardToken)) {
     </div>
 
     <div id="page-chores" class="page-container">
-        <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">Today's Overview</h2>
-
         <div id="chores-layout" style="display: flex; width: 100%; height: 100%; gap: clamp(2px, 1vh, 15px); min-height: 0;">
 
             <div id="chores-duties-column" style="flex: 1.5; display: flex; flex-direction: column; gap: clamp(2px, 1vh, 15px); min-width: 0; min-height: 0;">
@@ -367,8 +365,8 @@ if (!empty($dashboardToken)) {
         "></div>
                 </div>
 
-                <div class="chore-item" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding: clamp(4px, 1.5vh, 10px);">
-                    <h2 style="font-size: 1.5em; border: none; padding: 0; margin: 0 0 clamp(1px, 0.5vh, 5px) 0;">Today's Station Duties</h2>
+                <div class="chore-item" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; padding: clamp(4px, 1.5vh, 10px);">
+                    <h2 style="font-size: clamp(24px, 3vh, 45px); border: none; padding: 0; margin: 0 0 clamp(1px, 0.5vh, 5px) 0;">Today's Station Duties</h2>
                     <ul id="chore-list" class="chore-list"></ul>
                     <div id="holiday-container" style="display: none;"><p id="national-day" class="national-day"></p></div>
                 </div>
