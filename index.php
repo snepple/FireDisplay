@@ -133,7 +133,7 @@ if (!empty($dashboardToken)) {
         .event-until { font-size: 0.9em; color: var(--muted-text); font-weight: 400; }
 
         .permit-details { display: flex; flex-direction: column; width: 100%; gap: 4px; }
-        .permit-address { font-size: 2.4em; font-weight: 500; color: var(--text-color); white-space: normal; }
+        .permit-address { font-size: clamp(1.2em, 3vw, 2.4em); font-weight: 500; color: var(--text-color); white-space: normal; }
         .permit-burn-info { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .permit-type { font-size: 2.0em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; }
         .permit-time { font-size: 1.8em; color: var(--muted-text); font-weight: 400; }
@@ -146,7 +146,7 @@ if (!empty($dashboardToken)) {
 
 
         #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 4px; padding: clamp(4px, 1.5vh, 10px);}
-        #danger-meter { width: 60%; min-height: 60px; height: auto; padding: clamp(4px, 1.5vh, 10px); box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: clamp(5px, 1.5vh, 15px); display: flex; align-items: center; justify-content: center; font-size: 2.4em; font-weight: 700; text-transform: uppercase; }
+        #danger-meter { width: 60%; min-height: 60px; height: auto; padding: clamp(4px, 1.5vh, 10px); box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: clamp(5px, 1.5vh, 15px); display: flex; align-items: center; justify-content: center; font-size: clamp(1.2em, 3vw, 2.4em); font-weight: 700; text-transform: uppercase; }
         #danger-date { font-size: 0.3em; color: var(--muted-text); margin-top: clamp(1px, 0.5vh, 5px); }
         .risk-snow-cover { background-color: #ffffff; color: #000 !important; border-color:#000 !important;}
         .risk-low { background-color: #28a745; color:#fff;}
@@ -2421,7 +2421,7 @@ if (!empty($dashboardToken)) {
 
             if (locations.length > 0) {
                 const bounds = L.latLngBounds(locations);
-                permitMap.fitBounds(bounds, { padding: [75, 75] });
+                permitMap.fitBounds(bounds, { padding: [75, 75], maxZoom: 12 });
                 fetchAndRenderMapLocations();
 
                 setTimeout(() => permitMap.invalidateSize(), 100);
@@ -2433,7 +2433,7 @@ if (!empty($dashboardToken)) {
             eventDiv.classList.add('event');
 
             const uid = eventData.uid || '';
-            const address = eventData.address || 'Unknown Address';
+            let address = eventData.address ? eventData.address.split(',')[0].trim() : 'Unknown Address'; if (address !== 'Unknown Address') { address = address.replace(/\b(?:Oakland(?:\s+Maine|\s+ME)?|Maine|ME)\b/gi, '').trim(); }
             const type = eventData.type || 'Open Burn';
 
             const expDate = new Date(eventData.expires);
@@ -2501,7 +2501,7 @@ if (!empty($dashboardToken)) {
                 });
             }
 
-            let displayAddress = eventData.location ? eventData.location.split(',')[0].trim() : 'Address not provided';
+            let displayAddress = eventData.location ? eventData.location.split(',')[0].trim() : 'Address not provided'; if (displayAddress !== 'Address not provided') { displayAddress = displayAddress.replace(/\b(?:Oakland(?:\s+Maine|\s+ME)?|Maine|ME)\b/gi, '').trim(); }
             let burnType = 'Type not specified';
             if (eventData.description) {
                 const descriptionParts = eventData.description.split('Details:');
