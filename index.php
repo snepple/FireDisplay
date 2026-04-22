@@ -76,7 +76,7 @@ if (!empty($dashboardToken)) {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px;
+            padding: clamp(4px, 1.5vh, 10px);
             font-size: clamp(30px, 4vh, 60px);
             box-sizing: border-box;
             transition: background-color 0.5s, color 0.5s;
@@ -88,10 +88,10 @@ if (!empty($dashboardToken)) {
             display: none;
             min-height: 0;
         }
-        #page-dashboard { flex-direction: row; align-items: stretch; height: 100%; gap: 15px; width: 100%; }
-        #page-chores { flex-direction: column; align-items: center; height: 100%; gap: 15px; width: 100%; }
+        #page-dashboard { flex-direction: row; align-items: stretch; height: 100%; gap: clamp(2px, 1vh, 15px); width: 100%; }
+        #page-chores { flex-direction: column; align-items: center; height: 100%; gap: clamp(2px, 1vh, 15px); width: 100%; }
 
-        .main-layout { display: flex; flex-direction: column; height: 100%; gap: 15px; min-width: 0; }
+        .main-layout { display: flex; flex-direction: column; height: 100%; gap: clamp(2px, 1vh, 15px); min-width: 0; }
         #top-section { flex: 1; min-width: 0; }
         #combined-permits-container { flex: 2; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
         .container { width: 100%; flex: 1; display: flex; flex-direction: column; min-height: 0; }
@@ -104,7 +104,7 @@ if (!empty($dashboardToken)) {
 
             padding-bottom: 3px;
             margin-top: 0;
-            margin-bottom: 5px;
+            margin-bottom: clamp(1px, 0.5vh, 5px);
             font-size: 0.6em;
             letter-spacing: 1.5px;
             flex-shrink: 0;
@@ -116,7 +116,7 @@ if (!empty($dashboardToken)) {
             justify-content: space-between;
             align-items: center;
             background-color: var(--card-bg);
-            padding: 9px 18px;
+            padding: clamp(3px, 1vh, 9px) clamp(6px, 1.5vw, 18px);
 
             flex-shrink: 0;
             border-radius: 4px;
@@ -149,17 +149,17 @@ if (!empty($dashboardToken)) {
         .permit-type { font-size: 2.0em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; }
         .permit-time { font-size: 1.8em; color: var(--muted-text); font-weight: 400; }
 
-        .no-events { text-align: center; color: var(--muted-text); padding: 15px; background-color: var(--card-bg); font-size: 1.2em; flex-shrink: 0; }
+        .no-events { text-align: center; color: var(--muted-text); padding: clamp(6px, 1.5vh, 15px); background-color: var(--card-bg); font-size: 1.2em; flex-shrink: 0; }
 
-        .no-burn-permits { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 20px; box-sizing: border-box; }
+        .no-burn-permits { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: clamp(8px, 2vh, 20px); box-sizing: border-box; }
         .no-burn-permits img { max-width: 400px; width: 50%; height: auto; margin-bottom: 30px; }
         .no-burn-permits p { font-size: clamp(3em, 4vw, 5em); font-weight: 700; color: var(--text-color); margin: 0; line-height: 1.2; }
 
 
-        #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 4px; padding: 10px;}
-        #danger-meter { width: 60%; min-height: 60px; height: auto; padding: 10px; box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 2.4em; font-weight: 700; text-transform: uppercase; }
-        #danger-date { font-size: 0.3em; color: var(--muted-text); margin-top: 5px; }
-        .risk-snow-cover { background-color: var(--card-bg); color: var(--text-color); border: 2px solid var(--border-color); }
+        #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 4px; padding: clamp(4px, 1.5vh, 10px);}
+        #danger-meter { width: 60%; min-height: 60px; height: auto; padding: clamp(4px, 1.5vh, 10px); box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: clamp(5px, 1.5vh, 15px); display: flex; align-items: center; justify-content: center; font-size: 2.4em; font-weight: 700; text-transform: uppercase; }
+        #danger-date { font-size: 0.3em; color: var(--muted-text); margin-top: clamp(1px, 0.5vh, 5px); }
+        .risk-snow-cover { background-color: #ffffff; color: #000 !important; border-color:#000 !important;}
         .risk-low { background-color: #28a745; color:#fff;}
         .risk-moderate { background-color: #007bff; color:#fff;}
         .risk-high { background-color: #ffc107; color: #000 !important; }
@@ -170,19 +170,19 @@ if (!empty($dashboardToken)) {
         .permit-tooltip { background-color: rgba(255, 255, 255, 0.9); border: 1px solid #888; border-radius: 3px; color: var(--text-color); font-weight: bold; padding: 4px 8px; font-size: 0.9em; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
         .flame-marker-icon { filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.7)); }
 
-        #page-calendar { display: none; flex-direction: column; gap: 15px; }
-        .calendar-content-row { display: flex; flex: 1; gap: 15px; min-height: 0; margin-top: 15px; overflow: hidden;
+        #page-calendar { display: none; flex-direction: column; gap: clamp(2px, 1vh, 15px); height: 100%; }
+        .calendar-content-row { display: flex; flex: 1; gap: clamp(5px, 1.5vw, 15px); min-height: 0; margin-top: clamp(2px, 1vh, 15px); overflow: hidden;
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
         .calendar-content-row::-webkit-scrollbar { display: none; }
         .calendar-main-content { flex: 0 0 calc(85% - 7.5px); max-width: calc(85% - 7.5px); box-sizing: border-box; display: flex; flex-direction: column; min-height: 0; }
-        .calendar-sidebar { flex: 0 0 calc(15% - 7.5px); max-width: calc(15% - 7.5px); box-sizing: border-box; background-color: var(--card-bg); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; overflow: hidden;
+        .calendar-sidebar { flex: 0 0 calc(15% - 7.5px); max-width: calc(15% - 7.5px); box-sizing: border-box; background-color: var(--card-bg); border-radius: 8px; padding: clamp(4px, 1vh, 10px); display: flex; flex-direction: column; overflow: hidden;
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
         .calendar-sidebar::-webkit-scrollbar { display: none; }
-        .calendar-sidebar h3 { font-size: 0.9em; text-align: center; margin: 0 0 10px 0; color: var(--muted-text);  padding-bottom: 5px; flex-shrink: 0; }
+        .calendar-sidebar h3 { font-size: clamp(10px, 1.5vh, 0.9em); text-align: center; margin: 0 0 clamp(2px, 0.5vh, 10px) 0; color: var(--muted-text);  padding-bottom: clamp(1px, 0.5vh, 5px); flex-shrink: 0; }
 
         #open-shifts-section { display: flex; flex-direction: column; flex-grow: 1; min-height: 0; }
         #open-shifts-list { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; padding-top: 5px; min-height: 0;
@@ -194,34 +194,35 @@ if (!empty($dashboardToken)) {
         .open-shift-link, .open-shift-link:visited { text-decoration: none; color: inherit; display: block; }
 
         .open-shift-item {
+            padding: clamp(4px, 1vh, 10px) clamp(6px, 1vw, 12px);
             display: flex; justify-content: space-between; align-items: center;
-            background-color: var(--item-bg); padding: 10px 12px; border-radius: 6px;
-            margin-bottom: 8px; font-size: clamp(10px, 1.1vw, 16px); gap: 15px;
+            background-color: var(--item-bg);  border-radius: 6px;
+            margin-bottom: clamp(2px, 0.5vh, 8px); font-size: clamp(8px, 1vw, 16px); gap: clamp(5px, 1vw, 15px);
             flex-shrink: 0; border: 1px solid var(--border-color);
         }
         .open-shift-item:hover { background-color: var(--event-hover); }
-        .open-shift-date { font-weight: 600; font-size: 1.1em; color: var(--text-color); white-space: nowrap; flex-shrink: 0; }
+        .open-shift-date { font-weight: 600; font-size: clamp(8px, 1.2vh, 1.1em); color: var(--text-color); white-space: nowrap; flex-shrink: 0; }
         .open-shift-right { display: flex; flex-direction: column; align-items: flex-end; min-width: 0; flex-shrink: 1; }
-        .open-shift-role { font-weight: 800; color: #ff6b6b; font-size: 0.95em; line-height: 1.2; white-space: nowrap; overflow: hidden;
+        .open-shift-role { font-weight: 800; color: #ff6b6b; font-size: clamp(8px, 1.2vh, 0.95em); line-height: 1.2; white-space: nowrap; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
 
         ::-webkit-scrollbar {
             display: none;
-        } text-overflow: ellipsis; max-width: 100%; }
-        .open-shift-time { font-size: 0.8em; color: var(--muted-text); font-weight: 500; white-space: nowrap; }
+        } .open-shift-role { text-overflow: ellipsis; max-width: 100%; overflow: hidden; }
+        .open-shift-time { font-size: clamp(6px, 1vh, 0.8em); color: var(--muted-text); font-weight: 500; white-space: nowrap; }
 
         .calendar-arrow { opacity: 0.15; cursor: pointer; transition: opacity 0.3s ease; user-select: none; padding: 0 15px; font-size: 24px; }
         .calendar-arrow:hover { opacity: 0.8; }
 
-        #calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; flex-grow: 1; min-height: min-content; }
+        #calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: clamp(2px, 0.5vh, 5px); flex-grow: 1; min-height: 0; }
 
-        .chores-header, .calendar-header { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; margin-bottom: 5px; }
-        .chores-header { font-size: 12pt; color: #ffc107; font-weight: bold; }
-        .calendar-header { font-size: 0.9em; color: var(--muted-text); }
+        .chores-header, .calendar-header { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; margin-bottom: clamp(1px, 0.5vh, 5px); }
+        .chores-header { font-size: clamp(8pt, 1.5vh, 12pt); color: #ffc107; font-weight: bold; }
+        .calendar-header { font-size: clamp(8px, 1.2vh, 0.9em); color: var(--muted-text); }
 
-        .calendar-day { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 5px; font-size: 0.9em; display: flex; flex-direction: column; overflow: hidden;
+        .calendar-day { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: clamp(1px, 0.5vh, 5px); font-size: clamp(8px, 1.2vh, 0.9em); display: flex; flex-direction: column; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
@@ -232,35 +233,35 @@ if (!empty($dashboardToken)) {
         .calendar-day.is-today { background-color: var(--today-bg); border-color: var(--today-border); }
         .calendar-day.other-month { opacity: 0.3; }
 
-        .day-number { display: flex; justify-content: space-between; align-items: center; color: var(--muted-text); margin-bottom: 5px; font-weight: 700; flex-shrink: 0; }
+        .day-number { display: flex; justify-content: space-between; align-items: center; color: var(--muted-text); margin-bottom: 1px; font-weight: 700; flex-shrink: 0; font-size: clamp(8px, 1.5vh, 12pt); }
         .calendar-day.new-month { border-top: 2px solid #ffc107; }
         .calendar-day.new-month .day-number { color: #ffc107; }
-        .chore-number { font-size: 1.0em; font-weight: normal; color: #ffc107; background-color: rgba(255, 255, 255, 0.1); border-radius: 50%; width: 1.5em; height: 1.5em; display: inline-flex; align-items: center; justify-content: center; }
+        .chore-number { font-size: 1.0em; font-weight: normal; color: #ffc107; background-color: rgba(255, 255, 255, 0.1); border-radius: 50%; width: 1.2em; height: 1.2em; display: inline-flex; align-items: center; justify-content: center; }
         body.light-theme .chore-number { background-color: rgba(0,0,0,0.05); }
 
         .calendar.event:nth-child(even) { background-color: rgba(255, 255, 255, 0.03); }
         body.light-theme .event:nth-child(even) { background-color: rgba(0, 0, 0, 0.03); }
-        .event { font-size: clamp(6px, 1.2vh, 10pt); padding: 1px 4px; border-radius: 3px; margin-bottom: 2px; white-space: nowrap; overflow: hidden;
+        .event { font-size: clamp(4px, 1.2vh, 10pt); padding: 1px 4px; border-radius: 3px; margin-bottom: clamp(1px, 0.2vh, 2px); white-space: nowrap; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
 
         ::-webkit-scrollbar {
             display: none;
-        } text-overflow: ellipsis; border: 1px solid transparent; line-height: 1.2; flex-shrink: 1; min-height: 0; }
+        } .event { text-overflow: ellipsis; border: 1px solid transparent; line-height: 1.2; flex-shrink: 1; min-height: 0; overflow: hidden; }
 
         .calendar-event.event-open { background-color: transparent; background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(128,128,128,0.2) 4px, rgba(128,128,128,0.2) 8px); color: var(--text-color); border: 1px dashed var(--muted-text); }
         .event-career { background-color: #6f42c1; color: white; }
         .event-per-diem { background-color: #e83e8c; color: white; }
         .event-night-duty { background-color: #fd7e14; color: white; }
         .event-town-meeting { background-color: #007bff; color: white; }
-        .event-dept { background-color: #20c997; color: var(--text-color); }
-        .event-unpublished { background-color: transparent; color: var(--muted-text); text-align: center; border: 1px dashed var(--border-color); font-style: italic; padding: 4px; margin-top: 5px; white-space: normal; }
+        .event-dept { background-color: #20c997; color: #000; }
+        .event-unpublished { background-color: transparent; color: var(--muted-text); text-align: center; border: 1px dashed var(--border-color); font-style: italic; padding: 4px; margin-top: clamp(1px, 0.5vh, 5px); white-space: normal; }
 
-        .calendar-legend { display: flex; justify-content: center; gap: 25px; margin-bottom: 10px; font-size: 11pt; color: var(--muted-text); flex-shrink: 0; }
-        .legend-item { display: flex; align-items: center; gap: 8px; }
-        .legend-color-box { width: 20px; height: 20px; border-radius: 4px; }
-        .chore-item { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 25px 40px; border-radius: 8px; text-align: center; overflow: hidden;
+        .calendar-legend { display: flex; justify-content: center; gap: clamp(10px, 1.5vw, 25px); margin-bottom: clamp(2px, 0.5vh, 10px); font-size: clamp(8pt, 1vh, 11pt); color: var(--muted-text); flex-shrink: 0; }
+        .legend-item { display: flex; align-items: center; gap: clamp(2px, 0.5vw, 8px); }
+        .legend-color-box { width: clamp(10px, 1.5vh, 20px); height: clamp(10px, 1.5vh, 20px); border-radius: 4px; }
+        .chore-item { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: clamp(10px, 2vh, 25px) clamp(15px, 2vw, 40px); border-radius: 8px; text-align: center; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
@@ -269,13 +270,13 @@ if (!empty($dashboardToken)) {
             display: none;
         } min-height: 0; }
         .chore-list { list-style-type: none; padding: 0; margin: 0; font-size: clamp(30px, 5vh, 70px); font-weight: 700; line-height: 1.5; color: var(--text-color); }
-        #page-chores .chore-list li { font-size: clamp(30px, 6.5vh, 80px); line-height: 1.2; list-style-type: none; margin-bottom: 10px; }
+        #page-chores .chore-list li { font-size: clamp(30px, 6.5vh, 80px); line-height: 1.2; list-style-type: none; margin-bottom: clamp(2px, 1vh, 10px); }
         .national-day { font-size: 18pt; color: var(--muted-text); font-style: italic; margin-top: 20px; }
         #debug-log { display: none; }
 
-        #permit-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 10000; justify-content: center; align-items: center; padding: 10px; box-sizing: border-box; }
-        #permit-modal-content { background-color: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--muted-text); width: 100%; max-width: 900px; color: var(--text-color); font-size: 0.9em; cursor: pointer; display: flex; flex-direction: column; }
-        #permit-modal-header h2 { margin-top: 0; margin-bottom: 5px; font-size: 0.9em; color: #ffc107;  white-space: nowrap; }
+        #permit-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 10000; justify-content: center; align-items: center; padding: clamp(4px, 1.5vh, 10px); box-sizing: border-box; }
+        #permit-modal-content { background-color: var(--card-bg); padding: clamp(6px, 1.5vh, 15px); border-radius: 8px; border: 1px solid var(--muted-text); width: 100%; max-width: 900px; color: var(--text-color); font-size: 0.9em; cursor: pointer; display: flex; flex-direction: column; }
+        #permit-modal-header h2 { margin-top: 0; margin-bottom: clamp(1px, 0.5vh, 5px); font-size: 0.9em; color: #ffc107;  white-space: nowrap; }
         #permit-modal-body { max-height: 70vh; overflow-y: auto; line-height: 1.4; }
         #permit-modal-body table { width: 100%; border-collapse: collapse; font-size: 11pt; }
         #permit-modal-body td { padding: 5px;  vertical-align: top; }
@@ -295,15 +296,15 @@ if (!empty($dashboardToken)) {
         .announcement-content p { font-size: 16pt; line-height: 1.4; margin: 0 0 10px 0; color: var(--text-color); }
         .announcement-content h1, .announcement-content h2, .announcement-content h3 { color: #ffc107; margin-top:0; border:none; padding:0; text-align: left; }
         .announcement-content ul, .announcement-content ol { text-align: left; font-size: 16pt; margin: 0 0 10px 20px; color: var(--text-color);}
-        .announcement-card { background: var(--item-bg); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 10px; text-align: left;}
+        .announcement-card { background: var(--item-bg); padding: clamp(4px, 1.5vh, 10px); border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: clamp(2px, 1vh, 10px); text-align: left;}
 
         #admin-link:hover { opacity: 1 !important; }
 
-        #page-chores h2 { font-size: 1.5em; }
-        #page-chores .event { font-size: clamp(16px, 2.5vh, 35px); padding: 15px 25px; margin-bottom: 8px; }
-        #page-chores .event-name { font-size: 1.6em; }
-        #page-chores .event-role { font-size: 1.3em; }
-        #page-chores .event-until { font-size: 1.2em; }
+        #page-chores h2 { font-size: 0.8em; }
+        #page-chores .event { font-size: clamp(12px, 2.5vh, 35px); padding: clamp(4px, 1vh, 10px) clamp(6px, 1vw, 15px); margin-bottom: clamp(1px, 0.5vh, 5px); }
+        #page-chores .event-name { font-size: 1.2em; }
+        #page-chores .event-role { font-size: 1em; }
+        #page-chores .event-until { font-size: 1em; }
     </style>
 </head>
 <body>
@@ -327,7 +328,7 @@ if (!empty($dashboardToken)) {
                 <h2>🔥 Fire Danger</h2>
                 <div id="fire-danger-content">
                      <div id="danger-meter">Loading...</div>
-                     <img id="danger-image" src="" alt="Fire Danger Level" style="display:none; max-width: 60%; height: auto; margin-bottom: 15px; border-radius: 5px;" />
+                     <img id="danger-image" src="" alt="Fire Danger Level" style="display:none; max-width: 60%; height: auto; margin-bottom: clamp(5px, 1.5vh, 15px); border-radius: 5px;" />
                      <div id="danger-date"></div>
 
                 </div>
@@ -335,7 +336,7 @@ if (!empty($dashboardToken)) {
         </div>
         <div class="container" id="combined-permits-container">
              <h2>Active Online-Issued Burn Permits</h2>
-             <div id="permits-content-wrapper" style="display: flex; flex-grow: 1; min-height: 0; gap: 15px; width: 100%;">
+             <div id="permits-content-wrapper" style="display: flex; flex-grow: 1; min-height: 0; gap: clamp(2px, 1vh, 15px); width: 100%;">
                  <div id="burnPermitsContainer" style="flex: 1; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
@@ -352,7 +353,7 @@ if (!empty($dashboardToken)) {
     <div id="page-calendar" class="page-container">
         <div class="calendar-content-row">
             <div class="calendar-main-content">
-                <div style="display: flex; justify-content: center; align-items: center;  margin-bottom: 5px; padding-bottom: 3px; flex-shrink: 0;">
+                <div style="display: flex; justify-content: center; align-items: center;  margin-bottom: clamp(1px, 0.5vh, 5px); padding-bottom: 3px; flex-shrink: 0;">
                     <button class="calendar-arrow" aria-label="Previous month" onclick="changeMonth(-1)" style="background:none;border:none;color:inherit;font:inherit;">&#10094;</button>
                     <h2 id="calendar-month-year" style="border: none; margin: 0; padding: 0;"></h2>
                     <button class="calendar-arrow" aria-label="Next month" onclick="changeMonth(1)" style="background:none;border:none;color:inherit;font:inherit;">&#10095;</button>
@@ -370,7 +371,7 @@ if (!empty($dashboardToken)) {
                 </div>
                 <div class="calendar-header"><div>Sunday</div><div>Monday</div><div>Tuesday</div><div>Wednesday</div><div>Thursday</div><div>Friday</div><div>Saturday</div></div>
                 <div id="calendar-grid"></div>
-                <div id="schedule-published-text" style="font-size: 0.9em; color: var(--muted-text); text-align: center; margin-top: 5px; flex-shrink: 0;"></div>
+                <div id="schedule-published-text" style="font-size: 0.9em; color: var(--muted-text); text-align: center; margin-top: clamp(1px, 0.5vh, 5px); flex-shrink: 0;"></div>
             </div>
             <div class="calendar-sidebar">
                 <div id="open-shifts-section">
@@ -382,14 +383,14 @@ if (!empty($dashboardToken)) {
     </div>
 
     <div id="page-chores" class="page-container">
-        <h2 style="margin-bottom: 5px;">Today's Overview</h2>
+        <h2 style="margin-bottom: clamp(1px, 0.5vh, 5px);">Today's Overview</h2>
 
-        <div id="chores-layout" style="display: flex; width: 100%; height: calc(100% - 120px); gap: 15px; min-height: 0;">
+        <div id="chores-layout" style="display: flex; width: 100%; height: 100%; gap: clamp(2px, 1vh, 15px); min-height: 0;">
 
-            <div id="chores-duties-column" style="flex: 1.5; display: flex; flex-direction: column; gap: 15px; min-width: 0; min-height: 0;">
+            <div id="chores-duties-column" style="flex: 1.5; display: flex; flex-direction: column; gap: clamp(2px, 1vh, 15px); min-width: 0; min-height: 0;">
 
-                <div class="chore-item" id="announcements-wrapper" style="display: none; flex-direction: column; padding: 10px;">
-                    <h2 style="font-size: 1.5em; border: none; padding: 0; margin: 0 0 5px 0; color: #ffc107;">📢 Announcements</h2>
+                <div class="chore-item" id="announcements-wrapper" style="display: none; flex-direction: column; padding: clamp(4px, 1.5vh, 10px);">
+                    <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 clamp(1px, 0.5vh, 5px) 0; color: #ffc107;">📢 Announcements</h2>
                     <div id="announcements-container" style="display: flex; flex-direction: column; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
@@ -400,15 +401,15 @@ if (!empty($dashboardToken)) {
         }"></div>
                 </div>
 
-                <div class="chore-item" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding: 10px;">
-                    <h2 style="font-size: 1.5em; border: none; padding: 0; margin: 0 0 5px 0;">Today's Station Duties</h2>
+                <div class="chore-item" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding: clamp(4px, 1.5vh, 10px);">
+                    <h2 style="font-size: 1.5em; border: none; padding: 0; margin: 0 0 clamp(1px, 0.5vh, 5px) 0;">Today's Station Duties</h2>
                     <ul id="chore-list" class="chore-list"></ul>
                     <div id="holiday-container" style="display: none;"><p id="national-day" class="national-day"></p></div>
                 </div>
             </div>
 
             <div id="chores-staff-column" style="flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0;">
-                 <div class="chore-item" style="height: 100%; box-sizing: border-box; display: flex; flex-direction: column; padding: 10px; overflow: hidden;
+                 <div class="chore-item" style="height: 100%; box-sizing: border-box; display: flex; flex-direction: column; padding: clamp(4px, 1.5vh, 10px); overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
@@ -417,22 +418,22 @@ if (!empty($dashboardToken)) {
             display: none;
         } min-height: 0;">
 
-                     <div id="dept-events-container" style="display: none; margin-bottom: 15px; flex-shrink: 0;">
-                         <h2 style="font-size: 1.5em; border: none; padding: 0; margin: 0 0 5px 0;">📅 Department Events</h2>
-                         <div id="dept-events-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                     <div id="dept-events-container" style="display: none; margin-bottom: clamp(5px, 1.5vh, 15px); flex-shrink: 0;">
+                         <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 clamp(1px, 0.5vh, 5px) 0;">📅 Department Events</h2>
+                         <div id="dept-events-list" style="display: flex; flex-direction: column; gap: clamp(4px, 1vh, 10px);"></div>
                      </div>
 
-                     <div id="town-meetings-container" style="display: none; margin-bottom: 15px; flex-shrink: 0;">
-                         <h2 style="font-size: 1.5em; border: none; padding: 0; margin: 0 0 5px 0;">🏛️ Town Meetings Here</h2>
-                         <div id="town-meetings-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                     <div id="town-meetings-container" style="display: none; margin-bottom: clamp(5px, 1.5vh, 15px); flex-shrink: 0;">
+                         <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 clamp(1px, 0.5vh, 5px) 0;">🏛️ Town Meetings Here</h2>
+                         <div id="town-meetings-list" style="display: flex; flex-direction: column; gap: clamp(4px, 1vh, 10px);"></div>
                      </div>
 
                      <div id="chores-on-duty-now-wrapper" style="flex-shrink: 0;">
-                          <h2 style="font-size: clamp(24px, 3vh, 45px); border: none; padding: 0; margin: 0 0 5px 0;">🧑‍🚒 On Duty</h2>
+                          <h2 style="font-size: clamp(24px, 3vh, 45px); border: none; padding: 0; margin: 0 0 clamp(1px, 0.5vh, 5px) 0;">🧑‍🚒 On Duty</h2>
                           <div id="chores-on-duty-container"></div>
                      </div>
-                     <div id="chores-on-duty-later-wrapper" style="margin-top: 15px; flex-shrink: 0;">
-                          <h2 style="font-size: clamp(24px, 3vh, 45px); border: none; padding: 0; margin: 0 0 5px 0;">🗓️ On Duty Later Today</h2>
+                     <div id="chores-on-duty-later-wrapper" style="margin-top: clamp(5px, 1.5vh, 15px); flex-shrink: 0;">
+                          <h2 style="font-size: clamp(24px, 3vh, 45px); border: none; padding: 0; margin: 0 0 clamp(1px, 0.5vh, 5px) 0;">🗓️ On Duty Later Today</h2>
                           <div id="chores-on-duty-later-container"></div>
                      </div>
                  </div>
@@ -2126,7 +2127,7 @@ if (!empty($dashboardToken)) {
 
             let html = `<table><tbody>${cleanedDetailsHtml}</tbody></table>`;
             if (lat !== null && lon !== null) {
-                html += '<div id="modalMap" style="height: 200px; width: 100%; margin-top: 15px; border-radius: 4px; pointer-events: none;"></div>';
+                html += '<div id="modalMap" style="height: 200px; width: 100%; margin-top: clamp(5px, 1.5vh, 15px); border-radius: 4px; pointer-events: none;"></div>';
             }
             modalBody.innerHTML = html;
             modalOverlay.style.display = 'flex';
