@@ -610,6 +610,40 @@ if (!empty($dashboardToken)) {
         }
 
         function pruneCalendar() {
+            const pageCalendar = document.getElementById('page-calendar');
+            const grid = document.getElementById('calendar-grid');
+            if (pageCalendar && grid && pageCalendar.clientHeight > 0) {
+                const days = grid.querySelectorAll('.calendar-day');
+                if (days.length > 0) {
+                    let todayIndex = -1;
+                    for (let i = 0; i < days.length; i++) {
+                        if (days[i].classList.contains('is-today')) {
+                            todayIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (todayIndex >= 7) {
+                        let currentWeekIndex = Math.floor(todayIndex / 7);
+                        let hiddenRows = 0;
+
+                        while (pageCalendar.scrollHeight > pageCalendar.clientHeight + 2 && hiddenRows < currentWeekIndex) {
+                            const startIndex = hiddenRows * 7;
+                            for (let i = 0; i < 7; i++) {
+                                if (days[startIndex + i]) {
+                                    days[startIndex + i].style.display = 'none';
+                                }
+                            }
+                            hiddenRows++;
+
+                            const totalWeeks = days.length / 7;
+                            const remainingWeeks = totalWeeks - hiddenRows;
+                            grid.style.gridTemplateRows = `repeat(${remainingWeeks}, minmax(0, 1fr))`;
+                        }
+                    }
+                }
+            }
+
             const sidebar = document.querySelector('.calendar-sidebar');
             const list = document.getElementById('open-shifts-list');
             if (sidebar && list) {
