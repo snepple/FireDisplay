@@ -411,7 +411,7 @@ var JS = {
 				text: labeltext,
                 id: labeltext,
 				className: 'zoneLabel',
-				color: "black",
+				color: "var(--text-color)",
 				fontWeight: "bold",
 				fontSize: "26px"
 			},
