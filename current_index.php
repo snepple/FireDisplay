@@ -347,7 +347,7 @@ if (!empty($dashboardToken)) {
                 </div>
                 <div class="calendar-header"><div>Sunday</div><div>Monday</div><div>Tuesday</div><div>Wednesday</div><div>Thursday</div><div>Friday</div><div>Saturday</div></div>
                 <div id="calendar-grid"></div>
-                <div id="schedule-published-text" style="font-size: 0.9em; color: var(--muted-text); text-align: center; margin-top: clamp(1px, 0.5vh, 5px); flex-shrink: 0;"></div>
+                <div id="schedule-published-text" style="font-size: 0.4em; color: var(--muted-text); text-align: center; margin-top: clamp(1px, 0.5vh, 5px); flex-shrink: 0;"></div>
             </div>
             <div class="calendar-sidebar">
                 <div id="open-shifts-section">
