@@ -173,7 +173,7 @@ function extractBurnPermit($body, $subject) {
         $burn_location_address = trim($matches[1]);
     }
 
-    $primary_address = $burn_location_address ? $burn_location_address : $person_address;
+    $primary_address = !empty($burn_location_address) && trim($burn_location_address) !== '--' ? $burn_location_address : $person_address;
 
     $burn_location_property = "";
     if (preg_match('/Burn Location on the Property:\s*(.*?)\s*Municipality\/Unorganized Territory:/i', $clean, $matches)) {
@@ -213,7 +213,7 @@ function extractBurnPermit($body, $subject) {
             $burn_type = $geminiResult['burn_type'] ?? $burn_type;
             $items_to_burn = $geminiResult['items_to_burn'] ?? $items_to_burn;
 
-            $primary_address = !empty($burn_location_address) ? $burn_location_address : $person_address;
+            $primary_address = !empty($burn_location_address) && trim($burn_location_address) !== '--' ? $burn_location_address : $person_address;
 
             if (!empty($geminiResult['expires_date'])) {
                 $parsed_time = strtotime($geminiResult['expires_date']);
