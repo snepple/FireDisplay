@@ -63,6 +63,49 @@ if (strpos($to, $danger_addr) !== false || strpos($subject, 'Fire Danger') !== f
     }
 }
 
+function callGeminiExtract($systemInstruction, $textToParse, $config) {
+    $apiKey = $config['api_integrations']['gemini_api_key'] ?? '';
+    if (empty($apiKey)) return null;
+
+    $payload = [
+        "contents" => [
+            [
+                "parts" => [
+                    ["text" => $systemInstruction . "\nText to parse: " . $textToParse]
+                ]
+            ]
+        ],
+        "generationConfig" => [
+            "temperature" => 0.1,
+        ]
+    ];
+
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $apiKey;
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode !== 200 || !$response) return null;
+
+    $responseData = json_decode($response, true);
+    $textOutput = $responseData['candidates'][0]['content']['parts'][0]['text'] ?? '';
+    if (empty($textOutput)) return null;
+
+    // Clean markdown code blocks
+    $textOutput = trim(str_replace(['```json', '```'], '', $textOutput));
+    $parsed = json_decode($textOutput, true);
+
+    return $parsed;
+}
+
 function extractFireDanger($body, $subject, $config) {
     $zone = isset($config['fire_danger_zone']) ? $config['fire_danger_zone'] : '7';
     $level = "Unknown";
@@ -83,6 +126,15 @@ function extractFireDanger($body, $subject, $config) {
         }
     }
 
+    if ($level === "Unknown") {
+        $instruction = "You are an assistant for a local fire department. Extract the fire danger level from the provided email text. The possible levels are: Extreme, Very High, High, Moderate, Low. Return your response strictly as a JSON object with one key: \"level\" (string). If the level cannot be determined, return \"Unknown\". Example output: {\"level\": \"Moderate\"}";
+        $geminiResult = callGeminiExtract($instruction, $subject . "\n" . $clean_body, $config);
+
+        if ($geminiResult && isset($geminiResult['level']) && in_array(ucwords(strtolower($geminiResult['level'])), $levels)) {
+            $level = ucwords(strtolower($geminiResult['level']));
+        }
+    }
+
     return [
         'level' => $level,
         'updated_at' => date('c')
@@ -90,6 +142,8 @@ function extractFireDanger($body, $subject, $config) {
 }
 
 function extractBurnPermit($body, $subject) {
+    global $config;
+
     $clean = strip_tags(str_replace(array("\n", "\r"), ' ', $body));
     $clean = preg_replace('/\s+/', ' ', $clean);
     $clean = trim($clean);
@@ -141,6 +195,32 @@ function extractBurnPermit($body, $subject) {
         $parsed_time = strtotime(trim($matches[1]));
         if ($parsed_time !== false) {
             $expires = date('c', $parsed_time);
+        }
+    }
+
+    // Fallback to Gemini if regex fails to extract essential fields
+    if ($name === "Unknown" || $primary_address === "Unknown Address") {
+        $instruction = "You are an assistant for a local fire department. Extract burn permit details from the provided email text. Return your response strictly as a JSON object with the following keys: \"name\" (string), \"person_address\" (string), \"phone\" (string), \"email\" (string), \"burn_location_address\" (string), \"burn_location_property\" (string), \"burn_type\" (string), \"items_to_burn\" (string), \"expires_date\" (string, format YYYY-MM-DD). If a field cannot be found, return an empty string for it. Example output: {\"name\": \"John Doe\", \"person_address\": \"123 Main St\", \"phone\": \"555-1234\", \"email\": \"\", \"burn_location_address\": \"\", \"burn_location_property\": \"Backyard\", \"burn_type\": \"Brush\", \"items_to_burn\": \"Leaves\", \"expires_date\": \"2024-04-15\"}";
+        $geminiResult = callGeminiExtract($instruction, $clean, $config);
+
+        if ($geminiResult) {
+            $name = $geminiResult['name'] ?? $name;
+            $person_address = $geminiResult['person_address'] ?? $person_address;
+            $phone = $geminiResult['phone'] ?? $phone;
+            $email = $geminiResult['email'] ?? $email;
+            $burn_location_address = $geminiResult['burn_location_address'] ?? $burn_location_address;
+            $burn_location_property = $geminiResult['burn_location_property'] ?? $burn_location_property;
+            $burn_type = $geminiResult['burn_type'] ?? $burn_type;
+            $items_to_burn = $geminiResult['items_to_burn'] ?? $items_to_burn;
+
+            $primary_address = !empty($burn_location_address) ? $burn_location_address : $person_address;
+
+            if (!empty($geminiResult['expires_date'])) {
+                $parsed_time = strtotime($geminiResult['expires_date']);
+                if ($parsed_time !== false) {
+                    $expires = date('c', $parsed_time);
+                }
+            }
         }
     }
 
