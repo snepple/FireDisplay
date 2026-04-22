@@ -300,7 +300,7 @@ if (!empty($dashboardToken)) {
 
         #admin-link:hover { opacity: 1 !important; }
 
-        #page-chores h2 { font-size: 0.8em; }
+        #page-chores h2 { font-size: clamp(24px, 3vh, 45px); }
         #page-chores .event { font-size: clamp(12px, 2.5vh, 35px); padding: clamp(4px, 1vh, 10px) clamp(6px, 1vw, 15px); margin-bottom: clamp(1px, 0.5vh, 5px); }
         #page-chores .event-name { font-size: 1.2em; }
         #page-chores .event-role { font-size: 1em; }
@@ -321,7 +321,7 @@ if (!empty($dashboardToken)) {
     <div id="page-dashboard" class="page-container">
         <div class="main-layout" id="top-section">
             <div class="container">
-                <h2>🔥 Fire Danger</h2>
+                <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">🔥 Fire Danger</h2>
                 <div id="fire-danger-content">
                      <div id="danger-meter">Loading...</div>
                      <div id="danger-date"></div>
@@ -332,7 +332,7 @@ if (!empty($dashboardToken)) {
             </div>
         </div>
         <div class="container" id="combined-permits-container">
-             <h2>Active Online-Issued Burn Permits</h2>
+             <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">Active Online-Issued Burn Permits</h2>
              <div id="permits-content-wrapper" style="display: flex; flex-grow: 1; min-height: 0; gap: clamp(2px, 1vh, 15px); width: 100%;">
                  <div id="burnPermitsContainer" style="flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
@@ -372,7 +372,7 @@ if (!empty($dashboardToken)) {
             </div>
             <div class="calendar-sidebar">
                 <div id="open-shifts-section">
-                    <h3>Upcoming Open Shifts</h3>
+                    <h3 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">Upcoming Open Shifts</h3>
                     <div id="open-shifts-list"></div>
                 </div>
             </div>
@@ -380,7 +380,7 @@ if (!empty($dashboardToken)) {
     </div>
 
     <div id="page-chores" class="page-container">
-        <h2 style="margin-bottom: clamp(1px, 0.5vh, 5px);">Today's Overview</h2>
+        <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">Today's Overview</h2>
 
         <div id="chores-layout" style="display: flex; width: 100%; height: 100%; gap: clamp(2px, 1vh, 15px); min-height: 0;">
 
