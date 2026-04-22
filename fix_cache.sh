@@ -1,0 +1,3 @@
+cat << 'INNER_EOF' > data/mainefireweather_cache.json
+{"classdays":{"1":"2","2":"2","3":"2","4":"3","5":"2","6":"2","7":"3","8":"3","9":"3","10":"3","11":"3","12":"3"},"lastUpdate":"Apr 22 2026, 8AM"}
+INNER_EOF
