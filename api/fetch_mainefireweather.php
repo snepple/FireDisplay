@@ -5,7 +5,9 @@ header("Content-Type: application/json; charset=utf-8");
 $cacheFile = __DIR__ . '/../data/mainefireweather_cache.json';
 $cacheTime = 3600; // 1 hour
 
-if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTime) {
+$forceRefresh = isset($_GET['force']) && $_GET['force'] == '1';
+
+if (!$forceRefresh && file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTime) {
     echo file_get_contents($cacheFile);
     return;
 }
