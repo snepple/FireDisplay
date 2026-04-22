@@ -440,12 +440,6 @@ var JS = {
         });
 */
 		JS.addMapListener(thisMarker,"labelClick");
-		// google.maps.event.addListener(thisMarker, 'click', function() {
-		// // 	//do nothing for now
-		//  	console.log("Clicked marker label for zone "+labeltext);
-		// // 	console.log("marker Label",this);
-
-		// });
 
 	},
 
