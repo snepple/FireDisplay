@@ -550,6 +550,17 @@ if (!empty($dashboardToken)) {
             className: 'flame-marker-icon'
         });
 
+        const stationIcon = L.divIcon({
+            className: "custom-station-marker",
+            html: "<div style=\"width: 28px; height: 28px; background-color: #dc3545; border: 2px solid white; border-radius: 4px; box-shadow: 0 0 5px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"white\" width=\"16\" height=\"16\"><path d=\"M19 9.3V4h-3v2.6L12 3 2 12h3v8h5v-6h4v6h5v-8h3l-3-2.7zm-9 .7c0-1.1.9-2 2-2s2 .9 2 2h-4z\"/></svg></div>",
+            iconSize: [28, 28],
+            iconAnchor: [14, 14],
+            popupAnchor: [0, -14],
+            tooltipAnchor: [14, 0]
+        });
+
+
+
         window.changeMonth = function(delta) {
             calendarMonthOffset += delta;
             renderCalendar(currentFireEvents, currentTownMeetings);
@@ -2289,6 +2300,7 @@ if (!empty($dashboardToken)) {
                     if(permitMapLayerControl) permitMapLayerControl.addOverlay(staticLocationsLayerGroup, 'Map Locations');
                 }
 
+                // Add predefined map locations
                 locations.forEach(loc => {
                     if (loc.lat && loc.lon) {
                         let color = '#3388ff';
@@ -2306,6 +2318,67 @@ if (!empty($dashboardToken)) {
                             opacity: 1,
                             fillOpacity: 0.8
                         });
+
+                        marker.bindPopup(`<strong>${loc.type || 'Location'}</strong><br>${loc.address}`);
+                        marker.addTo(staticLocationsLayerGroup);
+                    }
+                });
+
+                // Add fire stations from config
+                if (appConfig && appConfig.department_info && appConfig.department_info.stations) {
+                    const stations = appConfig.department_info.stations;
+
+                    const stationPromises = stations.map(async (station) => {
+                        const address = station.address;
+                        if (!address) return null;
+
+                        let geocoded = null;
+                        if (geocodeCache.has(address)) {
+                            geocoded = geocodeCache.get(address);
+                        } else {
+                            const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+                            try {
+                                const nominatimResult = await fetch(url).then(res => res.json());
+                                if (nominatimResult && nominatimResult.length > 0) {
+                                    geocoded = nominatimResult;
+                                    geocodeCache.set(address, nominatimResult);
+                                } else {
+                                    const fallbackUrl = `api/gemini_geocode.php?address=${encodeURIComponent(address)}`;
+                                    const geminiResult = await fetch(fallbackUrl).then(res => res.json());
+                                    if (geminiResult && geminiResult.lat && geminiResult.lon) {
+                                        geocoded = [{ lat: geminiResult.lat, lon: geminiResult.lon }];
+                                        geocodeCache.set(address, geocoded);
+                                    }
+                                }
+                            } catch (e) {
+                                console.error("Error geocoding station:", e);
+                            }
+                        }
+
+                        if (geocoded && geocoded.length > 0) {
+                            return { station: station, coords: geocoded[0] };
+                        }
+                        return null;
+                    });
+
+                    const resolvedStations = await Promise.all(stationPromises);
+
+                    resolvedStations.forEach(result => {
+                        if (result) {
+                            const { station, coords } = result;
+                            const marker = L.marker([coords.lat, coords.lon], {
+                                icon: stationIcon,
+                                zIndexOffset: 1000 // Ensure stations are always on top
+                            });
+
+                            marker.bindPopup(`<strong>${station.number}</strong><br>${station.address}`);
+                            marker.addTo(staticLocationsLayerGroup);
+
+                            // Include in bounds calculations
+                            locations.push({ lat: coords.lat, lon: coords.lon });
+                        }
+                    });
+                }
 
                         marker.bindPopup(`<strong>${loc.type || 'Location'}</strong><br>${loc.address}`);
                         marker.addTo(staticLocationsLayerGroup);
