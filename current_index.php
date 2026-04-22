@@ -2305,7 +2305,7 @@ if (!empty($dashboardToken)) {
                 if (!address) return Promise.resolve(null);
 
                 if (geocodeCache.has(address)) {
-                    return Promise.resolve(geocodeCache.get(address));
+                    return geocodeCache.get(address); // Performance: Avoid Promise wrapper overhead for cached hits
                 }
 
                 const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
