@@ -746,8 +746,50 @@ if (!empty($dashboardToken)) {
             }
         }
 
-        function setupDataRefreshSchedules() {
+
+        let lastDataUpdateTimestamps = {
+            fire_danger: 0,
+            permits: 0,
+            mainefireweather: 0
+        };
+
+        async function checkForDataUpdates() {
+            try {
+                const response = await fetch('api/check_updates.php?nocache=' + Date.now());
+                if (response.ok) {
+                    const timestamps = await response.json();
+                    let needsFireDangerUpdate = false;
+                    let needsPermitsUpdate = false;
+
+                    if (lastDataUpdateTimestamps.fire_danger !== 0 && timestamps.fire_danger > lastDataUpdateTimestamps.fire_danger) {
+                        needsFireDangerUpdate = true;
+                    }
+                    if (lastDataUpdateTimestamps.mainefireweather !== 0 && timestamps.mainefireweather > lastDataUpdateTimestamps.mainefireweather) {
+                        needsFireDangerUpdate = true;
+                    }
+                    if (lastDataUpdateTimestamps.permits !== 0 && timestamps.permits > lastDataUpdateTimestamps.permits) {
+                        needsPermitsUpdate = true;
+                    }
+
+                    lastDataUpdateTimestamps = timestamps;
+
+                    if (needsFireDangerUpdate) {
+                        console.log("Detected fire danger data update, reloading...");
+                        loadFireDanger();
+                    }
+                    if (needsPermitsUpdate) {
+                        console.log("Detected burn permits data update, reloading...");
+                        loadBurnPermits();
+                    }
+                }
+            } catch (err) {
+                console.error("Error checking for updates:", err);
+            }
+        }
+
+function setupDataRefreshSchedules() {
             setInterval(updateAllData, 900000);
+            setInterval(checkForDataUpdates, 15000);
             const scheduleHourlyUpdate = () => {
                 const now = new Date();
                 const target = new Date(now);
@@ -838,7 +880,7 @@ if (!empty($dashboardToken)) {
                 pollInterval = 300000; // 5 minutes
             }
 
-            window.fireDangerInterval = setInterval(loadFireDanger, pollInterval);
+            // window.fireDangerInterval = setInterval(loadFireDanger, pollInterval); // Replaced by global update checker
         }
 
         async function loadFireDanger() {
