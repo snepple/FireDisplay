@@ -12,7 +12,7 @@ if (!empty($dashboardToken)) {
     $providedToken = isset($_GET['token']) ? $_GET['token'] : '';
     if ($providedToken !== $dashboardToken) {
         http_response_code(403);
-        die("<h1 style='color: #aeb6c1; text-align: center; font-family: sans-serif; padding-top: 50px;'>Access Denied</h1>");
+        die("<h1 style='color: #aeb6c1; text-align: center; font-family: \"Inter\", sans-serif; padding-top: 50px;'>Access Denied</h1>");
     }
 }
 ?>
@@ -34,6 +34,7 @@ if (!empty($dashboardToken)) {
             --muted-text: #cbd5e1;
             --border-color: #30363d;
             --event-hover: #30363d;
+            --hover-bg: #2a313c;
             --today-bg: #004085;
             --today-border: #9fceff;
             --item-bg: #10141a;
@@ -47,6 +48,7 @@ if (!empty($dashboardToken)) {
             --muted-text: #475569;
             --border-color: #d2d2d7;
             --event-hover: #f0f0f5;
+            --hover-bg: #e5e5ea;
             --today-bg: #e6f2ff;
             --today-border: #007bff;
             --item-bg: #fbfbfd;
@@ -67,7 +69,7 @@ if (!empty($dashboardToken)) {
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Inter', sans-serif;
+            font-family: "Inter", sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -154,7 +156,7 @@ if (!empty($dashboardToken)) {
         .risk-extreme { background-color: #dc3545; color:#fff;}
 
         #permitMap { height: 100%; width: 100%; border-radius: 4px; }
-        .permit-tooltip { background-color: rgba(255, 255, 255, 0.9); border: 1px solid #888; border-radius: 3px; color: var(--text-color); font-weight: bold; padding: 4px 8px; font-size: 0.9em; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        .permit-tooltip { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 3px; color: var(--text-color); font-weight: bold; padding: 4px 8px; font-size: 0.9em; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
         .flame-marker-icon { filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.7)); }
 
         #page-calendar { display: none; flex-direction: column; gap: clamp(2px, 1vh, 15px); height: 100%; }
@@ -2219,10 +2221,10 @@ if (!empty($dashboardToken)) {
                                     const mapLot = feature.properties.MAP_LOT_1 || 'N/A';
 
                                     const popupContent = `
-                                        <div style="font-size: 14px; font-family: sans-serif;">
+                                        <div style="font-size: 14px; font-family: 'Inter', sans-serif; color: var(--text-color);">
                                             <strong>${owner}</strong><br/>
                                             ${address}<br/>
-                                            <span style="color: #666; font-size: 12px;">Map/Lot: ${mapLot}</span>
+                                            <span style="color: var(--muted-text); font-size: 12px;">Map/Lot: ${mapLot}</span>
                                         </div>
                                     `;
                                     layer.bindPopup(popupContent);

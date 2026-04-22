@@ -158,13 +158,41 @@ if (isset($_GET['logout'])) {
 
 // --- SECURE AREA ---
 if (!isset($_SESSION['admin_logged_in'])) {
-    echo "<!DOCTYPE html><html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'></head><body style='font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif; background: #f5f5f7; color: #1d1d1f; display: flex; justify-content: center; align-items: center; height: 100vh; margin:0;'>";
-    echo "<form method='POST' style='background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); width: 100%; max-width: 320px;'>";
-    echo "<h2 style='margin-top:0; color: #1d1d1f; text-align: center; font-weight: 600;'>Admin Login</h2>";
-    if (isset($error)) echo "<p style='color: #ff3b30; font-weight: bold; text-align: center; font-size: 0.9em;'>$error</p>";
+    echo "<!DOCTYPE html><html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <style>
+        :root {
+            --bg-color: #f5f5f7;
+            --card-bg: #ffffff;
+            --text-color: #1d1d1f;
+            --muted-text: #86868b;
+            --border-color: #e5e5ea;
+            --border-input: #d2d2d7;
+            --hover-bg: #eef2ff;
+            --primary-color: #007aff;
+            --danger-color: #ff3b30;
+            --success-color: #34c759;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1c1c1c;
+                --card-bg: #1C212B;
+                --text-color: #fff;
+                --muted-text: #cbd5e1;
+                --border-color: #30363d;
+                --border-input: #30363d;
+                --hover-bg: #30363d;
+                --primary-color: #0a84ff;
+                --danger-color: #ff453a;
+                --success-color: #32d74b;
+            }
+        }
+    </style></head><body style='font-family: \"Inter\", sans-serif; background: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; height: 100vh; margin:0;'>";
+    echo "<form method='POST' style='background: var(--card-bg); padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); width: 100%; max-width: 320px;'>";
+    echo "<h2 style='margin-top:0; color: var(--text-color); text-align: center; font-weight: 600;'>Admin Login</h2>";
+    if (isset($error)) echo "<p style='color: var(--danger-color); font-weight: bold; text-align: center; font-size: 0.9em;'>$error</p>";
     echo "<input type='hidden' name='csrf_token' value='" . htmlspecialchars($_SESSION['csrf_token']) . "'>";
-    echo "<input type='password' name='password' placeholder='Password' required style='padding: 12px; margin-bottom: 20px; width: 100%; box-sizing: border-box; background: #fff; border: 1px solid #d2d2d7; color: #1d1d1f; border-radius: 8px; font-size: 16px;'><br>";
-    echo "<button type='submit' name='login' style='padding: 12px; width: 100%; cursor: pointer; background: #007aff; color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 16px;'>Login</button>";
+    echo "<input type='password' name='password' placeholder='Password' required style='padding: 12px; margin-bottom: 20px; width: 100%; box-sizing: border-box; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 8px; font-size: 16px;'><br>";
+    echo "<button type='submit' name='login' style='padding: 12px; width: 100%; cursor: pointer; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 16px;'>Login</button>";
     echo "</form></body></html>"; exit;
 }
 
@@ -430,20 +458,46 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.5.0/ical.min.js"></script>
 
     <style>
+        :root {
+            --bg-color: #f5f5f7;
+            --card-bg: #ffffff;
+            --text-color: #1d1d1f;
+            --muted-text: #86868b;
+            --border-color: #e5e5ea;
+            --border-input: #d2d2d7;
+            --hover-bg: #eef2ff;
+            --primary-color: #007aff;
+            --danger-color: #ff3b30;
+            --success-color: #34c759;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1c1c1c;
+                --card-bg: #1C212B;
+                --text-color: #fff;
+                --muted-text: #cbd5e1;
+                --border-color: #30363d;
+                --border-input: #30363d;
+                --hover-bg: #30363d;
+                --primary-color: #0a84ff;
+                --danger-color: #ff453a;
+                --success-color: #32d74b;
+            }
+        }
         /* iOS / Light Apple Inspired Aesthetic */
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f5f5f7; color: #1d1d1f; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        body { font-family: "Inter", sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
-        .sidebar { width: 260px; background: #ffffff; border-right: 1px solid #e5e5ea; display: flex; flex-direction: column; flex-shrink: 0;}
-        .sidebar-header { padding: 25px 20px; font-size: 1.3em; font-weight: 700; border-bottom: 1px solid #e5e5ea; color: #1d1d1f; letter-spacing: -0.5px;}
+        .sidebar { width: 260px; background: var(--card-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0;}
+        .sidebar-header { padding: 25px 20px; font-size: 1.3em; font-weight: 700; border-bottom: 1px solid var(--border-color); color: var(--text-color); letter-spacing: -0.5px;}
         .sidebar-menu { list-style: none; padding: 0; margin: 0; flex-grow: 1; overflow-y: auto;}
-        .sidebar-menu li a { display: block; padding: 14px 20px; color: #515154; text-decoration: none; border-bottom: 1px solid #f0f0f5; transition: all 0.2s ease; font-weight: 500;}
-        .sidebar-menu li a:hover { background: #f5f5f7; color: #1d1d1f; }
-        .sidebar-menu li a.active { background: #eef2ff; color: #007aff; border-left: 4px solid #007aff; padding-left: 16px;}
+        .sidebar-menu li a { display: block; padding: 14px 20px; color: var(--muted-text); text-decoration: none; border-bottom: 1px solid #f0f0f5; transition: all 0.2s ease; font-weight: 500;}
+        .sidebar-menu li a:hover { background: var(--bg-color); color: var(--text-color); }
+        .sidebar-menu li a.active { background: var(--hover-bg); color: var(--primary-color); border-left: 4px solid var(--primary-color); padding-left: 16px;}
         .sub-menu a { padding-left: 40px !important; font-size: 0.9em; border-bottom: none !important; border-left: none !important;}
-        .sub-menu a.active { background: #f5f5f7; color: #007aff; font-weight: bold;}
+        .sub-menu a.active { background: var(--bg-color); color: var(--primary-color); font-weight: bold;}
 
-        .logout-btn { padding: 18px; text-align: center; background: #f5f5f7; color: #ff3b30; text-decoration: none; font-weight: 600; border-top: 1px solid #e5e5ea; transition: 0.2s;}
-        .logout-btn:hover { background: #ffeaeb; }
+        .logout-btn { padding: 18px; text-align: center; background: var(--bg-color); color: var(--danger-color); text-decoration: none; font-weight: 600; border-top: 1px solid var(--border-color); transition: 0.2s;}
+        .logout-btn:hover { background: var(--hover-bg); }
 
         .content { flex-grow: 1; padding: 40px 50px; overflow-y: auto; position: relative;}
 
@@ -451,75 +505,75 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
         .header-bar h1 { margin: 0; font-size: 2.2em; font-weight: 700; letter-spacing: -0.5px;}
 
         /* Buttons */
-        button.save-btn { background: #34c759; color: white; border: none; padding: 12px 28px; font-size: 1.05em; border-radius: 8px; cursor: pointer; font-weight: 600; box-shadow: 0 2px 8px rgba(52,199,89,0.3); transition: all 0.2s;}
+        button.save-btn { background: var(--success-color); color: white; border: none; padding: 12px 28px; font-size: 1.05em; border-radius: 8px; cursor: pointer; font-weight: 600; box-shadow: 0 2px 8px rgba(52,199,89,0.3); transition: all 0.2s;}
         button.save-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(52,199,89,0.4); }
-        button.action-btn { background: #007aff; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s;}
-        button.action-btn:hover { background: #0062cc; }
-        button.delete-btn { background: #ff3b30; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s;}
-        button.delete-btn:hover { background: #cc2e26; }
-        button.add { background: #34c759; margin-bottom: 10px; }
+        button.action-btn { background: var(--primary-color); color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s;}
+        button.action-btn:hover { filter: brightness(0.9); }
+        button.delete-btn { background: var(--danger-color); color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s;}
+        button.delete-btn:hover { filter: brightness(0.9); }
+        button.add { background: var(--success-color); margin-bottom: 10px; }
 
         /* Cards & Inputs */
-        .card { background: #ffffff; padding: 30px; border-radius: 12px; border: 1px solid #e5e5ea; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
-        h2 { margin-top: 0; color: #1d1d1f; border-bottom: 1px solid #e5e5ea; padding-bottom: 12px; font-weight: 600;}
-        h3 { color: #1d1d1f; margin-bottom: 12px; font-weight: 600;}
-        p.help { font-size: 0.95em; color: #86868b; margin-top: -5px; margin-bottom: 25px; line-height: 1.5; }
+        .card { background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        h2 { margin-top: 0; color: var(--text-color); border-bottom: 1px solid var(--border-color); padding-bottom: 12px; font-weight: 600;}
+        h3 { color: var(--text-color); margin-bottom: 12px; font-weight: 600;}
+        p.help { font-size: 0.95em; color: var(--muted-text); margin-top: -5px; margin-bottom: 25px; line-height: 1.5; }
 
         input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, input[type="password"] {
-            padding: 12px; background: #ffffff; border: 1px solid #d2d2d7; color: #1d1d1f; border-radius: 8px; box-sizing: border-box; width: 100%; font-size: 1em; font-family: inherit; transition: border-color 0.2s;
+            padding: 12px; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 8px; box-sizing: border-box; width: 100%; font-size: 1em; font-family: inherit; transition: border-color 0.2s;
         }
-        input[type="text"]:focus, input[type="date"]:focus, select:focus, input[type="password"]:focus { border-color: #007aff; outline: none; box-shadow: 0 0 0 3px rgba(0,122,255,0.1);}
+        input[type="text"]:focus, input[type="date"]:focus, select:focus, input[type="password"]:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 3px rgba(0,122,255,0.1);}
         input[type="checkbox"] { transform: scale(1.2); margin-right: 8px;}
-        label { font-size: 0.9em; color: #515154; font-weight: 600; margin-bottom: 8px; display: block;}
+        label { font-size: 0.9em; color: var(--muted-text); font-weight: 600; margin-bottom: 8px; display: block;}
 
-        .success { background: #e8f8eb; border: 1px solid #34c759; color: #248a3d; padding: 16px; border-radius: 8px; margin-bottom: 25px; font-weight: 600; }
-        .error { background: #ffeaeb; border: 1px solid #ff3b30; color: #cc2e26; padding: 16px; border-radius: 8px; margin-bottom: 25px; font-weight: 600; }
+        .success { background: #e8f8eb; border: 1px solid var(--success-color); color: #248a3d; padding: 16px; border-radius: 8px; margin-bottom: 25px; font-weight: 600; }
+        .error { background: var(--hover-bg); border: 1px solid #ff3b30; color: #cc2e26; padding: 16px; border-radius: 8px; margin-bottom: 25px; font-weight: 600; }
 
         /* Layouts */
         .flex-row { display: flex; gap: 20px; align-items: flex-end; margin-bottom: 20px; }
         .flex-col { display: flex; flex-direction: column; flex: 1;}
         .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; }
 
-        .item-card, .event-card, .ann-card { background: #fbfbfd; padding: 25px; border: 1px solid #e5e5ea; border-radius: 10px; margin-bottom: 20px; position: relative; }
+        .item-card, .event-card, .ann-card { background: var(--card-bg); padding: 25px; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 20px; position: relative; }
         .event-card hr, .ann-card hr { border-top: 1px solid #d2d2d7; border-bottom: none; margin: 20px 0; }
-        .config-box { background: #fbfbfd; padding: 20px; border-radius: 10px; border: 1px solid #e5e5ea; }
+        .config-box { background: var(--card-bg); padding: 20px; border-radius: 10px; border: 1px solid var(--border-color); }
 
-        .room-tag { display: inline-flex; align-items: center; background: #e5e5ea; padding: 6px 12px; border-radius: 6px; margin: 5px 5px 0 0; font-size: 0.9em; color: #1d1d1f; font-weight: 500;}
-        .room-tag button { background: none; border: none; color: #ff3b30; margin-left: 8px; cursor: pointer; font-weight: bold;}
+        .room-tag { display: inline-flex; align-items: center; background: var(--border-color); padding: 6px 12px; border-radius: 6px; margin: 5px 5px 0 0; font-size: 0.9em; color: var(--text-color); font-weight: 500;}
+        .room-tag button { background: none; border: none; color: var(--danger-color); margin-left: 8px; cursor: pointer; font-weight: bold;}
 
         /* Custom Multi-Select */
         .ms-container { position: relative; width: 100%; margin-bottom: 15px; }
-        .ms-btn { background: #ffffff; border: 1px solid #d2d2d7; color: #1d1d1f; padding: 12px; border-radius: 8px; width: 100%; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; min-height: 46px; font-size: 1em;}
-        .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: #ffffff; border: 1px solid #d2d2d7; border-radius: 8px; z-index: 100; max-height: 250px; overflow-y: auto; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.1); padding: 8px; margin-top: 4px;}
+        .ms-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color); padding: 12px; border-radius: 8px; width: 100%; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; min-height: 46px; font-size: 1em;}
+        .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; z-index: 100; max-height: 250px; overflow-y: auto; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.1); padding: 8px; margin-top: 4px;}
         .ms-dropdown.active { display: block; }
-        .ms-dropdown label { display: flex; align-items: center; padding: 10px; cursor: pointer; border-radius: 6px; font-weight: normal; color: #1d1d1f; margin: 0; transition: 0.1s;}
-        .ms-dropdown label:hover { background: #f5f5f7; }
+        .ms-dropdown label { display: flex; align-items: center; padding: 10px; cursor: pointer; border-radius: 6px; font-weight: normal; color: var(--text-color); margin: 0; transition: 0.1s;}
+        .ms-dropdown label:hover { background: var(--bg-color); }
         .ms-dropdown input[type="checkbox"] { margin: 0 12px 0 0; transform: scale(1.3); }
 
         /* Admin Interactive Calendar */
-        .admin-cal-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #fbfbfd; padding: 15px; border-radius: 10px; border: 1px solid #e5e5ea;}
+        .admin-cal-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: var(--card-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color);}
         .admin-cal-controls .btn-group { display: flex; gap: 8px; }
-        .admin-cal-controls h3, .admin-cal-controls h2 { color: #1d1d1f !important;}
+        .admin-cal-controls h3, .admin-cal-controls h2 { color: var(--text-color) !important;}
 
-        .admin-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e5e5ea; border: 1px solid #e5e5ea; border-radius: 8px; overflow: hidden; }
-        .admin-cal-day { background: #ffffff; padding: 8px; min-height: 110px; cursor: pointer; transition: background 0.2s; display: flex; flex-direction: column; position: relative; overflow: hidden;}
-        .admin-cal-day:hover { background: #f9f9fb; }
-        .admin-cal-day-header { font-size: 0.85em; color: #86868b; text-align: right; margin-bottom: 5px; z-index: 2; font-weight: 600;}
-        .admin-cal-lbl { background: #fbfbfd; text-align: center; font-weight: 600; padding: 10px 0; color: #515154; }
+        .admin-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border-color); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+        .admin-cal-day { background: var(--card-bg); padding: 8px; min-height: 110px; cursor: pointer; transition: background 0.2s; display: flex; flex-direction: column; position: relative; overflow: hidden;}
+        .admin-cal-day:hover { background: var(--hover-bg); }
+        .admin-cal-day-header { font-size: 0.85em; color: var(--muted-text); text-align: right; margin-bottom: 5px; z-index: 2; font-weight: 600;}
+        .admin-cal-lbl { background: var(--card-bg); text-align: center; font-weight: 600; padding: 10px 0; color: var(--muted-text); }
 
-        .cal-evt-pill { font-size: 0.75em; background: #34c759; color: #fff; padding: 4px 6px; border-radius: 4px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,0.1);}
+        .cal-evt-pill { font-size: 0.75em; background: var(--success-color); color: #fff; padding: 4px 6px; border-radius: 4px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,0.1);}
 
         /* Employee Shift Blocks on Admin Cal */
-        .cal-shift-block { font-size: 0.7em; padding: 3px 5px; margin-bottom: 3px; border-radius: 4px; color: #1d1d1f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; position: relative; font-weight: 500; border-left: 3px solid transparent;}
-        .bg-career { background-color: #eef2ff; border-left-color: #007aff;}
+        .cal-shift-block { font-size: 0.7em; padding: 3px 5px; margin-bottom: 3px; border-radius: 4px; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; position: relative; font-weight: 500; border-left: 3px solid transparent;}
+        .bg-career { background-color: #eef2ff; border-left-color: var(--primary-color);}
         .bg-perdiem { background-color: #fdf1f7; border-left-color: #e83e8c;}
         .bg-night { background-color: #fff4e6; border-left-color: #fd7e14;}
 
         /* Form Overrides */
-        .recur-group, .end-group { background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #d2d2d7; margin-top: 15px;}
+        .recur-group, .end-group { background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border-input); margin-top: 15px;}
         .day-checkboxes { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;}
-        .day-checkboxes label { display: inline-flex; align-items: center; background: #f5f5f7; padding: 8px 12px; border-radius: 6px; border: 1px solid #e5e5ea; font-weight: 500; margin-bottom:0; cursor: pointer; transition: 0.2s;}
-        .day-checkboxes label:hover { background: #ebebf0;}
+        .day-checkboxes label { display: inline-flex; align-items: center; background: var(--bg-color); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); font-weight: 500; margin-bottom:0; cursor: pointer; transition: 0.2s;}
+        .day-checkboxes label:hover { background: var(--hover-bg);}
     </style>
 
     <script>
@@ -887,7 +941,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             $oth = htmlspecialchars($parts[1] ?? '');
 
                             echo "<div class='config-box'>";
-                            echo "<h4 style='margin:0 0 12px 0; text-align: center; color: #1d1d1f;'>{$days[$i]}</h4>";
+                            echo "<h4 style='margin:0 0 12px 0; text-align: center; color: var(--text-color);'>{$days[$i]}</h4>";
 
                             $displayText = empty($appStr) ? "-- Select Apparatus --" : $appStr;
                             echo "<label>Apparatus</label>";
@@ -1004,12 +1058,12 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <div class="config-box flex-row" style="margin-bottom: 25px; align-items: flex-start;">
                         <div style="display: flex; flex-direction: column; gap: 20px; width: 250px; flex-shrink: 0;">
                             <div>
-                                <label style="color: #1d1d1f; font-size: 1.1em;">Chore #1 Anchor Date:</label>
+                                <label style="color: var(--text-color); font-size: 1.1em;">Chore #1 Anchor Date:</label>
                                 <p class="help" style="margin-bottom: 8px;">Pick a Sunday where Index #1 should fall.</p>
                                 <input type="date" name="chore_anchor" id="c_anchor" value="<?= $configData['chore_anchor'] ?>" required onchange="enforceSunday(this)">
                             </div>
                             <div>
-                                <label style="color: #1d1d1f; font-size: 1.1em;">Indices in Rotation:</label>
+                                <label style="color: var(--text-color); font-size: 1.1em;">Indices in Rotation:</label>
                                 <p class="help" style="margin-bottom: 8px;">How many total numbered days?</p>
                                 <input type="number" name="chore_num_indices" id="c_indices" value="<?= $configData['chore_num_indices'] ?>" min="1" required onchange="renderChorePreview()">
                             </div>
@@ -1372,7 +1426,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     </div>
                     <div class="admin-cal-grid" id="adminCalLabels"></div>
                     <div class="admin-cal-grid" id="adminCalGrid" style="border-top: none;"></div>
-                    <p style="text-align: center; color: #86868b; font-size: 0.9em; margin-top: 10px;">Click any date box to create an event on that day. Employee shifts are overlaid in faint colors for scheduling reference.</p>
+                    <p style="text-align: center; color: var(--muted-text); font-size: 0.9em; margin-top: 10px;">Click any date box to create an event on that day. Employee shifts are overlaid in faint colors for scheduling reference.</p>
                 </div>
 
                 <div class="card" id="events-form-area">
@@ -1817,13 +1871,13 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <h2>Archived Special Duties</h2>
                     <p class="help">Special duties whose End Date has passed automatically appear here.</p>
                     <?php if (empty($archived_chores)): ?>
-                        <p style="color: #86868b; font-style: italic;">No archived duties.</p>
+                        <p style="color: var(--muted-text); font-style: italic;">No archived duties.</p>
                     <?php else: ?>
                         <?php foreach($archived_chores as $evt): ?>
                             <div class="item-card flex-row" style="align-items: center; justify-content: space-between;">
                                 <div>
-                                    <h3 style="margin:0 0 5px 0; color: #1d1d1f;"><?= htmlspecialchars($evt['name']) ?></h3>
-                                    <div style="font-size: 0.9em; color: #86868b;">Start: <?= $evt['start_date'] ?></div>
+                                    <h3 style="margin:0 0 5px 0; color: var(--text-color);"><?= htmlspecialchars($evt['name']) ?></h3>
+                                    <div style="font-size: 0.9em; color: var(--muted-text);">Start: <?= $evt['start_date'] ?></div>
                                 </div>
                                 <button type="submit" form="delFormChore_<?= $evt['id'] ?>" name="delete_archived_chore" class="delete-btn" onclick="return confirm('Permanently delete this duty?');">Permanently Delete</button>
                             </div>
@@ -1837,13 +1891,13 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <h2>Archived Events</h2>
                     <p class="help">Events whose End Date has passed automatically appear here.</p>
                     <?php if (empty($archived_events)): ?>
-                        <p style="color: #86868b; font-style: italic;">No archived events.</p>
+                        <p style="color: var(--muted-text); font-style: italic;">No archived events.</p>
                     <?php else: ?>
                         <?php foreach($archived_events as $evt): ?>
                             <div class="item-card flex-row" style="align-items: center; justify-content: space-between;">
                                 <div>
-                                    <h3 style="margin:0 0 5px 0; color: #1d1d1f;"><?= htmlspecialchars($evt['title']) ?></h3>
-                                    <div style="font-size: 0.9em; color: #86868b;">Start: <?= $evt['start_date'] ?></div>
+                                    <h3 style="margin:0 0 5px 0; color: var(--text-color);"><?= htmlspecialchars($evt['title']) ?></h3>
+                                    <div style="font-size: 0.9em; color: var(--muted-text);">Start: <?= $evt['start_date'] ?></div>
                                 </div>
                                 <button type="submit" form="delFormEvt_<?= $evt['id'] ?>" name="delete_archived_event" class="delete-btn" onclick="return confirm('Permanently delete this event?');">Permanently Delete</button>
                             </div>
@@ -1857,13 +1911,13 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <h2>Archived Announcements</h2>
                     <p class="help">Announcements whose End Date has passed automatically appear here.</p>
                     <?php if (empty($archived_announcements)): ?>
-                        <p style="color: #86868b; font-style: italic;">No archived announcements.</p>
+                        <p style="color: var(--muted-text); font-style: italic;">No archived announcements.</p>
                     <?php else: ?>
                         <?php foreach($archived_announcements as $ann): ?>
                             <div class="item-card flex-row" style="align-items: center; justify-content: space-between;">
                                 <div style="flex-grow: 1; max-width: 70%; max-height: 60px; overflow: hidden;">
-                                    <div style="font-size: 0.9em; color: #86868b; margin-bottom: 5px; font-weight: bold;">Ran: <?= $ann['start_date'] ?> to <?= $ann['end_date'] ?></div>
-                                    <div style="color: #515154; font-size: 0.9em;"><?= strip_tags($ann['content']) ?></div>
+                                    <div style="font-size: 0.9em; color: var(--muted-text); margin-bottom: 5px; font-weight: bold;">Ran: <?= $ann['start_date'] ?> to <?= $ann['end_date'] ?></div>
+                                    <div style="color: var(--muted-text); font-size: 0.9em;"><?= strip_tags($ann['content']) ?></div>
                                 </div>
                                 <button type="submit" form="delFormAnn_<?= $ann['id'] ?>" name="delete_archived_ann" class="delete-btn" onclick="return confirm('Permanently delete this announcement?');">Permanently Delete</button>
                             </div>
@@ -1875,20 +1929,20 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
             <?php elseif ($page === 'api_integrations'): ?>
                 <div class="card fade-in">
                     <h1>API Integrations</h1>
-                    <p style="color: #86868b; margin-top: -10px; margin-bottom: 30px;">Manage third-party API keys and services used by the Fire Display dashboard.</p>
+                    <p style="color: var(--muted-text); margin-top: -10px; margin-bottom: 30px;">Manage third-party API keys and services used by the Fire Display dashboard.</p>
 
                     <form method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <div class="input-group">
                             <label>Gemini API Key (for Geocoding fallback)</label>
                             <input type="text" name="gemini_api_key" value="<?= htmlspecialchars($configData['api_integrations']['gemini_api_key'] ?? '') ?>" placeholder="AIzaSy..." autocomplete="off">
-                            <p style="font-size: 0.85em; color: #86868b; margin-top: 5px;">This key is used as a fallback to convert free-text burn permit locations into map coordinates when standard geocoding fails.</p>
+                            <p style="font-size: 0.85em; color: var(--muted-text); margin-top: 5px;">This key is used as a fallback to convert free-text burn permit locations into map coordinates when standard geocoding fails.</p>
                         </div>
 
                         <div class="input-group" style="margin-top: 15px;">
                             <label>Google TTS API Key (for Text-to-Speech)</label>
                             <input type="text" name="google_tts_api_key" value="<?= htmlspecialchars($configData['api_integrations']['google_tts_api_key'] ?? '') ?>" placeholder="AIzaSy..." autocomplete="off">
-                            <p style="font-size: 0.85em; color: #86868b; margin-top: 5px;">This key is used for the Text-to-Speech integration in the dashboard.</p>
+                            <p style="font-size: 0.85em; color: var(--muted-text); margin-top: 5px;">This key is used for the Text-to-Speech integration in the dashboard.</p>
                         </div>
 
                         <button type="submit" name="save_api_integration" class="save-btn" style="padding: 15px 40px; margin-top: 20px;">💾 Save API Integrations</button>
@@ -1972,7 +2026,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <h3>Email Extraction Testing Tool</h3>
                     <p style="color: var(--muted-text); font-size: 0.9em; margin-bottom: 15px;">Paste the raw text of an email (including headers like <code>To:</code> and <code>Subject:</code>) into the box below to test how the system parses it. <strong>This will not affect live data.</strong></p>
                     <div class="form-group">
-                        <textarea id="test_email_content" rows="10" style="font-family: monospace; font-size: 0.85em; background: var(--bg-color); color: var(--text-color); width: 100%; border: 1px solid var(--border-color); padding: 10px; border-radius: 4px;"></textarea>
+                        <textarea id="test_email_content" rows="10" style="font-family: Inter, monospace; font-size: 0.85em; background: var(--bg-color); color: var(--text-color); width: 100%; border: 1px solid var(--border-color); padding: 10px; border-radius: 4px;"></textarea>
                     </div>
                     <button type="button" class="btn btn-secondary" style="margin-top: 10px; padding: 10px 20px; font-weight: bold; background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;" onclick="testEmailExtraction()">Test Extraction</button>
 
