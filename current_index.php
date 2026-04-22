@@ -1367,10 +1367,14 @@ if (!empty($dashboardToken)) {
                         if (vevent.isRecurring()) {
                             const nextYear = new Date();
                             nextYear.setFullYear(nextYear.getFullYear() + 1);
+                            // Perf opt: cache duration and construct occurrence instead of calling getOccurrenceDetails in loop
+                            const duration = vevent.duration;
                             const iterator = vevent.iterator();
                             let next;
                             while ((next = iterator.next()) && next.toJSDate() < nextYear) {
-                                allMeetings.push(vevent.getOccurrenceDetails(next));
+                                const endDate = next.clone();
+                                endDate.addDuration(duration);
+                                allMeetings.push({ startDate: next, endDate: endDate, item: vevent });
                             }
                         } else {
                             allMeetings.push(vevent);
@@ -1709,10 +1713,14 @@ if (!empty($dashboardToken)) {
                 };
 
                 if (vevent.isRecurring()) {
+                    // Perf opt: cache duration and construct occurrence instead of calling getOccurrenceDetails in loop
+                    const duration = vevent.duration;
                     const iterator = vevent.iterator();
                     let next;
                     while ((next = iterator.next()) && next.toJSDate() < maxParseDate) {
-                        processOccurrence(vevent.getOccurrenceDetails(next));
+                        const endDate = next.clone();
+                        endDate.addDuration(duration);
+                        processOccurrence({ startDate: next, endDate: endDate, item: vevent });
                     }
                 } else {
                      if (vevent.startDate.toJSDate() < maxParseDate) {
@@ -2036,10 +2044,14 @@ if (!empty($dashboardToken)) {
 
         function processEventForDashboard(vevent, searchStart, windowEnd, now, onDutyNow, onDutyLater) {
             if (vevent.isRecurring()) {
+                // Perf opt: cache duration and construct occurrence instead of calling getOccurrenceDetails in loop
+                const duration = vevent.duration;
                 const iterator = vevent.iterator(ICAL.Time.fromJSDate(searchStart));
                 let next;
                 while ((next = iterator.next()) && next.toJSDate() < windowEnd) {
-                    const occurrence = vevent.getOccurrenceDetails(next);
+                    const endDate = next.clone();
+                    endDate.addDuration(duration);
+                    const occurrence = { startDate: next, endDate: endDate, item: vevent };
                     const eventStart = occurrence.startDate.toJSDate();
                     const eventEnd = occurrence.endDate.toJSDate();
                     if (eventStart < windowEnd && eventEnd > searchStart) {
