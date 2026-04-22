@@ -133,7 +133,7 @@ if (!empty($dashboardToken)) {
         .event-until { font-size: 1.0em; color: var(--muted-text); font-weight: 400; }
 
         .permit-details { display: flex; flex-direction: column; width: 100%; gap: 4px; }
-        .permit-address { font-size: 2.4em; font-weight: 500; color: var(--text-color); white-space: normal; }
+        .permit-address { font-size: clamp(1.2em, 3vw, 2.4em); font-weight: 500; color: var(--text-color); white-space: normal; }
         .permit-burn-info { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .permit-type { font-size: 2.0em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; }
         .permit-time { font-size: 1.8em; color: var(--muted-text); font-weight: 400; }
@@ -146,7 +146,7 @@ if (!empty($dashboardToken)) {
 
 
         #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 4px; padding: clamp(4px, 1.5vh, 10px);}
-        #danger-meter { width: 60%; min-height: 60px; height: auto; padding: clamp(4px, 1.5vh, 10px); box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: clamp(5px, 1.5vh, 15px); display: flex; align-items: center; justify-content: center; font-size: 3.6em; font-weight: 700; text-transform: uppercase; }
+        #danger-meter { width: 60%; min-height: 60px; height: auto; padding: clamp(4px, 1.5vh, 10px); box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: clamp(5px, 1.5vh, 15px); display: flex; align-items: center; justify-content: center; font-size: clamp(1.8em, 4vw, 3.6em); font-weight: 700; text-transform: uppercase; }
         #danger-date { font-size: 0.3em; color: var(--muted-text); margin-top: clamp(1px, 0.5vh, 5px); }
         .risk-snow-cover { background-color: #ffffff; color: #000 !important; border-color:#000 !important;}
         .risk-low { background-color: #28a745; color:#fff;}
@@ -288,7 +288,7 @@ if (!empty($dashboardToken)) {
 
     <a href="admin.php" id="admin-link" title="Open Admin Dashboard" aria-label="Open Admin Dashboard" style="position: absolute; bottom: 15px; right: 15px; z-index: 10000; opacity: 0.15; color: var(--text-color); text-decoration: none; font-size: 24px; transition: opacity 0.3s;">⚙️</a>
 
-    <div id="audio-toggle-wrapper" title="Toggle Audio Announcements">
+    <div id="audio-toggle-wrapper" title="Toggle Audio Announcements" style="display: none;">
         <label class="toggle-switch">
             <input type="checkbox" id="audio-toggle-checkbox" aria-label="Toggle Audio Announcements">
             <span class="toggle-slider"></span>
@@ -298,23 +298,30 @@ if (!empty($dashboardToken)) {
     <div id="page-dashboard" class="page-container">
         <div class="main-layout" id="top-section">
             <div class="container">
-                <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">🔥 Fire Danger</h2>
-                <div id="fire-danger-content">
+                <div id="fire-danger-content" style="justify-content: flex-start; padding-top: clamp(10px, 1.5vh, 20px); position: relative;">
+                     <button onclick="loadFireDanger(true)" style="position: absolute; bottom: 5px; right: 5px; background: none; border: none; cursor: pointer; opacity: 0.3; padding: 5px;" title="Force Reload Fire Danger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 1 0 2.63-6.37L21 8"></path></svg></button>
+                     <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(5px, 1vh, 15px); width: 100%;">🔥 Fire Danger</h2>
+                     <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
                      <div id="danger-meter">Loading...</div>
                      <div id="danger-date"></div>
                      <div id="danger-map-container" style="margin-top: clamp(5px, 1.5vh, 15px); width: 100%; display: none;">
                          <div id="danger-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(2px, 0.5vh, 5px);"></div>
                      </div>
+                     </div>
+
                 </div>
             </div>
         </div>
         <div class="container" id="combined-permits-container">
-             <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">Active Online-Issued Burn Permits</h2>
              <div id="permits-content-wrapper" style="display: flex; flex-grow: 1; min-height: 0; gap: clamp(2px, 1vh, 15px); width: 100%;">
                  <div id="burnPermitsContainer" style="flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden;
+            display: flex; flex-direction: column;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
-            min-height: 0;"></div>
+            min-height: 0;">
+                     <h2 style="font-size: clamp(24px, 3vh, 45px); margin: clamp(10px, 1.5vh, 20px) 0 clamp(5px, 1vh, 15px) 0; flex-shrink: 0; width: 100%;">Active Online-Issued Burn Permits</h2>
+                     <div id="burnPermitsList" style="flex-grow: 1; overflow-y: auto; min-height: 0;"></div>
+                 </div>
                  <div id="permitMap" style="flex: 1; border-radius: 4px;"></div>
              </div>
         </div>
@@ -341,7 +348,7 @@ if (!empty($dashboardToken)) {
                 </div>
                 <div class="calendar-header"><div>Sunday</div><div>Monday</div><div>Tuesday</div><div>Wednesday</div><div>Thursday</div><div>Friday</div><div>Saturday</div></div>
                 <div id="calendar-grid"></div>
-                <div id="schedule-published-text" style="font-size: 0.9em; color: var(--muted-text); text-align: center; margin-top: clamp(1px, 0.5vh, 5px); flex-shrink: 0;"></div>
+                <div id="schedule-published-text" style="font-size: 0.4em; color: var(--muted-text); text-align: center; margin-top: clamp(1px, 0.5vh, 5px); flex-shrink: 0;"></div>
             </div>
             <div class="calendar-sidebar">
                 <div id="open-shifts-section">
@@ -353,8 +360,6 @@ if (!empty($dashboardToken)) {
     </div>
 
     <div id="page-chores" class="page-container">
-        <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(1px, 0.5vh, 5px);">Today's Overview</h2>
-
         <div id="chores-layout" style="display: flex; width: 100%; height: 100%; gap: clamp(2px, 1vh, 15px); min-height: 0;">
 
             <div id="chores-duties-column" style="flex: 1.5; display: flex; flex-direction: column; gap: clamp(2px, 1vh, 15px); min-width: 0; min-height: 0;">
@@ -367,8 +372,8 @@ if (!empty($dashboardToken)) {
         "></div>
                 </div>
 
-                <div class="chore-item" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding: clamp(4px, 1.5vh, 10px);">
-                    <h2 style="font-size: 1.5em; border: none; padding: 0; margin: 0 0 clamp(1px, 0.5vh, 5px) 0;">Today's Station Duties</h2>
+                <div class="chore-item" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; padding: clamp(4px, 1.5vh, 10px);">
+                    <h2 style="font-size: clamp(24px, 3vh, 45px); border: none; padding: 0; margin: 0 0 clamp(1px, 0.5vh, 5px) 0;">Today's Station Duties</h2>
                     <ul id="chore-list" class="chore-list"></ul>
                     <div id="holiday-container" style="display: none;"><p id="national-day" class="national-day"></p></div>
                 </div>
@@ -563,7 +568,7 @@ if (!empty($dashboardToken)) {
         }
 
         function pruneDashboard() {
-            const container = document.getElementById('burnPermitsContainer');
+            const container = document.getElementById('burnPermitsList');
             if (!container) return;
             if (container.clientHeight === 0) return;
             while (container.scrollHeight > container.clientHeight + 2 && container.children.length > 0) {
@@ -655,7 +660,7 @@ if (!empty($dashboardToken)) {
 
         window.addEventListener('load', function() {
             const toggleWrapper = document.getElementById('audio-toggle-wrapper');
-            if (toggleWrapper) toggleWrapper.style.display = 'block';
+            if (toggleWrapper) toggleWrapper.style.display = 'none';
 
             const toggleCheckbox = document.getElementById('audio-toggle-checkbox');
             if (toggleCheckbox) {
@@ -673,6 +678,25 @@ if (!empty($dashboardToken)) {
 
             initializeApp();
         });
+
+        function formatAddressTitleCase(str) {
+            if (!str) return str;
+            let lowerStr = str.toLowerCase();
+            let words = lowerStr.split(/( |\-)/);
+            for (let i = 0; i < words.length; i++) {
+                if (words[i].length > 0 && words[i] !== ' ' && words[i] !== '-') {
+                    words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+                }
+            }
+            let titleStr = words.join('');
+            titleStr = titleStr.replace(/\b(Nw|Ne|Sw|Se)\b/g, (match) => match.toUpperCase());
+            titleStr = titleStr.replace(/\bMc([a-zA-Z])/gi, (match, p1) => 'Mc' + p1.toUpperCase());
+            titleStr = titleStr.replace(/\bMac([a-zA-Z])/gi, (match, p1) => 'Mac' + p1.toUpperCase());
+            titleStr = titleStr.replace(/\b(\d+)(St|Nd|Rd|Th)\b/gi, (match, num, suffix) => num + suffix.toLowerCase());
+            titleStr = titleStr.replace(/\bMe\b/g, 'ME');
+            titleStr = titleStr.replace(/\bPo Box\b/gi, 'PO Box');
+            return titleStr;
+        }
 
         function escapeHtml(unsafe) {
             return (unsafe || "").toString()
@@ -832,8 +856,8 @@ if (!empty($dashboardToken)) {
 
             let pollInterval = 3600000; // 1 hour default
 
-            // High-Frequency Window (9:00 AM - 10:00 AM EST), assuming system timezone is reasonably close or user wants local time 9-10.
-            if (hour === 9 && !isUpdatedToday) {
+            // High-Frequency Window (8:00 AM - 12:00 PM EST), assuming system timezone is reasonably close or user wants local time 8-12.
+            if (hour >= 8 && hour < 12 && !isUpdatedToday) {
                 pollInterval = 300000; // 5 minutes
             }
 
@@ -892,7 +916,10 @@ if (!empty($dashboardToken)) {
             return false;
         }
 
-        async function loadFireDanger() {
+        async function loadFireDanger(force = false) {
+            let fetchUrl = `api/fetch_mainefireweather.php?nocache=${Date.now()}`;
+            if (force) { fetchUrl += '&force=1'; }
+
             const fireDangerApiUrl = `api/get_fire_danger.php?nocache=${Date.now()}`;
             const meterDiv = document.getElementById('danger-meter');
             const dateDiv = document.getElementById('danger-date');
@@ -903,7 +930,7 @@ if (!empty($dashboardToken)) {
 
             // Primary: Fetch from mainefireweather api
             try {
-                const mwfUrl = `api/fetch_mainefireweather.php?nocache=${Date.now()}`;
+                const mwfUrl = fetchUrl;
                 const mwfResp = await fetch(mwfUrl);
                 if (mwfResp.ok) {
                     const mwfData = await mwfResp.json(); window.lastMwfData = mwfData;
@@ -1038,7 +1065,7 @@ if (!empty($dashboardToken)) {
                 announcedPermitUIDs.clear();
                 permitCheckDate = today;
             }
-            const container = document.getElementById('burnPermitsContainer');
+            const container = document.getElementById('burnPermitsList');
 
             const useEmailPermits = appConfig.email_integration && appConfig.email_integration.permit_address && appConfig.email_integration.permit_address.trim() !== '';
 
@@ -1112,7 +1139,7 @@ if (!empty($dashboardToken)) {
 
                 todaysPermits.forEach(permit => {
                     if (permit.uid && !announcedPermitUIDs.has(permit.uid)) {
-                        let address = permit.location ? permit.location.split(',')[0].trim() : 'Address not provided';
+                        let address = permit.location ? formatAddressTitleCase(permit.location.split(',')[0].trim()) : 'Address not provided';
                         announceNewBurnPermit(address);
                         announcedPermitUIDs.add(permit.uid);
                     }
@@ -2427,7 +2454,7 @@ if (!empty($dashboardToken)) {
 
             if (locations.length > 0) {
                 const bounds = L.latLngBounds(locations);
-                permitMap.fitBounds(bounds, { padding: [75, 75] });
+                permitMap.fitBounds(bounds, { padding: [75, 75], maxZoom: 12 });
                 fetchAndRenderMapLocations();
 
                 setTimeout(() => permitMap.invalidateSize(), 100);
@@ -2439,7 +2466,7 @@ if (!empty($dashboardToken)) {
             eventDiv.classList.add('event');
 
             const uid = eventData.uid || '';
-            const address = eventData.address || 'Unknown Address';
+            let address = eventData.address ? formatAddressTitleCase(eventData.address.split(',')[0].trim()) : 'Unknown Address'; if (address !== 'Unknown Address') { address = address.replace(/\b(?:Oakland(?:\s+Maine|\s+ME)?|Maine|ME)\b/gi, '').trim(); address = formatAddressTitleCase(address); }
             const type = eventData.type || 'Open Burn';
 
             const expDate = new Date(eventData.expires);
@@ -2494,7 +2521,7 @@ if (!empty($dashboardToken)) {
                 eventDiv.addEventListener('click', () => showPermitDetails(detailsHtml));
             }
 
-            let displayAddress = eventData.location ? eventData.location.split(',')[0].trim() : 'Address not provided';
+            let displayAddress = eventData.location ? formatAddressTitleCase(eventData.location.split(',')[0].trim()) : 'Address not provided'; if (displayAddress !== 'Address not provided') { displayAddress = displayAddress.replace(/\b(?:Oakland(?:\s+Maine|\s+ME)?|Maine|ME)\b/gi, '').trim(); displayAddress = formatAddressTitleCase(displayAddress); }
             let burnType = 'Type not specified';
             if (eventData.description) {
                 const descriptionParts = eventData.description.split('Details:');
