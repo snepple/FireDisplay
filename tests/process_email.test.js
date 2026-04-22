@@ -137,6 +137,26 @@ Burn Type:  Type of Item(s) to Burn:  Burn Requirements: `;
         // Expiration date should default to +1 day. Check if it's somewhat valid ISO string
         expect(new Date(permit.expires).getTime()).not.toBeNaN();
     });
+    test('handles -- as empty burn location address', async () => {
+        const emailBody = `To: permit@domain.com\r\nSubject: Burn Permit\r\n\r\nPermission is hereby granted to: Lily Rogers (DOB: 12/12/1980 ) 318 Wottons Mill Rd , Warren , ME 04864 , US Phone: (207) 691-9215 -- Email: tigerlily3305@gmail.com Date/Time Permit was Issued 04/22/2026 04:48 PM
+Address of Burn Location: -- Burn Location on the Property: -- Municipality/Unorganized Territory: Oakland
+Burn Type: Pile - brush/slash/debris Type of Item(s) to Burn: Brush/Lumber (pile less than 10' X 10')
+Burning may be conducted from 4:48 pm on 04/22/2026 to 9:00 am on 04/23/2026`;
+
+        const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+            method: 'POST',
+            body: emailBody
+        });
+
+        expect(data.type).toBe('permit');
+
+        const permit = data.data;
+        expect(permit.name).toBe('Lily Rogers');
+        expect(permit.person_address).toBe('318 Wottons Mill Rd , Warren , ME 04864 , US');
+        expect(permit.address).toBe('318 Wottons Mill Rd , Warren , ME 04864 , US');
+        expect(permit.burn_location_address).toBe('--');
+    });
+
 });
 
 describe('process_email.php (Fire Danger)', () => {
