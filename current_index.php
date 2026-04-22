@@ -836,8 +836,8 @@ if (!empty($dashboardToken)) {
 
             let pollInterval = 3600000; // 1 hour default
 
-            // High-Frequency Window (9:00 AM - 10:00 AM EST), assuming system timezone is reasonably close or user wants local time 9-10.
-            if (hour === 9 && !isUpdatedToday) {
+            // High-Frequency Window (8:00 AM - 12:00 PM EST), assuming system timezone is reasonably close or user wants local time 8-12.
+            if (hour >= 8 && hour < 12 && !isUpdatedToday) {
                 pollInterval = 300000; // 5 minutes
             }
 
