@@ -248,14 +248,15 @@ if (!empty($dashboardToken)) {
         #debug-log { display: none; }
 
         #permit-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 10000; justify-content: center; align-items: center; padding: clamp(4px, 1.5vh, 10px); box-sizing: border-box; }
-        #permit-modal-content { background-color: var(--card-bg); padding: clamp(6px, 1.5vh, 15px); border-radius: 8px; border: 1px solid var(--muted-text); width: 100%; max-width: 900px; color: var(--text-color); font-size: 0.9em; cursor: pointer; display: flex; flex-direction: column; }
-        #permit-modal-header h2 { margin-top: 0; margin-bottom: clamp(1px, 0.5vh, 5px); font-size: 0.9em; color: #ffc107;  white-space: nowrap; }
+        #permit-modal-content { background-color: var(--card-bg); padding: clamp(6px, 1.5vh, 15px); border-radius: 8px; border: 1px solid var(--muted-text); width: 100%; max-width: 900px; color: var(--text-color); font-size: 0.9em; cursor: pointer; display: flex; flex-direction: column;  max-height: 90vh;}
+        #permit-modal-header h2 { margin-top: 0; margin-bottom: clamp(1px, 0.5vh, 5px); color: var(--text-color); white-space: normal; text-align: center; font-size: 1.2em; }
         #permit-modal-body { max-height: 70vh; overflow-y: auto; line-height: 1.4; }
         #permit-modal-body table { width: 100%; border-collapse: collapse; font-size: 11pt; }
         #permit-modal-body td { padding: 5px;  vertical-align: top; }
         #permit-modal-body tr:last-child td { border-bottom: none; }
         #permit-modal-body td:first-child { color: var(--muted-text); width: 30%; font-weight: bold; }
-        #permit-modal-body strong { color: #ffc107; font-weight: 500; }
+        #permit-modal-body strong { color: var(--text-color); font-weight: 500; }
+        #permit-modal-footer p { font-size: 0.9em; text-align: center; color: var(--muted-text); margin-top: clamp(5px, 1.5vh, 15px); margin-bottom: 0; }
 
 
 
