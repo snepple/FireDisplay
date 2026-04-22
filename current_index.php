@@ -62,14 +62,7 @@ if (!empty($dashboardToken)) {
 
         ::-webkit-scrollbar {
             display: none;
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        }
-        }
-
-        body {
+        } body {
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: 'Inter', sans-serif;
@@ -127,19 +120,11 @@ if (!empty($dashboardToken)) {
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } }
         .event-right { text-align: right; flex-shrink: 0; padding-left: 10px;}
         .event-name { font-size: 1.2em; font-weight: 500; color: var(--text-color); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
-
-        ::-webkit-scrollbar {
-            display: none;
-        }}
         .event-role { font-size: 1.0em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; margin-top: 1px; letter-spacing: 0.5px; }
         .event-until { font-size: 1.0em; color: var(--muted-text); font-weight: 400; }
 
@@ -206,11 +191,7 @@ if (!empty($dashboardToken)) {
         .open-shift-role { font-weight: 800; color: #ff6b6b; font-size: clamp(8px, 1.2vh, 0.95em); line-height: 1.2; white-space: nowrap; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } .open-shift-role { text-overflow: ellipsis; max-width: 100%; overflow: hidden; }
+            text-overflow: ellipsis; max-width: 100%; overflow: hidden; }
         .open-shift-time { font-size: 1.2em; color: var(--muted-text); font-weight: 500; white-space: nowrap; }
 
         .calendar-arrow { opacity: 0.15; cursor: pointer; transition: opacity 0.3s ease; user-select: none; padding: 0 15px; font-size: 24px; }
@@ -225,11 +206,7 @@ if (!empty($dashboardToken)) {
         .calendar-day { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: clamp(1px, 0.5vh, 5px); font-size: clamp(8px, 1.2vh, 0.9em); display: flex; flex-direction: column; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } min-height: 0; min-width: 0; border-radius: 4px;}
+            min-height: 0; min-width: 0; border-radius: 4px; }
         .calendar-day.is-today { background-color: var(--today-bg); border-color: var(--today-border); }
         .calendar-day.other-month { opacity: 0.3; }
 
@@ -244,11 +221,7 @@ if (!empty($dashboardToken)) {
         .event { font-size: clamp(4px, 1.2vh, 10pt); padding: 1px 4px; border-radius: 3px; margin-bottom: clamp(1px, 0.2vh, 2px); white-space: nowrap; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } .event { text-overflow: ellipsis; border: 1px solid transparent; line-height: 1.2; flex-shrink: 1; min-height: 0; overflow: hidden; }
+            text-overflow: ellipsis; border: 1px solid transparent; line-height: 1.2; flex-shrink: 1; min-height: 0; overflow: hidden; }
 
         .calendar-event.event-open { background-color: transparent; background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(128,128,128,0.2) 4px, rgba(128,128,128,0.2) 8px); color: var(--text-color); border: 1px dashed var(--muted-text); }
         .event-career { background-color: #6f42c1; color: white; }
@@ -264,11 +237,7 @@ if (!empty($dashboardToken)) {
         .chore-item { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: clamp(10px, 2vh, 25px) clamp(15px, 2vw, 40px); border-radius: 8px; text-align: center; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } min-height: 0; }
+            min-height: 0; }
         .chore-list { list-style-type: none; padding: 0; margin: 0; font-size: clamp(30px, 5vh, 70px); font-weight: 700; line-height: 1.5; color: var(--text-color); }
         #page-chores .chore-list li { font-size: clamp(30px, 6.5vh, 80px); line-height: 1.2; list-style-type: none; margin-bottom: clamp(2px, 1vh, 10px); }
         .national-day { font-size: 18pt; color: var(--muted-text); font-style: italic; margin-top: 20px; }
@@ -305,6 +274,10 @@ if (!empty($dashboardToken)) {
         #page-chores .event-name { font-size: 1.2em; }
         #page-chores .event-role { font-size: 1em; }
         #page-chores .event-until { font-size: 1em; }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -337,11 +310,7 @@ if (!empty($dashboardToken)) {
                  <div id="burnPermitsContainer" style="flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } min-height: 0;"></div>
+            min-height: 0;"></div>
                  <div id="permitMap" style="flex: 1; border-radius: 4px;"></div>
              </div>
         </div>
@@ -391,11 +360,7 @@ if (!empty($dashboardToken)) {
                     <div id="announcements-container" style="display: flex; flex-direction: column; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        }"></div>
+        "></div>
                 </div>
 
                 <div class="chore-item" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding: clamp(4px, 1.5vh, 10px);">
@@ -409,11 +374,7 @@ if (!empty($dashboardToken)) {
                  <div class="chore-item" style="height: 100%; box-sizing: border-box; display: flex; flex-direction: column; padding: clamp(4px, 1.5vh, 10px); overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        } min-height: 0;">
+        min-height: 0;">
 
                      <div id="dept-events-container" style="display: none; margin-bottom: clamp(5px, 1.5vh, 15px); flex-shrink: 0;">
                          <h2 style="font-size: 1.0em; border: none; padding: 0; margin: 0 0 clamp(1px, 0.5vh, 5px) 0;">📅 Department Events</h2>
