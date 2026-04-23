@@ -112,17 +112,6 @@ foreach($configData['department_info']['apparatus'] as $app) {
     $appOptionsHtml .= "<option value='" . htmlspecialchars($app['abbr']) . "'>" . htmlspecialchars($app['abbr']) . "</option>";
 }
 
-// --- API ENDPOINT ---
-if (isset($_GET['api'])) {
-    header('Content-Type: application/json');
-    $exportData = $configData;
-    unset($exportData['admin_password']);
-    unset($exportData['api_integrations']['gemini_api_key']);
-    unset($exportData['api_integrations']['google_tts_api_key']);
-    unset($exportData['dashboard_token']);
-    echo json_encode($exportData);
-    exit;
-}
 
 // --- HANDLE LOGIN / LOGOUT ---
 if (isset($_POST['login'])) {
@@ -195,6 +184,19 @@ if (!isset($_SESSION['admin_logged_in'])) {
     echo "<button type='submit' name='login' style='padding: 12px; width: 100%; cursor: pointer; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 16px;'>Login</button>";
     echo "</form></body></html>"; exit;
 }
+
+// --- API ENDPOINT ---
+if (isset($_GET['api'])) {
+    header('Content-Type: application/json');
+    $exportData = $configData;
+    unset($exportData['admin_password']);
+    unset($exportData['api_integrations']['gemini_api_key']);
+    unset($exportData['api_integrations']['google_tts_api_key']);
+    unset($exportData['dashboard_token']);
+    echo json_encode($exportData);
+    exit;
+}
+
 
 // --- HANDLE SAVES ---
 $page = $_GET['page'] ?? 'settings';
