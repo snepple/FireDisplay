@@ -1072,6 +1072,10 @@ if (!empty($dashboardToken)) {
                     const allEvents = comp.getAllSubcomponents('vevent');
                     const windowStart = new Date();
                     windowStart.setHours(9, 0, 0, 0);
+                    const nowForWindow = new Date();
+                    if (nowForWindow.getHours() < 9) {
+                        windowStart.setDate(windowStart.getDate() - 1);
+                    }
                     const windowEnd = new Date(windowStart);
                     windowEnd.setDate(windowStart.getDate() + 1);
                     allEvents.forEach(event => {
