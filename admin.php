@@ -674,8 +674,8 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
         <form method="POST" id="mainConfigForm" onsubmit="runPreSubmitHooks()">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <div class="header-bar">
-                <h1 style="text-transform: capitalize;"><?= str_replace('_', ' ', $page) ?></h1>
-                <button type="submit" name="save_<?= explode('_', $page)[0] ?>" class="save-btn">Save Changes</button>
+                <h1 style="text-transform: capitalize;"><?= htmlspecialchars(str_replace('_', ' ', $page)) ?></h1>
+                <button type="submit" name="save_<?= htmlspecialchars(explode('_', $page)[0]) ?>" class="save-btn">Save Changes</button>
             </div>
 
             <?php if($success) echo "<div class='success'>$success</div>"; ?>
@@ -2107,7 +2107,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
             <?php endif; ?>
 
             <div style="display:flex; justify-content: flex-end;">
-                <button type="submit" name="save_<?= explode('_', $page)[0] ?>" class="save-btn" style="padding: 15px 40px; margin-bottom: 50px;">💾 Save Changes</button>
+                <button type="submit" name="save_<?= htmlspecialchars(explode('_', $page)[0]) ?>" class="save-btn" style="padding: 15px 40px; margin-bottom: 50px;">💾 Save Changes</button>
             </div>
         </form>
 
