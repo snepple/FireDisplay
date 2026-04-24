@@ -139,10 +139,9 @@ if (!empty($dashboardToken)) {
         .permit-time { font-size: 1.8em; color: var(--muted-text); font-weight: 400; }
 
         .no-events { text-align: center; color: var(--muted-text); padding: clamp(6px, 1.5vh, 15px); background-color: var(--card-bg); font-size: 1.2em; flex-shrink: 0; }
-
-        .no-burn-permits { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: clamp(8px, 2vh, 20px); box-sizing: border-box; }
-        .no-burn-permits img { max-width: 400px; width: 50%; height: auto; margin-bottom: 30px; }
-        .no-burn-permits p { font-size: clamp(3em, 4vw, 5em); font-weight: 700; color: var(--text-color); margin: 0; line-height: 1.2; }
+        .no-burn-permits { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: clamp(8px, 2vh, 20px); box-sizing: border-box; min-height: 0; }
+        .no-burn-permits img { max-width: 400px; width: 50%; max-height: 50vh; height: auto; margin-bottom: clamp(10px, 2vh, 30px); object-fit: contain; flex-shrink: 1; min-height: 0; }
+        .no-burn-permits p { font-size: clamp(1.5em, min(4vw, 6vh), 5em); font-weight: 700; color: var(--text-color); margin: 0; line-height: 1.2; flex-shrink: 1; min-height: 0; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; }
 
 
         #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 4px; padding: clamp(4px, 1.5vh, 10px);}
@@ -283,7 +282,32 @@ if (!empty($dashboardToken)) {
         ::-webkit-scrollbar {
             display: none;
         }
-    </style>
+
+        /* Fire Danger Toast Notification */
+        #fire-danger-toast {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+            z-index: 100;
+            border: 1px solid var(--border-color);
+        }
+        #fire-danger-toast.show {
+            opacity: 1;
+        }
+        #fire-danger-toast.success { border-color: #28a745; color: #28a745; }
+        #fire-danger-toast.error { border-color: #dc3545; color: #dc3545; }
+        #fire-danger-toast.loading { border-color: #007bff; color: #007bff; }
+</style>
 </head>
 <body>
     <div id="audio-unlock-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); color: #fff; z-index: 100000; align-items: center; justify-content: center; font-size: 3rem; cursor: pointer;">
@@ -304,6 +328,7 @@ if (!empty($dashboardToken)) {
         <div class="main-layout" id="top-section">
             <div class="container">
                 <div id="fire-danger-content" style="justify-content: flex-start; padding-top: clamp(10px, 1.5vh, 20px); position: relative;">
+                     <div id="fire-danger-toast">Updating...</div>
                      <button onclick="loadFireDanger(true)" style="position: absolute; bottom: 5px; right: 5px; background: none; border: none; cursor: pointer; opacity: 0.3; padding: 5px;" title="Force Reload Fire Danger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 1 0 2.63-6.37L21 8"></path></svg></button>
                      <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(5px, 1vh, 15px); width: 100%;">🔥 Fire Danger</h2>
                      <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
@@ -889,9 +914,29 @@ if (!empty($dashboardToken)) {
             window.fireDangerInterval = setInterval(loadFireDanger, pollInterval);
         }
 
+
+        function showUpdateToast(message, type) {
+            const toast = document.getElementById('fire-danger-toast');
+            if(!toast) return;
+            toast.textContent = message;
+            toast.className = 'show ' + type;
+
+            if (window.fireDangerToastTimeout) clearTimeout(window.fireDangerToastTimeout);
+
+            if (type !== 'loading') {
+                window.fireDangerToastTimeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 4000);
+            }
+        }
+
         async function loadFireDanger(force = false) {
             let fetchUrl = `api/fetch_mainefireweather.php?nocache=${Date.now()}`;
-            if (force) { fetchUrl += '&force=1'; }
+            if (force) {
+                fetchUrl += '&force=1';
+                showUpdateToast("Updating...", "loading");
+            }
+
 
             const fireDangerApiUrl = `api/get_fire_danger.php?nocache=${Date.now()}`;
             const meterDiv = document.getElementById('danger-meter');
@@ -989,10 +1034,19 @@ if (!empty($dashboardToken)) {
 
 
 
+
                 if (meterDiv.dataset.lastLevel !== riskLevel) {
                      announceFireDanger(riskLevel);
                 }
                 meterDiv.dataset.lastLevel = riskLevel;
+
+                if (force) {
+                    if (lastUpdateStr !== "") {
+                        showUpdateToast(`Updated: ${riskLevel} (${lastUpdateStr})`, "success");
+                    } else {
+                        showUpdateToast(`Updated: ${riskLevel}`, "success");
+                    }
+                }
             } else {
                 hasFireDanger = false;
                 document.getElementById('top-section').style.display = 'none';
@@ -1003,7 +1057,11 @@ if (!empty($dashboardToken)) {
                 imgDiv.style.display = 'none';
                 dateDiv.textContent = "Will be available once published by the state (usually after 9a).";
 
+
                 delete meterDiv.dataset.lastLevel;
+                if (force) {
+                    showUpdateToast("Failed to update", "error");
+                }
             }
         }
 
