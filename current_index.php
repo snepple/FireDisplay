@@ -2441,11 +2441,6 @@ if (!empty($dashboardToken)) {
                         }
                     });
                 }
-
-                        marker.bindPopup(`<strong>${loc.type || 'Location'}</strong><br>${loc.address}`);
-                        marker.addTo(staticLocationsLayerGroup);
-                    }
-                });
             } catch (e) {
                 console.error("Failed to load map locations", e);
             }
