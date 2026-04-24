@@ -1,11 +1,24 @@
 <?php
 header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=utf-8");
+header("Content-Type: application/json");
 
-$file = __DIR__ . '/../data/fire_danger.json';
-if (file_exists($file)) {
-    echo file_get_contents($file);
-} else {
-    echo json_encode(["level" => "Unknown", "updated_at" => ""]);
+require_once __DIR__ . '/db.php';
+
+$default = ['level' => 'Unknown', 'updated_at' => ''];
+
+try {
+    $pdo = getDbConnection();
+
+    $stmt = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = ?");
+    $stmt->execute(['fire_danger']);
+    $row = $stmt->fetch();
+
+    if ($row && $row['setting_value']) {
+        echo $row['setting_value']; // Already JSON string
+    } else {
+        echo json_encode($default);
+    }
+} catch (\PDOException $e) {
+    echo json_encode($default);
 }
 ?>

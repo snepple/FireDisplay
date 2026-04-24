@@ -23,17 +23,28 @@ if (!isset($input['locations']) || !is_array($input['locations'])) {
     die();
 }
 
-$file = __DIR__ . '/../data/locations.json';
+require_once __DIR__ . '/db.php';
 
-// Save locations
-if (!is_dir(__DIR__ . '/../data')) {
-    mkdir(__DIR__ . '/../data', 0755, true);
-}
+try {
+    $pdo = getDbConnection();
 
-if (file_put_contents($file, json_encode($input['locations'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !== false) {
+    // Clear existing locations
+    $pdo->exec("DELETE FROM locations");
+
+    // Insert new locations
+    $stmt = $pdo->prepare("INSERT INTO locations (lat, lng, name) VALUES (?, ?, ?)");
+    foreach ($input['locations'] as $loc) {
+        if (isset($loc['lat']) && isset($loc['lng'])) {
+            $stmt->execute([
+                $loc['lat'],
+                $loc['lng'],
+                $loc['name'] ?? ''
+            ]);
+        }
+    }
     echo json_encode(['success' => true]);
-} else {
+} catch (\PDOException $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Failed to write data file.']);
+    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
 }
 ?>

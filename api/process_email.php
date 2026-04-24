@@ -244,22 +244,27 @@ function extractBurnPermit($body, $subject) {
     ];
 }
 
+require_once __DIR__ . '/db.php';
+
 function saveBurnPermit($new_permit) {
-    $file = __DIR__ . '/../data/permits.json';
-    $permits = [];
-    if (file_exists($file)) {
-        $permits = json_decode(file_get_contents($file), true) ?: [];
+    try {
+        $pdo = getDbConnection();
+
+        $stmt = $pdo->prepare("INSERT INTO permits (permit_number, address, expires, details, created_at) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([
+            $new_permit['uid'] ?? uniqid(),
+            $new_permit['address'] ?? 'Unknown Address',
+            date('Y-m-d H:i:s', strtotime($new_permit['expires'])),
+            json_encode($new_permit), // Save all extra details as JSON
+            date('Y-m-d H:i:s', strtotime($new_permit['created_at'] ?? 'now'))
+        ]);
+
+        // Cleanup expired
+        $cleanup = $pdo->prepare("DELETE FROM permits WHERE expires <= ?");
+        $cleanup->execute([date('Y-m-d H:i:s')]);
+
+    } catch (\PDOException $e) {
+        error_log("Failed to save burn permit to DB: " . $e->getMessage());
     }
-
-    // Add new permit
-    $permits[] = $new_permit;
-
-    // Cleanup expired
-    $now = time();
-    $permits = array_filter($permits, function($p) use ($now) {
-        return strtotime($p['expires']) > $now;
-    });
-
-    file_put_contents($file, json_encode(array_values($permits)));
 }
 ?>

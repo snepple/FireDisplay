@@ -2,17 +2,24 @@
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=utf-8");
 
-$file = __DIR__ . '/../data/permits.json';
-$permits = [];
-if (file_exists($file)) {
-    $permits = json_decode(file_get_contents($file), true) ?: [];
+require_once __DIR__ . '/db.php';
+
+try {
+    $pdo = getDbConnection();
+
+    // Cleanup expired first
+    $cleanup = $pdo->prepare("DELETE FROM permits WHERE expires <= ?");
+    $cleanup->execute([date('Y-m-d H:i:s')]);
+
+        $stmt = $pdo->prepare("SELECT details FROM permits WHERE expires > ? ORDER BY expires ASC");
+    $stmt->execute([date('Y-m-d H:i:s')]);
+    $permits = [];
+    while ($row = $stmt->fetch()) {
+        $permits[] = json_decode($row['details'], true);
+    }
+
+    echo json_encode($permits);
+} catch (\PDOException $e) {
+    echo json_encode([]);
 }
-
-// Filter out expired permits before returning
-$now = time();
-$active_permits = array_filter($permits, function($p) use ($now) {
-    return strtotime($p['expires']) > $now;
-});
-
-echo json_encode(array_values($active_permits));
 ?>

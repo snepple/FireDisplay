@@ -2,11 +2,16 @@
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=utf-8");
 
-$file = __DIR__ . '/../data/locations.json';
-$locations = [];
-if (file_exists($file)) {
-    $locations = json_decode(file_get_contents($file), true) ?: [];
-}
+require_once __DIR__ . '/db.php';
 
-echo json_encode(array_values($locations));
+try {
+    $pdo = getDbConnection();
+
+    $stmt = $pdo->query("SELECT lat, lng, name FROM locations");
+    $locations = $stmt->fetchAll();
+
+    echo json_encode($locations);
+} catch (\PDOException $e) {
+    echo json_encode([]);
+}
 ?>

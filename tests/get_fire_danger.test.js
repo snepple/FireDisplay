@@ -30,36 +30,20 @@ const waitForServer = (url, timeout = 5000) => {
 };
 
 beforeAll(async () => {
-    // 1. Create tmp directory structure
-    if (fs.existsSync(TMP_DIR)) {
-        fs.rmSync(TMP_DIR, { recursive: true, force: true });
-    }
+    if (fs.existsSync(TMP_DIR)) fs.rmSync(TMP_DIR, { recursive: true, force: true });
     fs.mkdirSync(TMP_API_DIR, { recursive: true });
     fs.mkdirSync(TMP_DATA_DIR, { recursive: true });
 
-    // 2. Copy api/get_fire_danger.php to tmp directory
-    const srcFile = path.join(__dirname, '../api/get_fire_danger.php');
-    const destFile = path.join(TMP_API_DIR, 'get_fire_danger.php');
-    fs.copyFileSync(srcFile, destFile);
+    fs.copyFileSync(path.join(__dirname, '../api/get_fire_danger.php'), path.join(TMP_API_DIR, 'get_fire_danger.php'));
+    fs.copyFileSync(path.join(__dirname, '../api/db.php'), path.join(TMP_API_DIR, 'db.php'));
 
-    // 3. Spawn PHP server
     phpServer = spawn('php', ['-S', `127.0.0.1:${PORT}`, '-t', TMP_DIR]);
-
-    // Wait for the server to start by polling
     await waitForServer(`${BASE_URL}/api/get_fire_danger.php`);
 });
 
 afterAll((done) => {
-    // 1. Kill PHP server
-    if (phpServer) {
-        phpServer.kill();
-    }
-
-    // 2. Remove tmp directory
-    if (fs.existsSync(TMP_DIR)) {
-        fs.rmSync(TMP_DIR, { recursive: true, force: true });
-    }
-
+    if (phpServer) phpServer.kill();
+    if (fs.existsSync(TMP_DIR)) fs.rmSync(TMP_DIR, { recursive: true, force: true });
     done();
 });
 
@@ -71,12 +55,14 @@ describe('get_fire_danger.php', () => {
         expect(response.headers.get('Content-Type')).toContain('application/json');
     });
 
-    test('returns default data when fire_danger.json is missing', async () => {
-        // Ensure file is missing
-        const jsonFile = path.join(TMP_DATA_DIR, 'fire_danger.json');
-        if (fs.existsSync(jsonFile)) {
-            fs.unlinkSync(jsonFile);
-        }
+    test('returns default data when DB setting is missing', async () => {
+        const setupScript = path.join(TMP_API_DIR, 'setup_db.php');
+        fs.writeFileSync(setupScript, `<?php
+        require_once 'db.php';
+        $pdo = getDbConnection();
+        $pdo->exec("DELETE FROM settings WHERE setting_key = 'fire_danger'");
+        `);
+        await fetch(`${BASE_URL}/api/setup_db.php`);
 
         const response = await fetch(`${BASE_URL}/api/get_fire_danger.php`);
         expect(response.status).toBe(200);
@@ -87,13 +73,19 @@ describe('get_fire_danger.php', () => {
         });
     });
 
-    test('returns data from fire_danger.json when it exists', async () => {
+    test('returns data from settings DB when it exists', async () => {
         const mockData = {
             level: "Low",
             updated_at: "2023-10-27 10:00:00"
         };
-        const jsonFile = path.join(TMP_DATA_DIR, 'fire_danger.json');
-        fs.writeFileSync(jsonFile, JSON.stringify(mockData));
+        const setupScript = path.join(TMP_API_DIR, 'setup_db.php');
+        fs.writeFileSync(setupScript, `<?php
+        require_once 'db.php';
+        $pdo = getDbConnection();
+        $stmt = $pdo->prepare("REPLACE INTO settings (setting_key, setting_value) VALUES ('fire_danger', ?)");
+        $stmt->execute(['` + JSON.stringify(mockData) + `']);
+        `);
+        await fetch(`${BASE_URL}/api/setup_db.php`);
 
         const response = await fetch(`${BASE_URL}/api/get_fire_danger.php`);
         expect(response.status).toBe(200);

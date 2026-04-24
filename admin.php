@@ -74,29 +74,79 @@ if (!isset($configData['fire_danger_zone'])) $configData['fire_danger_zone'] = $
 
 $todayStr = date('Y-m-d');
 
-// Split Events
-$active_events = []; $archived_events = [];
-foreach ($configData['manual_events'] as $evt) {
-    $isArchived = false;
-    if ($evt['recurrence'] === 'none') { if ($evt['start_date'] < $todayStr) $isArchived = true; }
-    else if ($evt['end_type'] === 'date' && !empty($evt['end_date_bound'])) { if ($evt['end_date_bound'] < $todayStr) $isArchived = true; }
-    if ($isArchived) $archived_events[] = $evt; else $active_events[] = $evt;
-}
+require_once __DIR__ . '/api/db.php';
+try {
+    $pdo = getDbConnection();
 
-// Split Special Chores
-$active_chores = []; $archived_chores = [];
-foreach ($configData['special_chores'] as $sc) {
-    $isArchived = false;
-    if ($sc['recurrence'] === 'none') { if ($sc['start_date'] < $todayStr) $isArchived = true; }
-    else if ($sc['end_type'] === 'date' && !empty($sc['end_date_bound'])) { if ($sc['end_date_bound'] < $todayStr) $isArchived = true; }
-    if ($isArchived) $archived_chores[] = $sc; else $active_chores[] = $sc;
-}
+    $stmt = $pdo->query("SELECT setting_key, setting_value FROM settings");
+    while ($row = $stmt->fetch()) {
+        if (in_array($row['setting_key'], ['truck_check', 'truck_wash'])) {
+            $configData[$row['setting_key']] = json_decode($row['setting_value'], true);
+        } else if (in_array($row['setting_key'], ['chore_anchor'])) {
+            $configData['chore_anchor'] = $row['setting_value'];
+        } else if (in_array($row['setting_key'], ['chore_num_indices'])) {
+            $configData['chore_num_indices'] = (int)$row['setting_value'];
+        }
+    }
 
-// Split Announcements
-$active_announcements = []; $archived_announcements = [];
-foreach ($configData['announcements'] as $ann) {
-    if ($ann['end_date'] < $todayStr) $archived_announcements[] = $ann;
-    else $active_announcements[] = $ann;
+    $stmt = $pdo->query("SELECT id, name, abbr, category, type, status FROM apparatus ORDER BY display_order");
+    $configData['department_info']['apparatus'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmt = $pdo->query("SELECT id, number, address, rooms_json FROM stations");
+    $stations = [];
+    while ($row = $stmt->fetch()) {
+        $stations[] = ['id' => $row['id'], 'number' => $row['number'], 'address' => $row['address'], 'rooms' => json_decode($row['rooms_json'], true) ?: []];
+    }
+    $configData['department_info']['stations'] = $stations;
+
+    $stmt = $pdo->query("SELECT title FROM schedule_headers ORDER BY display_order");
+    $headers = [];
+    while ($row = $stmt->fetch()) $headers[] = $row['title'];
+    if (!empty($headers)) $configData['headers'] = $headers;
+
+    $stmt = $pdo->query("SELECT name FROM everyday_chores ORDER BY display_order");
+    $echores = [];
+    while ($row = $stmt->fetch()) $echores[] = $row['name'];
+    $configData['everyday_chores'] = $echores;
+
+    $stmt = $pdo->query("SELECT id, name FROM chores ORDER BY display_order");
+    $configData['chores'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $active_events = []; $archived_events = [];
+    $stmt = $pdo->query("SELECT id, details FROM manual_events");
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $evt = json_decode($row['details'], true);
+        $evt['id'] = $row['id']; // use db id
+        $isArchived = false;
+        if (($evt['recurrence'] ?? 'none') === 'none') { if (($evt['start_date'] ?? $evt['start']) < $todayStr) $isArchived = true; }
+        else if (($evt['end_type'] ?? 'never') === 'date' && !empty($evt['end_date_bound'])) { if ($evt['end_date_bound'] < $todayStr) $isArchived = true; }
+        if ($isArchived) $archived_events[] = $evt; else $active_events[] = $evt;
+    }
+
+    $active_chores = []; $archived_chores = [];
+    $stmt = $pdo->query("SELECT id, details FROM special_chores");
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $sc = json_decode($row['details'], true);
+        $sc['id'] = $row['id'];
+        $isArchived = false;
+        if (($sc['recurrence'] ?? 'none') === 'none') { if (($sc['start_date'] ?? $sc['date']) < $todayStr) $isArchived = true; }
+        else if (($sc['end_type'] ?? 'never') === 'date' && !empty($sc['end_date_bound'])) { if ($sc['end_date_bound'] < $todayStr) $isArchived = true; }
+        if ($isArchived) $archived_chores[] = $sc; else $active_chores[] = $sc;
+    }
+
+    $active_announcements = []; $archived_announcements = [];
+    $stmt = $pdo->query("SELECT id, details FROM announcements");
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $ann = json_decode($row['details'], true);
+        $ann['id'] = $row['id'];
+        if (($ann['end_date'] ?? $ann['expires']) < $todayStr) $archived_announcements[] = $ann;
+        else $active_announcements[] = $ann;
+    }
+
+} catch (\PDOException $e) {
+    $active_events = []; $archived_events = [];
+    $active_chores = []; $archived_chores = [];
+    $active_announcements = []; $archived_announcements = [];
 }
 
 // Prepare Rooms Datalist
@@ -130,6 +180,12 @@ if (isset($_POST['login'])) {
         die("CSRF token validation failed.");
     }
 
+    require_once __DIR__ . '/api/db.php';
+    try {
+        $pdo = getDbConnection();
+    } catch (\PDOException $e) {
+        die("Database connection failed. Please ensure migration is complete and credentials are correct.");
+    }
     $is_valid = false;
     $needs_rehash = false;
 
@@ -146,8 +202,9 @@ if (isset($_POST['login'])) {
     if ($is_valid) {
         $_SESSION['admin_logged_in'] = true;
         if ($needs_rehash) {
-            $configData['admin_password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
-            file_put_contents($configFile, json_encode($configData, JSON_PRETTY_PRINT));
+            $cleanConf = json_decode(file_get_contents($configFile), true);
+            $cleanConf['admin_password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+            file_put_contents($configFile, json_encode($cleanConf, JSON_PRETTY_PRINT));
         }
         header("Location: admin.php"); exit;
     } else { $error = "Invalid Password"; }
@@ -294,23 +351,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ];
             }
         }
-        $configData['department_info']['stations'] = $stations;
+        $pdo->exec("DELETE FROM stations");
+        $stmt_st = $pdo->prepare("INSERT INTO stations (id, number, address, rooms_json) VALUES (?, ?, ?, ?)");
+        foreach ($stations as $st) {
+            $stmt_st->execute([$st['id'], $st['number'], $st['address'], json_encode($st['rooms'])]);
+        }
 
         $apparatus = [];
+        $pdo->exec("DELETE FROM apparatus");
+        $stmt_app = $pdo->prepare("INSERT INTO apparatus (id, name, abbr, category, type, status, display_order) VALUES (?, ?, ?, ?, ?, ?, ?)");
         if (isset($_POST['app_id'])) {
             $appCount = count($_POST['app_id']);
             for ($i=0; $i<$appCount; $i++) {
-                $apparatus[] = [
-                    "id" => $_POST['app_id'][$i] ?: uniqid(),
-                    "name" => trim($_POST['app_name'][$i]),
-                    "abbr" => trim($_POST['app_abbr'][$i]),
-                    "category" => $_POST['app_category'][$i],
-                    "type" => $_POST['app_type'][$i],
-                    "status" => $_POST['app_status'][$i]
-                ];
+                $stmt_app->execute([$_POST['app_id'][$i] ?: uniqid(), trim($_POST['app_name'][$i]), trim($_POST['app_abbr'][$i]), $_POST['app_category'][$i], $_POST['app_type'][$i], $_POST['app_status'][$i], $i]);
             }
         }
-        $configData['department_info']['apparatus'] = $apparatus;
         $success = "Department Information Saved.";
     }
     elseif (isset($_POST['save_headers'])) {
@@ -321,78 +376,127 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $oth = trim($_POST['other'][$i]);
             $combined[] = ($oth !== '') ? ($app !== '' ? $app . "<br>" . $oth : $oth) : $app;
         }
-        $configData['headers'] = $combined;
+        $pdo->exec("DELETE FROM schedule_headers");
+        $stmt = $pdo->prepare("INSERT INTO schedule_headers (title, display_order) VALUES (?, ?)");
+        foreach ($combined as $i => $title) { $stmt->execute([$title, $i]); }
         $success = "Headers Saved.";
     }
     elseif (isset($_POST['save_apparatus'])) {
-        $configData['truck_check'] = ["anchor" => $_POST['truck_check_anchor'], "interval" => (int)$_POST['truck_check_interval']];
-        $configData['truck_wash'] = ["anchor" => $_POST['truck_wash_anchor'], "interval" => (int)$_POST['truck_wash_interval']];
+        $stmt = $pdo->prepare("REPLACE INTO settings (setting_key, setting_value) VALUES (?, ?)");
+        $stmt->execute(['truck_check', json_encode(["anchor" => $_POST['truck_check_anchor'], "interval" => (int)$_POST['truck_check_interval']])]);
+        $stmt->execute(['truck_wash', json_encode(["anchor" => $_POST['truck_wash_anchor'], "interval" => (int)$_POST['truck_wash_interval']])]);
         $success = "Apparatus Schedules Saved.";
     }
     elseif (isset($_POST['save_chores'])) {
-        $configData['everyday_chores'] = array_filter(array_map('trim', $_POST['everyday_chores'] ?? []), 'strlen');
-        $configData['chore_anchor'] = $_POST['chore_anchor'];
-        $configData['chore_num_indices'] = (int)$_POST['chore_num_indices'];
-        $newChores = [];
+        require_once __DIR__ . '/api/db.php';
+        $pdo = getDbConnection();
+        $pdo->exec("DELETE FROM everyday_chores");
+        $stmt_ec = $pdo->prepare("INSERT INTO everyday_chores (name, display_order) VALUES (?, ?)");
+        $ec_list = array_filter(array_map('trim', $_POST['everyday_chores'] ?? []), 'strlen');
+        foreach (array_values($ec_list) as $i => $name) {
+            $stmt_ec->execute([$name, $i]);
+        }
+        $stmt_set = $pdo->prepare("REPLACE INTO settings (setting_key, setting_value) VALUES (?, ?)");
+        $stmt_set->execute(['chore_anchor', $_POST['chore_anchor']]);
+        $stmt_set->execute(['chore_num_indices', (int)$_POST['chore_num_indices']]);
+        $pdo->exec("DELETE FROM chores");
+        $stmt_c = $pdo->prepare("INSERT INTO chores (id, name, display_order) VALUES (?, ?, ?)");
         if (isset($_POST['chore_ids'])) {
             $choreCount = count($_POST['chore_ids']);
+            $order = 0;
             for ($i=0; $i<$choreCount; $i++) {
                 if (trim($_POST['chore_names'][$i]) !== '') {
-                    $newChores[] = ["id" => (int)$_POST['chore_ids'][$i], "name" => trim($_POST['chore_names'][$i])];
+                    $stmt_c->execute([(int)$_POST['chore_ids'][$i], trim($_POST['chore_names'][$i]), $order++]);
                 }
             }
         }
-        $configData['chores'] = $newChores;
+        $stmt = $pdo->query("SELECT details FROM special_chores");
+        $archived_chores = [];
+        $todayStr = date('Y-m-d');
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $sc = json_decode($row['details'], true);
+            $isArchived = false;
+            if (($sc['recurrence'] ?? 'none') === 'none') { if (($sc['start_date'] ?? $sc['date'] ?? '') < $todayStr) $isArchived = true; }
+            else if (($sc['end_type'] ?? 'never') === 'date' && !empty($sc['end_date_bound'])) { if ($sc['end_date_bound'] < $todayStr) $isArchived = true; }
+            if ($isArchived) $archived_chores[] = $sc;
+        }
 
-        $newSpecialChores = [];
+        $pdo->exec("DELETE FROM special_chores");
+        $stmt_sc = $pdo->prepare("INSERT INTO special_chores (details) VALUES (?)");
+        foreach ($archived_chores as $sc) {
+            $stmt_sc->execute([json_encode($sc)]);
+        }
+
         if (!empty($_POST['special_chores_json'])) {
             foreach ($_POST['special_chores_json'] as $jsonStr) {
                 $scData = json_decode($jsonStr, true);
                 if (!empty($scData['name'])) {
-                    if (empty($scData['id'])) $scData['id'] = uniqid();
-                    $newSpecialChores[] = $scData;
+                    $stmt_sc->execute([json_encode($scData)]);
                 }
             }
         }
-        $configData['special_chores'] = array_merge($newSpecialChores, $archived_chores);
-        $active_chores = $newSpecialChores;
-
-        $success = "Station Duties Saved.";
+        $success = "Station Duties Saved to Database.";
     }
     elseif (isset($_POST['save_events'])) {
-        $newActiveEvents = [];
+        require_once __DIR__ . '/api/db.php';
+        $pdo = getDbConnection();
+        $stmt = $pdo->query("SELECT details FROM manual_events");
+        $archived_events = [];
+        $todayStr = date('Y-m-d');
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $evt = json_decode($row['details'], true);
+            $isArchived = false;
+            if (($evt['recurrence'] ?? 'none') === 'none') { if (($evt['start_date'] ?? $evt['start'] ?? '') < $todayStr) $isArchived = true; }
+            else if (($evt['end_type'] ?? 'never') === 'date' && !empty($evt['end_date_bound'])) { if ($evt['end_date_bound'] < $todayStr) $isArchived = true; }
+            if ($isArchived) $archived_events[] = $evt;
+        }
+
+        $pdo->exec("DELETE FROM manual_events");
+        $stmt_evt = $pdo->prepare("INSERT INTO manual_events (details) VALUES (?)");
+        foreach ($archived_events as $evt) {
+            $stmt_evt->execute([json_encode($evt)]);
+        }
+
         if (!empty($_POST['events_json'])) {
             foreach ($_POST['events_json'] as $jsonStr) {
                 $evtData = json_decode($jsonStr, true);
                 if (!empty($evtData['title'])) {
-                    if (empty($evtData['id'])) $evtData['id'] = uniqid();
-                    $newActiveEvents[] = $evtData;
+                    $stmt_evt->execute([json_encode($evtData)]);
                 }
             }
         }
-        $configData['manual_events'] = array_merge($newActiveEvents, $archived_events);
-        $active_events = $newActiveEvents;
-        $success = "Events Saved.";
+        $success = "Events Saved to Database.";
     }
     elseif (isset($_POST['save_announcements'])) {
-        $newAnns = [];
+        require_once __DIR__ . '/api/db.php';
+        $pdo = getDbConnection();
+        $stmt = $pdo->query("SELECT details FROM announcements");
+        $archived_announcements = [];
+        $todayStr = date('Y-m-d');
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $ann = json_decode($row['details'], true);
+            if (($ann['end_date'] ?? $ann['expires'] ?? '') < $todayStr) $archived_announcements[] = $ann;
+        }
+
+        $pdo->exec("DELETE FROM announcements");
+        $stmt_ann = $pdo->prepare("INSERT INTO announcements (details) VALUES (?)");
+        foreach ($archived_announcements as $ann) {
+            $stmt_ann->execute([json_encode($ann)]);
+        }
+
         if (!empty($_POST['anns_json'])) {
             foreach ($_POST['anns_json'] as $jsonStr) {
                 $annData = json_decode($jsonStr, true);
                 if (!empty($annData['content']) && $annData['content'] !== '<p><br></p>') {
-                    if (empty($annData['id'])) $annData['id'] = uniqid();
-                    $newAnns[] = $annData;
+                    $stmt_ann->execute([json_encode($annData)]);
                 }
             }
         }
-        $configData['announcements'] = array_merge($newAnns, $archived_announcements);
-        $active_announcements = $newAnns;
-        $success = "Announcements Saved.";
+        $success = "Announcements Saved to Database.";
     }
     elseif (isset($_POST['delete_archived_event'])) {
-        $idToDel = $_POST['delete_id'];
-        $archived_events = array_filter($archived_events, function($e) use ($idToDel) { return $e['id'] !== $idToDel; });
-        $configData['manual_events'] = array_merge($active_events, $archived_events);
+        $stmt = $pdo->prepare("DELETE FROM manual_events WHERE id=?");
+        $stmt->execute([(int)$_POST['delete_id']]);
         $success = "Archived Event Deleted.";
     }
     elseif (isset($_POST['delete_archived_chore'])) {
@@ -438,7 +542,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else { $error_msg = "New passwords do not match or are too short."; }
         } else { $error_msg = "Incorrect current password."; }
     }
-    file_put_contents($configFile, json_encode($configData, JSON_PRETTY_PRINT));
+    $cleanConfigData = json_decode(file_get_contents($configFile), true);
+    // Merge the keys that actually changed in configData but shouldn't be arrays
+    if (isset($configData['dashboard_settings'])) $cleanConfigData['dashboard_settings'] = $configData['dashboard_settings'];
+    if (isset($configData['fire_danger_zone'])) $cleanConfigData['fire_danger_zone'] = $configData['fire_danger_zone'];
+    if (isset($configData['dashboard_token'])) $cleanConfigData['dashboard_token'] = $configData['dashboard_token'];
+    if (isset($configData['calendar_urls'])) $cleanConfigData['calendar_urls'] = $configData['calendar_urls'];
+    if (isset($configData['department_info']['name'])) $cleanConfigData['department_info']['name'] = $configData['department_info']['name'];
+    if (isset($configData['email_integration'])) $cleanConfigData['email_integration'] = $configData['email_integration'];
+    if (isset($configData['api_integrations'])) $cleanConfigData['api_integrations'] = $configData['api_integrations'];
+
+    file_put_contents($configFile, json_encode($cleanConfigData, JSON_PRETTY_PRINT));
 }
 
 $eventsJson = json_encode($active_events);
