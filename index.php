@@ -737,6 +737,21 @@ if (!empty($dashboardToken)) {
             return titleStr;
         }
 
+        function formatMapTooltipAddress(rawLocation) {
+            if (!rawLocation) return 'Address not provided';
+            let parts = rawLocation.split(',').map(p => p.trim());
+            let street = parts[0];
+            let city = parts.length > 1 ? parts[1] : null;
+            if (city && (city.toLowerCase() === 'maine' || city.toLowerCase() === 'me')) {
+                city = null;
+            }
+            let resultStr = street;
+            if (city && city.toLowerCase() !== 'oakland') {
+                resultStr += ', ' + city;
+            }
+            return formatAddressTitleCase(resultStr);
+        }
+
         function escapeHtml(unsafe) {
             return (unsafe || "").toString()
                  .replace(/&/g, "&amp;")
@@ -2554,7 +2569,7 @@ if (!empty($dashboardToken)) {
                 if (result && result.length > 0) {
                     const { lat, lon } = result[0];
                     const permit = permits[index];
-                    const address = permit.location.split(',')[0];
+                    const address = formatMapTooltipAddress(permit.location);
                     const detailsHtml = permit.description.split('Details:')[1] || '';
 
                     const marker = L.marker([lat, lon], { icon: dynamicFlameIcon }).addTo(permitMap)
