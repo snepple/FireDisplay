@@ -119,6 +119,7 @@ if (isset($_POST['login'])) {
         die("CSRF token validation failed.");
     }
 
+
     $is_valid = false;
     $needs_rehash = false;
 
@@ -206,6 +207,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         die("CSRF token validation failed.");
     }
+
+    if (isset($_POST['action']) && $_POST['action'] === 'clear_logs') {
+        $logFile = __DIR__ . '/data/system.log';
+        if (file_exists($logFile)) {
+            file_put_contents($logFile, '');
+            $success = "System logs cleared successfully.";
+        } else {
+            $error_msg = "Log file does not exist.";
+        }
+    }
+
 
     if (isset($_POST['save_settings'])) {
         $configData['dashboard_settings']['theme'] = $_POST['dash_theme'];
@@ -666,6 +678,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
             <li><a href="?page=map_locations" class="<?= isPage('map_locations', $page) ?>">Map Locations</a></li>
             <li><a href="?page=api_integrations" class="<?= isPage('api_integrations', $page) ?>">API Integrations</a></li>
             <li><a href="?page=password" class="<?= isPage('password', $page) ?>">Change Password</a></li>
+            <li><a href="?page=system_logs" class="<?= isPage('system_logs', $page) ?>">System Logs</a></li>
         </ul>
         <a href="?logout=true" class="logout-btn">Log Out Securely</a>
     </div>
@@ -2036,6 +2049,106 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         <h4 style="margin-top: 0; border-bottom: 1px solid #dee2e6; padding-bottom: 8px; margin-bottom: 12px; color: #495057;">Extraction Results</h4>
                         <div id="test_email_results_content" style="color: #212529;"></div>
                     </div>
+
+                <!-- System Logs Section -->
+                <div id="system_logs" class="tab-content <?= $page === 'system_logs' ? 'active' : '' ?>">
+                    <h2>System Logs</h2>
+                    <p class="help">View system events, errors, and integration usage. Logs rotate automatically at 5MB.</p>
+
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div class="flex-row" style="align-items: center; justify-content: space-between;">
+                            <div class="flex-row" style="gap: 15px;">
+                                <select id="logComponentFilter" onchange="filterLogs()">
+                                    <option value="all">All Components</option>
+                                    <option value="Email">Email</option>
+                                    <option value="ICS">ICS</option>
+                                    <option value="Gemini">Gemini</option>
+                                </select>
+                                <select id="logStatusFilter" onchange="filterLogs()">
+                                    <option value="all">All Statuses</option>
+                                    <option value="info">Info</option>
+                                    <option value="success">Success</option>
+                                    <option value="warning">Warning</option>
+                                    <option value="error">Error</option>
+                                </select>
+                            </div>
+                            <form method="POST" style="margin: 0;">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+                                <input type="hidden" name="action" value="clear_logs">
+                                <button type="submit" class="btn btn-remove" onclick="return confirm('Are you sure you want to clear all logs?');">Clear Logs</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card" style="overflow-x: auto;">
+                        <table class="table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border-color);">
+                                    <th style="padding: 10px;">Timestamp</th>
+                                    <th style="padding: 10px;">Component</th>
+                                    <th style="padding: 10px;">Status</th>
+                                    <th style="padding: 10px;">Message</th>
+                                    <th style="padding: 10px;">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logTableBody">
+                                <?php
+                                $logFile = __DIR__ . '/data/system.log';
+                                if (file_exists($logFile)) {
+                                    $logs = file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                                    if (!empty($logs)) {
+                                        $logs = array_reverse($logs); // Show newest first
+                                        foreach ($logs as $line) {
+                                            $log = json_decode($line, true);
+                                            if ($log) {
+                                                $statusColor = 'inherit';
+                                                if ($log['status'] === 'error') $statusColor = 'var(--danger-color)';
+                                                if ($log['status'] === 'warning') $statusColor = 'var(--warning-color)';
+                                                if ($log['status'] === 'success') $statusColor = 'var(--success-color)';
+
+                                                echo "<tr class='log-row' data-component='".htmlspecialchars($log['component'])."' data-status='".htmlspecialchars($log['status'])."' style='border-bottom: 1px solid var(--border-color);'>";
+                                                echo "<td style='padding: 10px; white-space: nowrap;'>" . htmlspecialchars($log['timestamp']) . "</td>";
+                                                echo "<td style='padding: 10px; font-weight: bold;'>" . htmlspecialchars($log['component']) . "</td>";
+                                                echo "<td style='padding: 10px; color: {$statusColor}; font-weight: bold;'>" . ucfirst(htmlspecialchars($log['status'])) . "</td>";
+                                                echo "<td style='padding: 10px;'>" . htmlspecialchars($log['message']) . "</td>";
+                                                echo "<td style='padding: 10px; font-size: 0.9em; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' title='" . htmlspecialchars(json_encode($log['details']), ENT_QUOTES) . "'>" . htmlspecialchars(json_encode($log['details']), ENT_QUOTES) . "</td>";
+                                                echo "</tr>";
+                                            }
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='5' style='padding: 10px; text-align: center;'>No logs found.</td></tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='5' style='padding: 10px; text-align: center;'>Log file does not exist yet.</td></tr>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <script>
+                function filterLogs() {
+                    const compFilter = document.getElementById('logComponentFilter').value.toLowerCase();
+                    const statFilter = document.getElementById('logStatusFilter').value.toLowerCase();
+                    const rows = document.querySelectorAll('.log-row');
+
+                    rows.forEach(row => {
+                        const comp = row.getAttribute('data-component').toLowerCase();
+                        const stat = row.getAttribute('data-status').toLowerCase();
+
+                        const compMatch = (compFilter === 'all' || comp === compFilter);
+                        const statMatch = (statFilter === 'all' || stat === statFilter);
+
+                        if (compMatch && statMatch) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                }
+                </script>
+
                 </div>
                 <script>
                     function runPreSubmitHooks() {}

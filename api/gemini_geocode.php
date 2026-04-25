@@ -1,9 +1,11 @@
 <?php
+if (file_exists(__DIR__ . "/logger.php")) require_once __DIR__ . "/logger.php";
 header('Content-Type: application/json');
 
 // Check config for API key
 $configFile = '../config.json';
 if (!file_exists($configFile)) {
+    if(function_exists("sys_log")) sys_log("Gemini", "Failed to decode config.json", "error");
     echo json_encode(null);
     die();
 }
@@ -12,6 +14,7 @@ $configData = json_decode(file_get_contents($configFile), true);
 $apiKey = $configData['api_integrations']['gemini_api_key'] ?? '';
 
 if (empty($apiKey)) {
+    if(function_exists("sys_log")) sys_log("Gemini", "Gemini API key missing", "error");
     echo json_encode(null);
     die();
 }
@@ -22,6 +25,8 @@ if (empty($address)) {
     echo json_encode(null);
     die();
 }
+
+if(function_exists("sys_log")) sys_log("Gemini", "Calling Gemini API for geocoding", "info", ["address" => $address]);
 
 // Check cache first
 $cacheFile = '../data/geocode_cache.json';
@@ -65,6 +70,7 @@ $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
 if ($httpCode !== 200 || !$response) {
+    if(function_exists("sys_log")) sys_log("Gemini", "Error in Gemini geocode", "error", ["address" => $address, "http_code" => $httpCode]);
     echo json_encode(null);
     die();
 }
@@ -84,6 +90,8 @@ $textOutput = trim(str_replace(['```json', '```'], '', $textOutput));
 $parsedJson = json_decode($textOutput, true);
 
 if ($parsedJson && isset($parsedJson['lat']) && isset($parsedJson['lon'])) {
+    if(function_exists("sys_log")) sys_log("Gemini", "Successfully geocoded address", "success", ["address" => $address, "lat" => $parsedJson['lat'], "lon" => $parsedJson['lon']]);
+
     $result = [
         'lat' => (float) $parsedJson['lat'],
         'lon' => (float) $parsedJson['lon']
@@ -130,6 +138,7 @@ if ($parsedJson && isset($parsedJson['lat']) && isset($parsedJson['lon'])) {
 
     echo json_encode($result);
 } else {
+    if(function_exists("sys_log")) sys_log("Gemini", "Failed to extract coordinates from response", "error", ["address" => $address, "response" => $textOutput]);
     echo json_encode(null);
 }
 ?>

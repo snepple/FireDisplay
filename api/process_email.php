@@ -1,5 +1,6 @@
 #!/usr/local/bin/php -q
 <?php
+if (file_exists(__DIR__ . "/logger.php")) require_once __DIR__ . "/logger.php";
 // Script to be piped from cPanel email forwarders
 // Example email addresses: danger@yourdomain.com, permits@yourdomain.com
 
@@ -16,6 +17,11 @@ if ($is_test) {
 // Basic parsing logic (this is a simplified example, a robust email parser is better)
 // In a real scenario, you'd use a library like PhpMimeMailParser or standard regex based on the email format.
 
+$from = '';
+if (preg_match('/^From: (.*)$/m', $email_content, $matches)) {
+    $from = trim($matches[1]);
+}
+
 $to = '';
 if (preg_match('/^To: (.*)$/m', $email_content, $matches)) {
     $to = strtolower(trim($matches[1]));
@@ -25,6 +31,8 @@ $subject = '';
 if (preg_match('/^Subject: (.*)$/m', $email_content, $matches)) {
     $subject = trim($matches[1]);
 }
+
+if(function_exists("sys_log")) sys_log("Email", "Received email", "info", ["from" => $from, "to" => $to, "subject" => $subject]);
 
 // Find empty line separating headers and body
 $headers_end = strpos($email_content, "\r\n\r\n");
@@ -61,9 +69,11 @@ if (strpos($to, $danger_addr) !== false || strpos($subject, 'Fire Danger') !== f
     if ($is_test) {
         echo json_encode(['type' => 'none', 'error' => 'No match found for routing']);
     }
+    if(function_exists("sys_log")) sys_log("Email", "Failed to parse email. No match found for routing.", "error", ["body" => substr($body, 0, 500)]);
 }
 
 function callGeminiExtract($systemInstruction, $textToParse, $config) {
+    if(function_exists("sys_log")) sys_log("Gemini", "Calling Gemini API for extraction", "info", ["instruction" => $systemInstruction, "text" => substr($textToParse, 0, 500) . "..."]);
     $apiKey = $config['api_integrations']['gemini_api_key'] ?? '';
     if (empty($apiKey)) return null;
 
@@ -102,6 +112,7 @@ function callGeminiExtract($systemInstruction, $textToParse, $config) {
     // Clean markdown code blocks
     $textOutput = trim(str_replace(['```json', '```'], '', $textOutput));
     $parsed = json_decode($textOutput, true);
+    if ($parsed && function_exists("sys_log")) sys_log("Gemini", "Successfully extracted data with Gemini", "success", ["extracted" => $parsed]);
 
     return $parsed;
 }
@@ -255,6 +266,7 @@ function extractBurnPermit($body, $subject) {
 }
 
 function saveBurnPermit($new_permit) {
+    if(function_exists("sys_log")) sys_log("Email", "Burn permit added successfully", "success", ["permit" => $new_permit]);
     $file = __DIR__ . '/../data/permits.json';
     $permits = [];
     if (file_exists($file)) {
