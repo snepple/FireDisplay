@@ -1,13 +1,17 @@
 <?php
+if (file_exists(__DIR__ . "/logger.php")) require_once __DIR__ . "/logger.php";
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: text/plain; charset=utf-8");
 
 $url = isset($_GET['url']) ? $_GET['url'] : '';
 
 if (empty($url)) {
+    if(function_exists("sys_log")) sys_log("ICS", "Fetch failed: URL missing", "error");
     http_response_code(400);
     die("Error: No URL provided.");
 }
+
+if(function_exists("sys_log")) sys_log("ICS", "Fetching ICS calendar", "info", ["url" => $url]);
 
 // Security: Prevent SSRF by checking against a whitelist
 $configFile = __DIR__ . '/../config.json';
@@ -96,6 +100,7 @@ $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
 if ($httpCode !== 200 || !$content) {
+    if(function_exists("sys_log")) sys_log("ICS", "Failed to fetch calendar from URL", "error", ["url" => $url, "http_code" => $httpCode]);
     echo "Error: Could not fetch calendar. HTTP Code: " . $httpCode;
 } else {
     $content = str_replace("\r\n", "\n", $content);
@@ -104,6 +109,7 @@ if ($httpCode !== 200 || !$content) {
     // Save to cache
     file_put_contents($cacheFile, $content);
 
+    if(function_exists("sys_log")) sys_log("ICS", "Successfully fetched ICS calendar", "success", ["url" => $url, "bytes" => strlen($content)]);
     echo $content;
 }
 ?>
