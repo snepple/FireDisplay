@@ -329,6 +329,10 @@ if (!empty($dashboardToken)) {
                      <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(5px, 1vh, 15px); width: 100%;">🔥 Fire Danger</h2>
                      <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
                      <div id="danger-meter">Loading...</div>
+                     <div id="danger-image-container" style="position: relative; max-width: 60%; margin-bottom: clamp(5px, 1.5vh, 15px); aspect-ratio: 16/9; display:none; width: 100%;">
+                         <img id="danger-image-active" src="" alt="Fire Danger Level" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 5px; object-fit: contain; transition: opacity 0.5s ease-in-out; opacity: 1;" />
+                         <img id="danger-image-standby" src="" alt="" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 5px; object-fit: contain; transition: opacity 0.5s ease-in-out; opacity: 0;" />
+                     </div>
                      <div id="danger-date"></div>
                      <div id="danger-map-container" style="margin-top: clamp(5px, 1.5vh, 15px); width: 100%; display: none;">
                          <div id="danger-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(2px, 0.5vh, 5px);"></div>
@@ -735,6 +739,21 @@ if (!empty($dashboardToken)) {
             return titleStr;
         }
 
+        function formatMapTooltipAddress(rawLocation) {
+            if (!rawLocation) return 'Address not provided';
+            let parts = rawLocation.split(',').map(p => p.trim());
+            let street = parts[0];
+            let city = parts.length > 1 ? parts[1] : null;
+            if (city && (city.toLowerCase() === 'maine' || city.toLowerCase() === 'me')) {
+                city = null;
+            }
+            let resultStr = street;
+            if (city && city.toLowerCase() !== 'oakland') {
+                resultStr += ', ' + city;
+            }
+            return formatAddressTitleCase(resultStr);
+        }
+
         function escapeHtml(unsafe) {
             return (unsafe || "").toString()
                  .replace(/&/g, "&amp;")
@@ -773,7 +792,10 @@ if (!empty($dashboardToken)) {
 
         async function loadAppConfig() {
             try {
-                const configResponse = await fetch('api/get_config.php', { cache: 'no-store' });
+                const urlParams = new URLSearchParams(window.location.search);
+                const token = urlParams.get('token') || '';
+                const configUrl = 'api/get_config.php' + (token ? '?token=' + encodeURIComponent(token) : '');
+                const configResponse = await fetch(configUrl, { cache: 'no-store' });
                 if (!configResponse.ok) throw new Error("Config fetch failed");
                 appConfig = await configResponse.json();
 
@@ -806,18 +828,67 @@ if (!empty($dashboardToken)) {
             }
         }
 
+        let sseReconnectDelay = 1000;
+        let eventSource = null;
+
+        function setupSSEConnection() {
+            if (eventSource) {
+                eventSource.close();
+            }
+
+            eventSource = new EventSource('api/stream_updates.php');
+
+            eventSource.addEventListener('update', function(e) {
+                console.log("SSE Update received:", e.data);
+                try {
+                    const data = JSON.parse(e.data);
+                    if (data.changed) {
+                        if (data.changed.includes('permits') || data.changed.includes('fire_danger') || data.changed.includes('mainefireweather')) {
+                            // Instead of reloading everything, intelligently update what changed
+                            if (data.changed.includes('fire_danger') || data.changed.includes('mainefireweather')) {
+                                loadFireDanger();
+                            }
+                            if (data.changed.includes('permits')) {
+                                loadBurnPermits();
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error("Error parsing SSE data", err);
+                }
+            });
+
+            eventSource.addEventListener('timeout', function(e) {
+                // Server closed after timeout, browser will auto-reconnect.
+                // Reset exponential backoff.
+                sseReconnectDelay = 1000;
+            });
+
+            eventSource.onerror = function(err) {
+                console.error("EventSource failed:", err);
+                eventSource.close();
+
+                // Exponential backoff reconnect
+                setTimeout(setupSSEConnection, sseReconnectDelay);
+                sseReconnectDelay = Math.min(sseReconnectDelay * 2, 60000); // max 1 minute
+            };
+
+            eventSource.onopen = function() {
+                console.log("SSE Connection opened");
+                sseReconnectDelay = 1000;
+            };
+        }
+
+        // Also keep a 15-minute fallback to update calendars/meetings
         function setupDataRefreshSchedules() {
             setInterval(updateAllData, 900000);
-            const scheduleHourlyUpdate = () => {
-                const now = new Date();
-                const target = new Date(now);
-                target.setMinutes(1, 0, 0);
-                if (now.getTime() > target.getTime()) target.setHours(target.getHours() + 1);
-                const delay = target.getTime() - now.getTime();
-                setTimeout(() => { updateAllData(); setInterval(updateAllData, 3600000); }, delay);
-            };
-            scheduleHourlyUpdate();
+
+            // Midnight calendar refresh
+            const now = new Date();
+            const millisTillMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 1, 0) - now;
+            setTimeout(() => { updateAllData(); setInterval(updateAllData, 3600000); }, millisTillMidnight);
         }
+
 
         async function initializeApp() {
             initPermitMap();
@@ -829,6 +900,7 @@ if (!empty($dashboardToken)) {
             });
 
             setupDataRefreshSchedules();
+            setupSSEConnection();
         }
 
         async function updateAllData() {
@@ -898,7 +970,7 @@ if (!empty($dashboardToken)) {
                 pollInterval = 300000; // 5 minutes
             }
 
-            window.fireDangerInterval = setInterval(loadFireDanger, pollInterval);
+
         }
 
 
@@ -1009,6 +1081,47 @@ if (!empty($dashboardToken)) {
 
                 meterDiv.textContent = riskLevel;
                 meterDiv.className = "danger-meter " + riskClass;
+
+                const imgContainer = document.getElementById('danger-image-container');
+                const imgActive = document.getElementById('danger-image-active');
+                const imgStandby = document.getElementById('danger-image-standby');
+
+                const newSrc = "assets/images/" + riskLevel.toLowerCase().replace(/ /g, '') + ".png?t=" + Date.now();
+
+                if (imgActive && imgStandby && imgContainer && imgActive.src !== newSrc) {
+                    // Temporarily remove transition from standby so we can snap it to opacity 0 instantly without animating
+                    imgStandby.style.transition = 'none';
+                    imgStandby.style.opacity = '0';
+
+                    // Force a reflow to ensure the 'none' transition takes effect
+                    void imgStandby.offsetWidth;
+
+                    imgStandby.src = newSrc;
+                    imgStandby.onload = () => {
+                        // Restore transition and begin fade in
+                        imgStandby.style.transition = 'opacity 0.5s ease-in-out';
+                        imgStandby.style.opacity = '1';
+                        imgActive.style.opacity = '0';
+
+                        setTimeout(() => {
+                            // Snap active to new src and reset opacities instantly
+                            imgActive.style.transition = 'none';
+                            imgActive.src = newSrc;
+                            imgActive.style.opacity = '1';
+                            imgStandby.style.transition = 'none';
+                            imgStandby.style.opacity = '0';
+
+                            imgContainer.style.display = 'block';
+
+                            // Restore transitions for the next time
+                            void imgActive.offsetWidth;
+                            imgActive.style.transition = 'opacity 0.5s ease-in-out';
+                        }, 500); // match transition duration
+                    };
+                } else if (imgContainer) {
+                    imgContainer.style.display = 'block';
+                }
+
                 if (lastUpdateStr !== "") {
                     dateDiv.textContent = `Published by Maine Forest Service (${lastUpdateStr})`;
                 } else {
@@ -1060,6 +1173,8 @@ if (!empty($dashboardToken)) {
 
                 meterDiv.textContent = "Unavailable";
                 meterDiv.className = "danger-meter";
+                const imgContainer = document.getElementById('danger-image-container');
+                if (imgContainer) imgContainer.style.display = 'none';
                 dateDiv.textContent = "Will be available once published by the state (usually after 9a).";
                 document.getElementById('danger-map-container').style.display = 'none';
 
@@ -2505,7 +2620,7 @@ if (!empty($dashboardToken)) {
                 if (result && result.length > 0) {
                     const { lat, lon } = result[0];
                     const permit = permits[index];
-                    const address = permit.location.split(',')[0];
+                    const address = formatMapTooltipAddress(permit.location);
                     const detailsHtml = permit.description.split('Details:')[1] || '';
 
                     const marker = L.marker([lat, lon], { icon: flameIcon }).addTo(permitMap)
