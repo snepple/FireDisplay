@@ -38,7 +38,7 @@ if (file_exists($cacheFile)) {
 
 // Prepare the system instruction and prompt for Gemini
 $systemInstruction = "You are an expert geospatial routing assistant for a local fire department. Your task is to convert free-text location descriptions from burn permits into approximate latitude and longitude coordinates.
-Assume all locations are within or immediately surrounding Oakland, Maine unless explicitly stated otherwise.
+Assume all locations are within or immediately surrounding Oakland, Maine unless explicitly stated otherwise. If the address is an intersection (e.g. 'Corner of Road A and Road B' or 'Road A & Road B'), provide the approximate coordinates of that intersection.
 Location description to map: " . $address . "
 Return your response strictly as a JSON object with two keys: \"lat\" (float) and \"lon\" (float). Do not include any markdown formatting, explanations, or additional text. If the location is completely impossible to estimate even with the local context, return null for both values. Example output: {\"lat\": 44.5445, \"lon\": -69.7262}";
 

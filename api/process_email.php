@@ -169,15 +169,20 @@ function extractBurnPermit($body, $subject) {
     }
 
     $burn_location_address = "";
-    if (preg_match('/Address of Burn Location:\s*(.*?)\s*(?:Burn Location on the Property:|Municipality\/Unorganized Territory:)/i', $clean, $matches)) {
+    if (preg_match('/Address of Burn Location:\s*(.*?)\s*(?:Burn Location on the Property:|Municipality\/Unorganized Territory:|Burn Type:)/i', $clean, $matches)) {
         $burn_location_address = trim($matches[1]);
     }
 
-    $primary_address = !empty($burn_location_address) && trim($burn_location_address) !== '--' ? $burn_location_address : $person_address;
-
     $burn_location_property = "";
-    if (preg_match('/Burn Location on the Property:\s*(.*?)\s*Municipality\/Unorganized Territory:/i', $clean, $matches)) {
+    if (preg_match('/Burn Location on the Property:\s*(.*?)\s*(?:Municipality\/Unorganized Territory:|Burn Type:)/i', $clean, $matches)) {
         $burn_location_property = trim($matches[1]);
+    }
+
+    $primary_address = $person_address;
+    if (!empty($burn_location_address) && trim($burn_location_address) !== '--') {
+        $primary_address = $burn_location_address;
+    } elseif (!empty($burn_location_property) && trim($burn_location_property) !== '--') {
+        $primary_address = $burn_location_property;
     }
 
     $burn_type = "Open Burn";
@@ -213,7 +218,12 @@ function extractBurnPermit($body, $subject) {
             $burn_type = $geminiResult['burn_type'] ?? $burn_type;
             $items_to_burn = $geminiResult['items_to_burn'] ?? $items_to_burn;
 
-            $primary_address = !empty($burn_location_address) && trim($burn_location_address) !== '--' ? $burn_location_address : $person_address;
+            $primary_address = $person_address;
+            if (!empty($burn_location_address) && trim($burn_location_address) !== '--') {
+                $primary_address = $burn_location_address;
+            } elseif (!empty($burn_location_property) && trim($burn_location_property) !== '--') {
+                $primary_address = $burn_location_property;
+            }
 
             if (!empty($geminiResult['expires_date'])) {
                 $parsed_time = strtotime($geminiResult['expires_date']);

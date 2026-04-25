@@ -2468,7 +2468,12 @@ if (!empty($dashboardToken)) {
                     return geocodeCache.get(address); // Performance: Avoid Promise wrapper overhead for cached hits
                 }
 
-                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+                // Clean up intersection addresses for better Nominatim compatibility
+                let searchAddress = address;
+                searchAddress = searchAddress.replace(/^Corner of\s+/i, '');
+                searchAddress = searchAddress.replace(/^Intersection of\s+/i, '');
+
+                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchAddress)}&format=json&limit=1`;
                 return fetch(url).then(res => res.json()).then(async (nominatimResult) => {
                     if (nominatimResult && nominatimResult.length > 0) {
                         geocodeCache.set(address, nominatimResult);
