@@ -790,7 +790,10 @@ if (!empty($dashboardToken)) {
 
         async function loadAppConfig() {
             try {
-                const configResponse = await fetch('api/get_config.php', { cache: 'no-store' });
+                const urlParams = new URLSearchParams(window.location.search);
+                const token = urlParams.get('token') || '';
+                const configUrl = 'api/get_config.php' + (token ? '?token=' + encodeURIComponent(token) : '');
+                const configResponse = await fetch(configUrl, { cache: 'no-store' });
                 if (!configResponse.ok) throw new Error("Config fetch failed");
                 appConfig = await configResponse.json();
 
