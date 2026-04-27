@@ -247,7 +247,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $type = mime_content_type($tmpName);
                 $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 
-                if (in_array($type, $allowedTypes) || in_array($ext, $allowedExts)) {
+                if (in_array($type, $allowedTypes) && in_array($ext, $allowedExts)) {
                     $safeName = $fileKey . '_' . time() . '.' . $ext;
                     $dest = $audioDir . $safeName;
                     if (move_uploaded_file($tmpName, $dest)) {
