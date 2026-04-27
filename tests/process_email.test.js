@@ -20,6 +20,9 @@ beforeAll((done) => {
     const srcFile = path.join(__dirname, '../api/process_email.php');
     const destFile = path.join(TMP_API_DIR, 'process_email.php');
     fs.copyFileSync(srcFile, destFile);
+    const secSrc = path.join(__dirname, '../api/security_check.php');
+    const secDest = path.join(TMP_API_DIR, 'security_check.php');
+    if (fs.existsSync(secSrc)) fs.copyFileSync(secSrc, secDest);
 
     // 3. Create a mock config.json so routing logic does not fail
     const mockConfig = {
