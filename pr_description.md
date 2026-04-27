@@ -1,9 +1,11 @@
-This pull request addresses two issues on the dashboard:
+🛡️ Sentinel: [HIGH] Fix Unauthenticated API Quota Exhaustion / SSRF via speak.php Bypass
 
-1. **Fix Burn Permits Text/Image Overlap on Dashboard:**
-    - Modified the `.no-burn-permits` CSS in `index.php` and `current_index.php` to use `flex-shrink: 1` and `min-height: 0` constraints, along with dynamic `max-height: 50vh` on the image and `min(vw, vh)` on text clamps. This ensures the "No active online burn permits at this time." text and image gracefully shrink instead of overflowing and disappearing on smaller vertically-constrained screens like IAMResponding.
-
-2. **Add Toast Notification for Manual Fire Danger Update:**
-    - Updated the `loadFireDanger` JavaScript function in `index.php` and `current_index.php` to implement a self-dismissing toast notification.
-    - When the force-refresh button is clicked, a "Updating..." toast appears absolute positioned in the bottom-right of the fire danger container.
-    - Upon completion, the toast updates to show the fetched risk level and the date (if available) before fading out after 4 seconds.
+🚨 Severity: HIGH
+💡 Vulnerability: The `api/speak.php` endpoint completely lacked the `verify_dashboard_token()` check. This allowed any unauthenticated user to directly hit the endpoint, make POST requests with text, and have the backend synthesize speech via the Google Cloud TTS API using the department's API key. This represented an Unauthenticated API Quota Exhaustion vulnerability and a potential SSRF proxy issue.
+🎯 Impact: An attacker could bypass the frontend authentication and exhaust the Google Cloud TTS API quota or run up billing charges for the department.
+🔧 Fix:
+1. Included `security_check.php` and invoked `verify_dashboard_token()` at the top of `api/speak.php`.
+2. Updated the frontend JavaScript in `index.php` and `current_index.php` to append the `token` parameter to the URL when making fetch requests to `api/speak.php` so legitimate uses still work.
+3. Added a new unit test in `tests/speak.test.js` to explicitly assert that a 403 Forbidden is returned for requests with an invalid/missing dashboard token.
+4. Logged this critical finding in `.jules/sentinel.md`.
+✅ Verification: Ran `npx jest` to ensure tests, including the new `speak.php` 403 check, pass successfully.
