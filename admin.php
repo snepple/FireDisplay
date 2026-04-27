@@ -2167,7 +2167,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         resultsContent.innerHTML = '<em>Testing extraction...</em>';
 
                         try {
-                            const response = await fetch('api/process_email.php?test=true', {
+                            const response = await fetch('api/process_email.php?test=true&token=' + encodeURIComponent(document.querySelector('input[name="dashboard_token"]') ? document.querySelector('input[name="dashboard_token"]').value : ''), {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'text/plain'

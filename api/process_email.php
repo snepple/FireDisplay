@@ -5,6 +5,10 @@ if (file_exists(__DIR__ . "/logger.php")) require_once __DIR__ . "/logger.php";
 // Example email addresses: danger@yourdomain.com, permits@yourdomain.com
 
 $is_test = isset($_GET['test']) && $_GET['test'] === 'true';
+if ($is_test) {
+    require_once __DIR__ . "/security_check.php";
+    verify_dashboard_token();
+}
 
 if ($is_test) {
     header("Content-Type: application/json; charset=utf-8");

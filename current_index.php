@@ -990,14 +990,14 @@ if (!empty($dashboardToken)) {
         }
 
         async function loadFireDanger(force = false) {
-            let fetchUrl = `api/fetch_mainefireweather.php?nocache=${Date.now()}`;
+            let fetchUrl = `api/fetch_mainefireweather.php?nocache=${Date.now()}&token=${encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '')}`;
             if (force) {
                 fetchUrl += '&force=1';
                 showUpdateToast("Updating...", "loading");
             }
 
 
-            const fireDangerApiUrl = `api/get_fire_danger.php?nocache=${Date.now()}`;
+            const fireDangerApiUrl = `api/get_fire_danger.php?nocache=${Date.now()}&token=${encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '')}`;
             const meterDiv = document.getElementById('danger-meter');
             const dateDiv = document.getElementById('danger-date');
 
@@ -1201,7 +1201,7 @@ if (!empty($dashboardToken)) {
 
                 let permitsSource = 'ics';
                 if (useEmailPermits) {
-                    const fetchUrl = `api/get_permits.php?nocache=${Date.now()}`;
+                    const fetchUrl = `api/get_permits.php?nocache=${Date.now()}&token=${encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '')}`;
                     const response = await fetch(fetchUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
                     if (!response.ok) { throw new Error(`Network response was not ok`) }
 
@@ -2467,7 +2467,7 @@ if (!empty($dashboardToken)) {
         async function fetchAndRenderMapLocations() {
             if (!permitMap) return;
             try {
-                const res = await fetch('api/get_locations.php');
+                const res = await fetch(`api/get_locations.php?token=${encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '')}`);
                 const locations = await res.json();
 
                 if (staticLocationsLayerGroup) {
@@ -2520,7 +2520,7 @@ if (!empty($dashboardToken)) {
                                     geocoded = nominatimResult;
                                     geocodeCache.set(address, nominatimResult);
                                 } else {
-                                    const fallbackUrl = `api/gemini_geocode.php?address=${encodeURIComponent(address)}`;
+                                    const fallbackUrl = `api/gemini_geocode.php?address=${encodeURIComponent(address)}&token=${encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '')}`;
                                     const geminiResult = await fetch(fallbackUrl).then(res => res.json());
                                     if (geminiResult && geminiResult.lat && geminiResult.lon) {
                                         geocoded = [{ lat: geminiResult.lat, lon: geminiResult.lon }];
@@ -2595,7 +2595,7 @@ if (!empty($dashboardToken)) {
                         return nominatimResult;
                     } else {
                         console.warn("Nominatim failed for:", address, ". Falling back to Gemini...");
-                        const fallbackUrl = `api/gemini_geocode.php?address=${encodeURIComponent(address)}`;
+                        const fallbackUrl = `api/gemini_geocode.php?address=${encodeURIComponent(address)}&token=${encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '')}`;
                         return fetch(fallbackUrl).then(res => res.json()).then(geminiResult => {
                             if (geminiResult && geminiResult.lat && geminiResult.lon) {
                                 const result = [{ lat: geminiResult.lat, lon: geminiResult.lon }];

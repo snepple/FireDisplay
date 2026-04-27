@@ -41,6 +41,9 @@ beforeAll(async () => {
     const srcFile = path.join(__dirname, '../api/get_permits.php');
     const destFile = path.join(TMP_API_DIR, 'get_permits.php');
     fs.copyFileSync(srcFile, destFile);
+    const secSrc = path.join(__dirname, '../api/security_check.php');
+    const secDest = path.join(TMP_API_DIR, 'security_check.php');
+    if (fs.existsSync(secSrc)) fs.copyFileSync(secSrc, secDest);
 
     // 3. Spawn PHP server
     phpServer = spawn('php', ['-S', `127.0.0.1:${PORT}`, '-t', TMP_DIR]);
