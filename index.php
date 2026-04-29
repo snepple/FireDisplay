@@ -329,7 +329,7 @@ if (!empty($dashboardToken)) {
             <div class="container">
                 <div id="fire-danger-content" style="justify-content: flex-start; padding-top: clamp(10px, 1.5vh, 20px); position: relative;">
                      <div id="fire-danger-toast">Updating...</div>
-                     <button onclick="loadFireDanger(true)" style="position: absolute; bottom: 5px; right: 5px; background: none; border: none; cursor: pointer; opacity: 0.3; padding: 5px;" title="Force Reload Fire Danger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 1 0 2.63-6.37L21 8"></path></svg></button>
+                     <button onclick="loadFireDanger(true)" style="position: absolute; bottom: 5px; right: 5px; background: none; border: none; cursor: pointer; opacity: 0.3; padding: 5px;" title="Force Reload Fire Danger" aria-label="Force Reload Fire Danger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 1 0 2.63-6.37L21 8"></path></svg></button>
                      <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(5px, 1vh, 15px); width: 100%;">🔥 Fire Danger</h2>
                      <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
                      <div id="danger-meter">Loading...</div>
