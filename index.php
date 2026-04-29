@@ -904,7 +904,8 @@ if (!empty($dashboardToken)) {
                 eventSource.close();
             }
 
-            eventSource = new EventSource('api/stream_updates.php');
+            const token = encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '');
+            eventSource = new EventSource('api/stream_updates.php?token=' + token);
 
             eventSource.addEventListener('update', function(e) {
                 console.log("SSE Update received:", e.data);
@@ -1002,7 +1003,8 @@ if (!empty($dashboardToken)) {
 
         async function fetchFireSchedule() {
             const scheduleUrl = `${appConfig.calendar_urls?.main || 'https://calendar.google.com/calendar/ical/c303c9aa08e0a090db126a0b15eb0bc0e8b66cc1af810aa971059b7b01b6d25a@group.calendar.google.com/public/basic.ics'}?nocache=${Date.now()}`;
-            const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(scheduleUrl)}&_cb=${Date.now()}`;
+            const token = encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '');
+            const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(scheduleUrl)}&_cb=${Date.now()}&token=${token}`;
             try {
                 const response = await fetch(proxyUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
                 if (!response.ok) throw new Error(`Network response was not ok (${response.status})`);
@@ -1275,7 +1277,8 @@ if (!empty($dashboardToken)) {
                     todaysPermits = [];
                     activePermits = [];
                     const calendarUrl = `${appConfig.calendar_urls?.burn_permits || 'https://calendar.google.com/calendar/ical/permitsburn@gmail.com/public/basic.ics'}?nocache=${Date.now()}`;
-                    const fetchUrl = `api/fetch_calendar.php?url=${encodeURIComponent(calendarUrl)}&_cb=${Date.now()}`;
+                    const token = encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '');
+                    const fetchUrl = `api/fetch_calendar.php?url=${encodeURIComponent(calendarUrl)}&_cb=${Date.now()}&token=${token}`;
 
                     const response = await fetch(fetchUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
                     if (!response.ok) { throw new Error(`Network response was not ok`) }
@@ -1346,7 +1349,8 @@ if (!empty($dashboardToken)) {
             const settings = appConfig?.dashboard_settings || {};
             if (!settings.audio_enabled || !settings.tts_enabled) return;
             try {
-                const response = await fetch('api/speak.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: textToRead }) });
+                const token = encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '');
+                const response = await fetch('api/speak.php?token=' + token, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: textToRead }) });
                 if (!response.ok) { fallbackTTS(textToRead); return; }
                 const arrayBuffer = await response.arrayBuffer();
                 const blob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
@@ -1602,7 +1606,8 @@ if (!empty($dashboardToken)) {
 
         async function fetchAllTownMeetings() {
             const calendarUrl = `${appConfig.calendar_urls?.town_meetings || 'https://calendar.google.com/calendar/ical/amarshall@oaklandme.gov/public/basic.ics'}?nocache=${Date.now()}`;
-            const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(calendarUrl)}&_cb=${Date.now()}`;
+            const token = encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '');
+            const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(calendarUrl)}&_cb=${Date.now()}&token=${token}`;
             const allMeetings = [];
             try {
                 const response = await fetch(proxyUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
@@ -1761,7 +1766,8 @@ if (!empty($dashboardToken)) {
 
         async function loadHolidays() {
             const holidayUrl = `${appConfig.calendar_urls?.holidays || 'https://calendars.icloud.com/holidays/us_en-us.ics'}?nocache=${Date.now()}`;
-            const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(holidayUrl)}&_cb=${Date.now()}`;
+            const token = encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '');
+            const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(holidayUrl)}&_cb=${Date.now()}&token=${token}`;
             try {
                 const response = await fetch(proxyUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
                 if (!response.ok) return;

@@ -3,6 +3,8 @@ header('Content-Type: text/event-stream');
 header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Connection: keep-alive');
 header('Access-Control-Allow-Origin: *');
+require_once __DIR__ . "/security_check.php";
+verify_dashboard_token();
 
 // Disable output buffering
 if (function_exists('apache_setenv')) {
