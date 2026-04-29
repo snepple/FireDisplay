@@ -727,16 +727,16 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <h2>Audio & Alerts</h2>
                     <p class="help">Configure global audio settings and custom alert sounds.</p>
                     <div style="margin-top: 15px;">
-                        <label style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
-                            <input type="checkbox" name="audio_enabled" <?= !empty($configData['dashboard_settings']['audio_enabled']) ? 'checked' : '' ?> style="transform: scale(1.2);">
-                            Enable Audio Announcements
-                        </label>
+                        <label for="audio_enabled_input" style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
+                                <input type="checkbox" id="audio_enabled_input" name="audio_enabled" <?= !empty($configData['dashboard_settings']['audio_enabled']) ? 'checked' : '' ?> style="transform: scale(1.2);">
+                                Enable Audio Announcements
+                            </label>
                         <p class="help" style="margin-bottom: 15px;">If enabled, the dashboard will attempt to play audio for alerts.</p>
 
-                        <label style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
-                            <input type="checkbox" name="tts_enabled" <?= !empty($configData['dashboard_settings']['tts_enabled']) ? 'checked' : '' ?> style="transform: scale(1.2);">
-                            Enable Text-to-Speech (TTS)
-                        </label>
+                        <label for="tts_enabled_input" style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
+                                <input type="checkbox" id="tts_enabled_input" name="tts_enabled" <?= !empty($configData['dashboard_settings']['tts_enabled']) ? 'checked' : '' ?> style="transform: scale(1.2);">
+                                Enable Text-to-Speech (TTS)
+                            </label>
                         <p class="help" style="margin-bottom: 20px;">If enabled, Google TTS or browser fallback will read alerts aloud.</p>
 
                         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
@@ -775,12 +775,12 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             $duration = $pagesSettings[$key]['duration'];
                         ?>
                         <div style="border: 1px solid var(--border-color); padding: 15px; border-radius: 6px; flex: 1; min-width: 200px;">
-                            <label style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
-                                <input type="checkbox" name="page_<?= $key ?>_enabled" <?= $enabled ? 'checked' : '' ?> style="transform: scale(1.2);">
+                            <label for="page_<?= $key ?>_enabled_input" style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
+                                <input type="checkbox" id="page_<?= $key ?>_enabled_input" name="page_<?= $key ?>_enabled" <?= $enabled ? 'checked' : '' ?> style="transform: scale(1.2);">
                                 <?= $label ?>
                             </label>
-                            <label style="font-size: 0.9em; color: var(--muted-text); display: block; margin-bottom: 5px;">Duration (seconds)</label>
-                            <input type="number" name="page_<?= $key ?>_duration" value="<?= htmlspecialchars((string)$duration) ?>" min="1" style="width: 100px; padding: 6px; border: 1px solid #c3c3c3; border-radius: 4px;">
+                            <label for="page_<?= $key ?>_duration_input" style="font-size: 0.9em; color: var(--muted-text); display: block; margin-bottom: 5px;">Duration (seconds)</label>
+                            <input type="number" id="page_<?= $key ?>_duration_input" name="page_<?= $key ?>_duration" value="<?= htmlspecialchars((string)$duration) ?>" min="1" style="width: 100px; padding: 6px; border: 1px solid #c3c3c3; border-radius: 4px;">
                         </div>
                         <?php endforeach; ?>
                     </div>
@@ -967,11 +967,11 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             foreach($configData['department_info']['apparatus'] as $app) {
                                 $abbr = htmlspecialchars($app['abbr']);
                                 $checked = in_array($abbr, $selectedApps) ? 'checked' : '';
-                                echo "<label><input type='checkbox' name='app[{$i}][]' value='{$abbr}' onchange='updateMultiSelect({$i})' {$checked}> {$abbr}</label>";
+                                echo "<label for='app_{$i}_{$abbr}'><input type='checkbox' id='app_{$i}_{$abbr}' name='app[{$i}][]' value='{$abbr}' onchange='updateMultiSelect({$i})' {$checked}> {$abbr}</label>";
                             }
                             echo "</div></div>";
 
-                            echo "<label>Other (Optional)</label><input type='text' name='other[]' value='{$oth}'>";
+                            echo "<label for='other_{$i}'>Other (Optional)</label><input type='text' id='other_{$i}' name='other[]' value='{$oth}'>";
                             echo "</div>";
                         }
                         ?>
@@ -986,17 +986,17 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <div class="flex-row">
                         <div class="flex-col config-box">
                             <h3 style="margin-top: 0;">✅ Check Trucks</h3>
-                            <label>Anchor Sunday Date</label>
-                            <input type="date" name="truck_check_anchor" value="<?= $configData['truck_check']['anchor'] ?>" required onchange="enforceSunday(this)" style="margin-bottom: 15px;">
-                            <label>Repeats Every (Weeks)</label>
-                            <input type="number" name="truck_check_interval" value="<?= $configData['truck_check']['interval'] ?>" min="1" required onchange="renderAppPreview()">
+                            <label for="truck_check_anchor_input">Anchor Sunday Date</label>
+                            <input type="date" id="truck_check_anchor_input" name="truck_check_anchor" value="<?= $configData['truck_check']['anchor'] ?>" required onchange="enforceSunday(this)" style="margin-bottom: 15px;">
+                            <label for="truck_check_interval_input">Repeats Every (Weeks)</label>
+                            <input type="number" id="truck_check_interval_input" name="truck_check_interval" value="<?= $configData['truck_check']['interval'] ?>" min="1" required onchange="renderAppPreview()">
                         </div>
                         <div class="flex-col config-box">
                             <h3 style="margin-top: 0;">🧽 Wash Trucks</h3>
-                            <label>Anchor Sunday Date</label>
-                            <input type="date" name="truck_wash_anchor" value="<?= $configData['truck_wash']['anchor'] ?>" required onchange="enforceSunday(this)" style="margin-bottom: 15px;">
-                            <label>Repeats Every (Weeks)</label>
-                            <input type="number" name="truck_wash_interval" value="<?= $configData['truck_wash']['interval'] ?>" min="1" required onchange="renderAppPreview()">
+                            <label for="truck_wash_anchor_input">Anchor Sunday Date</label>
+                            <input type="date" id="truck_wash_anchor_input" name="truck_wash_anchor" value="<?= $configData['truck_wash']['anchor'] ?>" required onchange="enforceSunday(this)" style="margin-bottom: 15px;">
+                            <label for="truck_wash_interval_input">Repeats Every (Weeks)</label>
+                            <input type="number" id="truck_wash_interval_input" name="truck_wash_interval" value="<?= $configData['truck_wash']['interval'] ?>" min="1" required onchange="renderAppPreview()">
                         </div>
                     </div>
                 </div>
@@ -1181,13 +1181,13 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 <div class="r-weekly-opts" style="display: ${rec==='weekly'?'block':'none'}; margin-top: 10px;">
                                     <label>Repeats On:</label>
                                     <div class="day-checkboxes">
-                                        <label><input type="checkbox" value="0" class="sc-rwk" ${rWkDays.includes('0')?'checked':''} onchange="renderChorePreview()"> S</label>
-                                        <label><input type="checkbox" value="1" class="sc-rwk" ${rWkDays.includes('1')?'checked':''} onchange="renderChorePreview()"> M</label>
-                                        <label><input type="checkbox" value="2" class="sc-rwk" ${rWkDays.includes('2')?'checked':''} onchange="renderChorePreview()"> T</label>
-                                        <label><input type="checkbox" value="3" class="sc-rwk" ${rWkDays.includes('3')?'checked':''} onchange="renderChorePreview()"> W</label>
-                                        <label><input type="checkbox" value="4" class="sc-rwk" ${rWkDays.includes('4')?'checked':''} onchange="renderChorePreview()"> T</label>
-                                        <label><input type="checkbox" value="5" class="sc-rwk" ${rWkDays.includes('5')?'checked':''} onchange="renderChorePreview()"> F</label>
-                                        <label><input type="checkbox" value="6" class="sc-rwk" ${rWkDays.includes('6')?'checked':''} onchange="renderChorePreview()"> S</label>
+                                        <label for="sc-rwk_0_${id}"><input type="checkbox" id="sc-rwk_0_${id}" value="0" class="sc-rwk" ${rWkDays.includes('0')?'checked':''} onchange="renderChorePreview()"> S</label>
+                                        <label for="sc-rwk_1_${id}"><input type="checkbox" id="sc-rwk_1_${id}" value="1" class="sc-rwk" ${rWkDays.includes('1')?'checked':''} onchange="renderChorePreview()"> M</label>
+                                        <label for="sc-rwk_2_${id}"><input type="checkbox" id="sc-rwk_2_${id}" value="2" class="sc-rwk" ${rWkDays.includes('2')?'checked':''} onchange="renderChorePreview()"> T</label>
+                                        <label for="sc-rwk_3_${id}"><input type="checkbox" id="sc-rwk_3_${id}" value="3" class="sc-rwk" ${rWkDays.includes('3')?'checked':''} onchange="renderChorePreview()"> W</label>
+                                        <label for="sc-rwk_4_${id}"><input type="checkbox" id="sc-rwk_4_${id}" value="4" class="sc-rwk" ${rWkDays.includes('4')?'checked':''} onchange="renderChorePreview()"> T</label>
+                                        <label for="sc-rwk_5_${id}"><input type="checkbox" id="sc-rwk_5_${id}" value="5" class="sc-rwk" ${rWkDays.includes('5')?'checked':''} onchange="renderChorePreview()"> F</label>
+                                        <label for="sc-rwk_6_${id}"><input type="checkbox" id="sc-rwk_6_${id}" value="6" class="sc-rwk" ${rWkDays.includes('6')?'checked':''} onchange="renderChorePreview()"> S</label>
                                     </div>
                                 </div>
                                 <div class="r-monthly-opts" style="display: ${rec==='monthly'?'block':'none'}; margin-top: 10px;">
@@ -1778,13 +1778,13 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 <div class="r-weekly-opts" style="display: ${rec==='weekly'?'block':'none'}; margin-top: 15px;">
                                     <label>Repeats On:</label>
                                     <div class="day-checkboxes">
-                                        <label><input type="checkbox" value="0" class="e-rwk" ${rWkDays.includes('0')?'checked':''}> S</label>
-                                        <label><input type="checkbox" value="1" class="e-rwk" ${rWkDays.includes('1')?'checked':''}> M</label>
-                                        <label><input type="checkbox" value="2" class="e-rwk" ${rWkDays.includes('2')?'checked':''}> T</label>
-                                        <label><input type="checkbox" value="3" class="e-rwk" ${rWkDays.includes('3')?'checked':''}> W</label>
-                                        <label><input type="checkbox" value="4" class="e-rwk" ${rWkDays.includes('4')?'checked':''}> T</label>
-                                        <label><input type="checkbox" value="5" class="e-rwk" ${rWkDays.includes('5')?'checked':''}> F</label>
-                                        <label><input type="checkbox" value="6" class="e-rwk" ${rWkDays.includes('6')?'checked':''}> S</label>
+                                        <label for="e-rwk_0_${id}"><input type="checkbox" id="e-rwk_0_${id}" value="0" class="e-rwk" ${rWkDays.includes('0')?'checked':''}> S</label>
+                                        <label for="e-rwk_1_${id}"><input type="checkbox" id="e-rwk_1_${id}" value="1" class="e-rwk" ${rWkDays.includes('1')?'checked':''}> M</label>
+                                        <label for="e-rwk_2_${id}"><input type="checkbox" id="e-rwk_2_${id}" value="2" class="e-rwk" ${rWkDays.includes('2')?'checked':''}> T</label>
+                                        <label for="e-rwk_3_${id}"><input type="checkbox" id="e-rwk_3_${id}" value="3" class="e-rwk" ${rWkDays.includes('3')?'checked':''}> W</label>
+                                        <label for="e-rwk_4_${id}"><input type="checkbox" id="e-rwk_4_${id}" value="4" class="e-rwk" ${rWkDays.includes('4')?'checked':''}> T</label>
+                                        <label for="e-rwk_5_${id}"><input type="checkbox" id="e-rwk_5_${id}" value="5" class="e-rwk" ${rWkDays.includes('5')?'checked':''}> F</label>
+                                        <label for="e-rwk_6_${id}"><input type="checkbox" id="e-rwk_6_${id}" value="6" class="e-rwk" ${rWkDays.includes('6')?'checked':''}> S</label>
                                     </div>
                                 </div>
 
