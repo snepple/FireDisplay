@@ -614,7 +614,20 @@ if (!empty($dashboardToken)) {
             if (!container) return;
             if (container.clientHeight === 0) return;
             while (container.scrollHeight > container.clientHeight + 2 && container.children.length > 0) {
-                container.removeChild(container.lastElementChild);
+                let excessHeight = container.scrollHeight - container.clientHeight - 2;
+                const children = Array.from(container.children);
+                let itemsToRemove = 0;
+                for (let i = children.length - 1; i >= 0; i--) {
+                    if (excessHeight <= 0) break;
+                    excessHeight -= (children[i].offsetHeight || 20);
+                    itemsToRemove++;
+                }
+                itemsToRemove = Math.max(1, itemsToRemove);
+                for (let i = 0; i < itemsToRemove; i++) {
+                    if (container.lastElementChild) {
+                        container.removeChild(container.lastElementChild);
+                    }
+                }
             }
         }
 
@@ -637,14 +650,31 @@ if (!empty($dashboardToken)) {
                         let hiddenRows = 0;
 
                         while (pageCalendar.scrollHeight > pageCalendar.clientHeight + 2 && hiddenRows < currentWeekIndex) {
-                            const startIndex = hiddenRows * 7;
-                            for (let i = 0; i < 7; i++) {
-                                if (days[startIndex + i]) {
-                                    days[startIndex + i].style.display = 'none';
+                            let excessPageHeight = pageCalendar.scrollHeight - pageCalendar.clientHeight - 2;
+                            let rowsToHide = 0;
+                            let accumulatedHeight = 0;
+                            for (let r = hiddenRows; r < currentWeekIndex; r++) {
+                                const startIndex = r * 7;
+                                let maxRowHeight = 0;
+                                for (let i = 0; i < 7; i++) {
+                                    if (days[startIndex + i] && days[startIndex + i].offsetHeight > maxRowHeight) {
+                                        maxRowHeight = days[startIndex + i].offsetHeight;
+                                    }
+                                }
+                                accumulatedHeight += (maxRowHeight || 50);
+                                rowsToHide++;
+                                if (excessPageHeight - accumulatedHeight <= 0) break;
+                            }
+                            rowsToHide = Math.max(1, rowsToHide);
+                            for (let r = 0; r < rowsToHide && hiddenRows + r < currentWeekIndex; r++) {
+                                const startIndex = (hiddenRows + r) * 7;
+                                for (let i = 0; i < 7; i++) {
+                                    if (days[startIndex + i]) {
+                                        days[startIndex + i].style.display = 'none';
+                                    }
                                 }
                             }
-                            hiddenRows++;
-
+                            hiddenRows += rowsToHide;
                             const totalWeeks = days.length / 7;
                             const remainingWeeks = totalWeeks - hiddenRows;
                             grid.style.gridTemplateRows = `repeat(${remainingWeeks}, minmax(0, 1fr))`;
@@ -679,7 +709,20 @@ if (!empty($dashboardToken)) {
                     if (container) {
                         if (column.clientHeight === 0) return;
                         while (column.scrollHeight > column.clientHeight + 2 && container.children.length > 0) {
-                            container.removeChild(container.lastElementChild);
+                            let excessColumnHeight = column.scrollHeight - column.clientHeight - 2;
+                            const children = Array.from(container.children);
+                            let itemsToRemove = 0;
+                            for (let i = children.length - 1; i >= 0; i--) {
+                                if (excessColumnHeight <= 0) break;
+                                excessColumnHeight -= (children[i].offsetHeight || 20);
+                                itemsToRemove++;
+                            }
+                            itemsToRemove = Math.max(1, itemsToRemove);
+                            for (let i = 0; i < itemsToRemove; i++) {
+                                if (container.lastElementChild) {
+                                    container.removeChild(container.lastElementChild);
+                                }
+                            }
                         }
                         if (container.children.length === 0) {
                             const wrapper = document.getElementById(target.wrapperId);
@@ -694,7 +737,20 @@ if (!empty($dashboardToken)) {
             if (annCol && annCont) {
                 if (annCol.clientHeight === 0) return;
                 while (annCol.scrollHeight > annCol.clientHeight + 2 && annCont.children.length > 0) {
-                    annCont.removeChild(annCont.lastElementChild);
+                    let excessAnnColHeight = annCol.scrollHeight - annCol.clientHeight - 2;
+                    const children = Array.from(annCont.children);
+                    let itemsToRemove = 0;
+                    for (let i = children.length - 1; i >= 0; i--) {
+                        if (excessAnnColHeight <= 0) break;
+                        excessAnnColHeight -= (children[i].offsetHeight || 20);
+                        itemsToRemove++;
+                    }
+                    itemsToRemove = Math.max(1, itemsToRemove);
+                    for (let i = 0; i < itemsToRemove; i++) {
+                        if (annCont.lastElementChild) {
+                            annCont.removeChild(annCont.lastElementChild);
+                        }
+                    }
                 }
                 if(annCont.children.length === 0) document.getElementById('announcements-wrapper').style.display = 'none';
             }
