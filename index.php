@@ -333,7 +333,7 @@ if (!empty($dashboardToken)) {
                      <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(5px, 1vh, 15px); width: 100%;">🔥 Fire Danger</h2>
                      <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
                      <div id="danger-meter">Loading...</div>
-                     <div id="danger-image-container" style="position: relative; max-width: 60%; margin-bottom: clamp(5px, 1.5vh, 15px); aspect-ratio: 16/9; display:none;">
+                     <div id="danger-image-container" style="position: relative; max-width: 60%; margin-bottom: clamp(5px, 1.5vh, 15px); aspect-ratio: 16/9; display:none; width: 100%; flex: 1; min-height: 0;">
                          <img id="danger-image-active" src="" alt="Fire Danger Level" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 5px; object-fit: contain; transition: opacity 0.5s ease-in-out; opacity: 1;" />
                          <img id="danger-image-standby" src="" alt="" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 5px; object-fit: contain; transition: opacity 0.5s ease-in-out; opacity: 0;" />
                      </div>
@@ -1098,9 +1098,13 @@ if (!empty($dashboardToken)) {
                 const imgActive = document.getElementById('danger-image-active');
                 const imgStandby = document.getElementById('danger-image-standby');
 
-                const newSrc = "assets/images/" + riskLevel.toLowerCase().replace(/ /g, '') + ".png?t=" + Date.now();
+                const baseSrc = "assets/images/" + riskLevel.toLowerCase().replace(/ /g, '') + ".png";
+                const newSrc = baseSrc + "?t=" + Date.now();
 
-                if (imgActive.src !== newSrc) {
+                let currentPath = "";
+                try { currentPath = new URL(imgActive.src, window.location.href).pathname; } catch(e){}
+
+                if (!currentPath.includes(baseSrc)) {
                     imgStandby.style.transition = 'none';
                     imgStandby.style.opacity = '0';
                     void imgStandby.offsetWidth;
@@ -1125,7 +1129,8 @@ if (!empty($dashboardToken)) {
                         }, 500); // match transition duration
                     };
                 } else {
-                    imgContainer.style.display = 'block';
+                    if (imgActive) imgActive.src = newSrc;
+                    if (imgContainer) imgContainer.style.display = 'block';
                 }
                 if (lastUpdateStr !== "") {
                     dateDiv.textContent = `Published by Maine Forest Service (${lastUpdateStr})`;

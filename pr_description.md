@@ -1,9 +1,11 @@
-This pull request addresses two issues on the dashboard:
+This pull request addresses the issue where the fire danger image was not displaying on the dashboard.
 
-1. **Fix Burn Permits Text/Image Overlap on Dashboard:**
-    - Modified the `.no-burn-permits` CSS in `index.php` and `current_index.php` to use `flex-shrink: 1` and `min-height: 0` constraints, along with dynamic `max-height: 50vh` on the image and `min(vw, vh)` on text clamps. This ensures the "No active online burn permits at this time." text and image gracefully shrink instead of overflowing and disappearing on smaller vertically-constrained screens like IAMResponding.
+1. **Fix Image Source Comparison Logic:**
+    - The `imgActive.src` property returns a full URL (e.g., `http://.../assets/images/veryhigh.png?t=1234`), which was failing the strict comparison against the new relative URL (`assets/images/veryhigh.png?t=5678`).
+    - The updated logic extracts the base path (e.g., `assets/images/veryhigh.png`) and uses `includes()` to safely determine if the image actually needs to be transitioned, ignoring cache-busting timestamp differences.
+    - Updated the `else` blocks so that if the base image is already correct, its `src` is simply updated with the newest timestamp string without triggering a broken cross-fade.
 
-2. **Add Toast Notification for Manual Fire Danger Update:**
-    - Updated the `loadFireDanger` JavaScript function in `index.php` and `current_index.php` to implement a self-dismissing toast notification.
-    - When the force-refresh button is clicked, a "Updating..." toast appears absolute positioned in the bottom-right of the fire danger container.
-    - Upon completion, the toast updates to show the fetched risk level and the date (if available) before fading out after 4 seconds.
+2. **Fix Container Styling:**
+    - The `#danger-image-container` was missing flexible sizing rules (`flex: 1; min-height: 0;`), causing layout collapsing issues in vertically constrained environments.
+
+These fixes have been applied to both `index.php` and `current_index.php`.
