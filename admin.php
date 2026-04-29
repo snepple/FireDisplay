@@ -119,28 +119,61 @@ if (isset($_POST['login'])) {
         die("CSRF token validation failed.");
     }
 
-
-    $is_valid = false;
-    $needs_rehash = false;
-
-    if (password_verify($_POST['password'], $configData['admin_password'])) {
-        $is_valid = true;
-        if (password_needs_rehash($configData['admin_password'], PASSWORD_DEFAULT)) {
-            $needs_rehash = true;
-        }
-    } elseif ($_POST['password'] === $configData['admin_password']) {
-        $is_valid = true;
-        $needs_rehash = true;
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $attemptsFile = __DIR__ . '/data/login_attempts.json';
+    $attemptsData = [];
+    if (file_exists($attemptsFile)) {
+        $attemptsData = json_decode(file_get_contents($attemptsFile), true) ?: [];
     }
 
-    if ($is_valid) {
-        $_SESSION['admin_logged_in'] = true;
-        if ($needs_rehash) {
-            $configData['admin_password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
-            file_put_contents($configFile, json_encode($configData, JSON_PRETTY_PRINT));
+    // Clean up old attempts (> 15 minutes)
+    $now = time();
+    $lockoutDuration = 900; // 15 minutes
+    $maxAttempts = 5;
+
+    foreach ($attemptsData as $storedIp => $data) {
+        if ($now - $data['last_attempt'] > $lockoutDuration) {
+            unset($attemptsData[$storedIp]);
         }
-        header("Location: admin.php"); exit;
-    } else { $error = "Invalid Password"; }
+    }
+
+    $currentIpData = $attemptsData[$ip] ?? ['count' => 0, 'last_attempt' => 0];
+
+    if ($currentIpData['count'] >= $maxAttempts && ($now - $currentIpData['last_attempt']) < $lockoutDuration) {
+        $error = "Too many failed attempts. Please try again later.";
+    } else {
+        $is_valid = false;
+        $needs_rehash = false;
+
+        if (password_verify($_POST['password'], $configData['admin_password'])) {
+            $is_valid = true;
+            if (password_needs_rehash($configData['admin_password'], PASSWORD_DEFAULT)) {
+                $needs_rehash = true;
+            }
+        } elseif ($_POST['password'] === $configData['admin_password']) {
+            $is_valid = true;
+            $needs_rehash = true;
+        }
+
+        if ($is_valid) {
+            // Reset attempts on successful login
+            unset($attemptsData[$ip]);
+            file_put_contents($attemptsFile, json_encode($attemptsData, JSON_PRETTY_PRINT));
+
+            $_SESSION['admin_logged_in'] = true;
+            if ($needs_rehash) {
+                $configData['admin_password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                file_put_contents($configFile, json_encode($configData, JSON_PRETTY_PRINT));
+            }
+            header("Location: admin.php"); exit;
+        } else {
+            $error = "Invalid Password";
+            $currentIpData['count']++;
+            $currentIpData['last_attempt'] = $now;
+            $attemptsData[$ip] = $currentIpData;
+            file_put_contents($attemptsFile, json_encode($attemptsData, JSON_PRETTY_PRINT));
+        }
+    }
 }
 if (isset($_GET['logout'])) {
     session_destroy(); header("Location: admin.php"); exit;
