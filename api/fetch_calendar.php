@@ -2,6 +2,8 @@
 if (file_exists(__DIR__ . "/logger.php")) require_once __DIR__ . "/logger.php";
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: text/plain; charset=utf-8");
+require_once __DIR__ . "/security_check.php";
+verify_dashboard_token();
 
 $url = isset($_GET['url']) ? $_GET['url'] : '';
 
