@@ -9,3 +9,6 @@
 ## 2024-05-18 - Missing ID associations on labels
 **Learning:** Found several input elements (especially dynamically generated or array-based ones) that were enclosed within `<label>` tags or sitting next to `<label>` tags but lacked proper `for` and `id` linking.
 **Action:** When adding inputs, always use `id` on the `<input>` and a matching `for` attribute on the corresponding `<label>`, rather than just nesting the input inside the label or relying on visual proximity, to ensure robust screen reader support and better clickable area.
+## 2024-05-24 - Missing ARIA label on icon-only Force Reload button
+**Learning:** Found an icon-only button (a refresh button with an SVG) that was missing an `aria-label`, making it inaccessible to screen reader users, despite having a `title` attribute.
+**Action:** Always ensure that icon-only buttons (containing only SVGs or Unicode characters) have descriptive `aria-label` attributes to ensure they are accessible to screen readers.
