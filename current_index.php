@@ -1370,7 +1370,7 @@ if (!empty($dashboardToken)) {
         async function playGoogleTTS(textToRead) {
             if (!audioEnabled) return;
             try {
-                const response = await fetch('api/speak.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: textToRead }) });
+                const response = await fetch('api/speak.php?token=<?= urlencode($dashboardToken) ?>', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: textToRead }) });
                 if (!response.ok) { fallbackTTS(textToRead); return; }
                 const arrayBuffer = await response.arrayBuffer();
                 const blob = new Blob([arrayBuffer], { type: 'audio/mpeg' });

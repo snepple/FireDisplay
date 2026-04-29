@@ -43,3 +43,8 @@
 **Vulnerability:** The `admin.php` login form did not have any rate limiting or brute-force protection mechanism in place. An attacker could attempt to guess the password repeatedly without any restriction, increasing the likelihood of a successful compromise, especially given that a default password (`ChangeMe123!`) is specified in the configuration.
 **Learning:** Always implement robust rate limiting or account lockout mechanisms for authentication endpoints.
 **Prevention:** IP-based tracking was introduced to limit the number of failed attempts (e.g., maximum 5 attempts within 15 minutes) before temporarily locking the IP out. This approach requires maintaining an attempt count with a timestamp (such as in `data/login_attempts.json`).
+
+## 2024-05-24 - Unauthenticated Access to TTS Endpoint (speak.php)
+**Vulnerability:** The API endpoint `api/speak.php` was missing authentication checks and was processing incoming requests without verifying the dashboard token. This could potentially allow unauthorized users to utilize the configured Google TTS API key and exhaust quota.
+**Learning:** Security checks must be applied universally across all API endpoints that perform actions or use external services, not just those serving configuration data.
+**Prevention:** Ensured `require_once __DIR__ . "/security_check.php";` and `verify_dashboard_token();` are placed at the beginning of `api/speak.php`.

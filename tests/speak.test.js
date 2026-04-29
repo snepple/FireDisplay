@@ -44,15 +44,17 @@ beforeAll((done) => {
         `'http://127.0.0.1:${MOCK_TTS_PORT}/v1/text:synthesize?key=' . $apiKey`
     );
     // Replace md5 logic with a unique one for testing if needed, but not strictly required
+
     const destFile = path.join(TMP_API_DIR, 'speak.php');
     fs.writeFileSync(destFile, speakPhpContent);
 
+    // Also copy security_check.php so require_once works
+    const securityCheckContent = fs.readFileSync(path.join(__dirname, '../api/security_check.php'), 'utf8');
+    fs.writeFileSync(path.join(TMP_API_DIR, 'security_check.php'), securityCheckContent);
+
+
     // 4. Create a mock config.json
-    const mockConfig = {
-        api_integrations: {
-            google_tts_api_key: 'test_api_key'
-        }
-    };
+    const mockConfig = { dashboard_token: 'test_token', api_integrations: { google_tts_api_key: 'test_api_key' } };
     fs.writeFileSync(path.join(TMP_DIR, 'config.json'), JSON.stringify(mockConfig));
 
     // 5. Spawn PHP server
@@ -104,7 +106,7 @@ describe('speak.php', () => {
         // Temporarily rename config.json
         fs.renameSync(path.join(TMP_DIR, 'config.json'), path.join(TMP_DIR, 'config.json.bak'));
 
-        const response = await fetch(`${BASE_URL}/api/speak.php`, {
+        const response = await fetch(`${BASE_URL}/api/speak.php?token=test_token`, {
             method: 'POST',
             body: JSON.stringify({ text: 'hello' })
         });
@@ -119,10 +121,10 @@ describe('speak.php', () => {
 
     test('returns 500 when API key is missing', async () => {
         // Create config with empty key
-        const emptyKeyConfig = { api_integrations: { google_tts_api_key: '' } };
+        const emptyKeyConfig = { dashboard_token: 'test_token', api_integrations: { google_tts_api_key: '' } };
         fs.writeFileSync(path.join(TMP_DIR, 'config.json'), JSON.stringify(emptyKeyConfig));
 
-        const response = await fetch(`${BASE_URL}/api/speak.php`, {
+        const response = await fetch(`${BASE_URL}/api/speak.php?token=test_token`, {
             method: 'POST',
             body: JSON.stringify({ text: 'hello' })
         });
@@ -132,12 +134,12 @@ describe('speak.php', () => {
         expect(text).toBe('TTS API Key not configured.');
 
         // Restore normal config
-        const mockConfig = { api_integrations: { google_tts_api_key: 'test_api_key' } };
+        const mockConfig = { dashboard_token: 'test_token', api_integrations: { google_tts_api_key: 'test_api_key' } };
         fs.writeFileSync(path.join(TMP_DIR, 'config.json'), JSON.stringify(mockConfig));
     });
 
     test('returns 400 when text is missing', async () => {
-        const response = await fetch(`${BASE_URL}/api/speak.php`, {
+        const response = await fetch(`${BASE_URL}/api/speak.php?token=test_token`, {
             method: 'POST',
             body: JSON.stringify({})
         });
@@ -148,7 +150,7 @@ describe('speak.php', () => {
     });
 
     test('returns 200 and audio content on success (happy path)', async () => {
-        const response = await fetch(`${BASE_URL}/api/speak.php`, {
+        const response = await fetch(`${BASE_URL}/api/speak.php?token=test_token`, {
             method: 'POST',
             body: JSON.stringify({ text: 'hello world' })
         });
@@ -171,7 +173,7 @@ describe('speak.php', () => {
         mockTtsResponseStatus = 500;
         mockTtsResponseBody = JSON.stringify({ error: 'Internal Server Error' });
 
-        const response = await fetch(`${BASE_URL}/api/speak.php`, {
+        const response = await fetch(`${BASE_URL}/api/speak.php?token=test_token`, {
             method: 'POST',
             body: JSON.stringify({ text: 'error text' })
         });
