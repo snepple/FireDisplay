@@ -329,7 +329,7 @@ if (!empty($dashboardToken)) {
                      <h2 style="font-size: clamp(24px, 3vh, 45px); margin-bottom: clamp(5px, 1vh, 15px); width: 100%;">🔥 Fire Danger</h2>
                      <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
                      <div id="danger-meter">Loading...</div>
-                     <div id="danger-image-container" style="position: relative; max-width: 60%; margin-bottom: clamp(5px, 1.5vh, 15px); aspect-ratio: 16/9; display:none; width: 100%;">
+                     <div id="danger-image-container" style="position: relative; max-width: 60%; margin-bottom: clamp(5px, 1.5vh, 15px); aspect-ratio: 16/9; display:none; width: 100%; flex: 1; min-height: 0;">
                          <img id="danger-image-active" src="" alt="Fire Danger Level" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 5px; object-fit: contain; transition: opacity 0.5s ease-in-out; opacity: 1;" />
                          <img id="danger-image-standby" src="" alt="" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 5px; object-fit: contain; transition: opacity 0.5s ease-in-out; opacity: 0;" />
                      </div>
@@ -613,7 +613,20 @@ if (!empty($dashboardToken)) {
             if (!container) return;
             if (container.clientHeight === 0) return;
             while (container.scrollHeight > container.clientHeight + 2 && container.children.length > 0) {
-                container.removeChild(container.lastElementChild);
+                let excessHeight = container.scrollHeight - container.clientHeight - 2;
+                const children = Array.from(container.children);
+                let itemsToRemove = 0;
+                for (let i = children.length - 1; i >= 0; i--) {
+                    if (excessHeight <= 0) break;
+                    excessHeight -= (children[i].offsetHeight || 20);
+                    itemsToRemove++;
+                }
+                itemsToRemove = Math.max(1, itemsToRemove);
+                for (let i = 0; i < itemsToRemove; i++) {
+                    if (container.lastElementChild) {
+                        container.removeChild(container.lastElementChild);
+                    }
+                }
             }
         }
 
@@ -636,14 +649,31 @@ if (!empty($dashboardToken)) {
                         let hiddenRows = 0;
 
                         while (pageCalendar.scrollHeight > pageCalendar.clientHeight + 2 && hiddenRows < currentWeekIndex) {
-                            const startIndex = hiddenRows * 7;
-                            for (let i = 0; i < 7; i++) {
-                                if (days[startIndex + i]) {
-                                    days[startIndex + i].style.display = 'none';
+                            let excessPageHeight = pageCalendar.scrollHeight - pageCalendar.clientHeight - 2;
+                            let rowsToHide = 0;
+                            let accumulatedHeight = 0;
+                            for (let r = hiddenRows; r < currentWeekIndex; r++) {
+                                const startIndex = r * 7;
+                                let maxRowHeight = 0;
+                                for (let i = 0; i < 7; i++) {
+                                    if (days[startIndex + i] && days[startIndex + i].offsetHeight > maxRowHeight) {
+                                        maxRowHeight = days[startIndex + i].offsetHeight;
+                                    }
+                                }
+                                accumulatedHeight += (maxRowHeight || 50);
+                                rowsToHide++;
+                                if (excessPageHeight - accumulatedHeight <= 0) break;
+                            }
+                            rowsToHide = Math.max(1, rowsToHide);
+                            for (let r = 0; r < rowsToHide && hiddenRows + r < currentWeekIndex; r++) {
+                                const startIndex = (hiddenRows + r) * 7;
+                                for (let i = 0; i < 7; i++) {
+                                    if (days[startIndex + i]) {
+                                        days[startIndex + i].style.display = 'none';
+                                    }
                                 }
                             }
-                            hiddenRows++;
-
+                            hiddenRows += rowsToHide;
                             const totalWeeks = days.length / 7;
                             const remainingWeeks = totalWeeks - hiddenRows;
                             grid.style.gridTemplateRows = `repeat(${remainingWeeks}, minmax(0, 1fr))`;
@@ -678,7 +708,20 @@ if (!empty($dashboardToken)) {
                     if (container) {
                         if (column.clientHeight === 0) return;
                         while (column.scrollHeight > column.clientHeight + 2 && container.children.length > 0) {
-                            container.removeChild(container.lastElementChild);
+                            let excessColumnHeight = column.scrollHeight - column.clientHeight - 2;
+                            const children = Array.from(container.children);
+                            let itemsToRemove = 0;
+                            for (let i = children.length - 1; i >= 0; i--) {
+                                if (excessColumnHeight <= 0) break;
+                                excessColumnHeight -= (children[i].offsetHeight || 20);
+                                itemsToRemove++;
+                            }
+                            itemsToRemove = Math.max(1, itemsToRemove);
+                            for (let i = 0; i < itemsToRemove; i++) {
+                                if (container.lastElementChild) {
+                                    container.removeChild(container.lastElementChild);
+                                }
+                            }
                         }
                         if (container.children.length === 0) {
                             const wrapper = document.getElementById(target.wrapperId);
@@ -693,7 +736,20 @@ if (!empty($dashboardToken)) {
             if (annCol && annCont) {
                 if (annCol.clientHeight === 0) return;
                 while (annCol.scrollHeight > annCol.clientHeight + 2 && annCont.children.length > 0) {
-                    annCont.removeChild(annCont.lastElementChild);
+                    let excessAnnColHeight = annCol.scrollHeight - annCol.clientHeight - 2;
+                    const children = Array.from(annCont.children);
+                    let itemsToRemove = 0;
+                    for (let i = children.length - 1; i >= 0; i--) {
+                        if (excessAnnColHeight <= 0) break;
+                        excessAnnColHeight -= (children[i].offsetHeight || 20);
+                        itemsToRemove++;
+                    }
+                    itemsToRemove = Math.max(1, itemsToRemove);
+                    for (let i = 0; i < itemsToRemove; i++) {
+                        if (annCont.lastElementChild) {
+                            annCont.removeChild(annCont.lastElementChild);
+                        }
+                    }
                 }
                 if(annCont.children.length === 0) document.getElementById('announcements-wrapper').style.display = 'none';
             }
@@ -1086,9 +1142,15 @@ if (!empty($dashboardToken)) {
                 const imgActive = document.getElementById('danger-image-active');
                 const imgStandby = document.getElementById('danger-image-standby');
 
-                const newSrc = "assets/images/" + riskLevel.toLowerCase().replace(/ /g, '') + ".png?t=" + Date.now();
+                const baseSrc = "assets/images/" + riskLevel.toLowerCase().replace(/ /g, '') + ".png";
+                const newSrc = baseSrc + "?t=" + Date.now();
 
-                if (imgActive && imgStandby && imgContainer && imgActive.src !== newSrc) {
+                let currentPath = "";
+                if (imgActive && imgActive.src) {
+                    try { currentPath = new URL(imgActive.src, window.location.href).pathname; } catch(e){}
+                }
+
+                if (imgActive && imgStandby && imgContainer && !currentPath.includes(baseSrc)) {
                     // Temporarily remove transition from standby so we can snap it to opacity 0 instantly without animating
                     imgStandby.style.transition = 'none';
                     imgStandby.style.opacity = '0';
@@ -1119,6 +1181,7 @@ if (!empty($dashboardToken)) {
                         }, 500); // match transition duration
                     };
                 } else if (imgContainer) {
+                    if (imgActive) imgActive.src = newSrc;
                     imgContainer.style.display = 'block';
                 }
 
@@ -1305,7 +1368,8 @@ if (!empty($dashboardToken)) {
         async function playGoogleTTS(textToRead) {
             if (!audioEnabled) return;
             try {
-                const response = await fetch('api/speak.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: textToRead }) });
+                const url = 'api/speak.php' + (token ? '?token=' + encodeURIComponent(token) : '');
+                const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: textToRead }) });
                 if (!response.ok) { fallbackTTS(textToRead); return; }
                 const arrayBuffer = await response.arrayBuffer();
                 const blob = new Blob([arrayBuffer], { type: 'audio/mpeg' });

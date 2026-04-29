@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/security_check.php';
+verify_dashboard_token();
+
 // Check config for API key
 $configFile = '../config.json';
 if (!file_exists($configFile)) {

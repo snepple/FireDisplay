@@ -119,28 +119,61 @@ if (isset($_POST['login'])) {
         die("CSRF token validation failed.");
     }
 
-
-    $is_valid = false;
-    $needs_rehash = false;
-
-    if (password_verify($_POST['password'], $configData['admin_password'])) {
-        $is_valid = true;
-        if (password_needs_rehash($configData['admin_password'], PASSWORD_DEFAULT)) {
-            $needs_rehash = true;
-        }
-    } elseif ($_POST['password'] === $configData['admin_password']) {
-        $is_valid = true;
-        $needs_rehash = true;
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $attemptsFile = __DIR__ . '/data/login_attempts.json';
+    $attemptsData = [];
+    if (file_exists($attemptsFile)) {
+        $attemptsData = json_decode(file_get_contents($attemptsFile), true) ?: [];
     }
 
-    if ($is_valid) {
-        $_SESSION['admin_logged_in'] = true;
-        if ($needs_rehash) {
-            $configData['admin_password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
-            file_put_contents($configFile, json_encode($configData, JSON_PRETTY_PRINT));
+    // Clean up old attempts (> 15 minutes)
+    $now = time();
+    $lockoutDuration = 900; // 15 minutes
+    $maxAttempts = 5;
+
+    foreach ($attemptsData as $storedIp => $data) {
+        if ($now - $data['last_attempt'] > $lockoutDuration) {
+            unset($attemptsData[$storedIp]);
         }
-        header("Location: admin.php"); exit;
-    } else { $error = "Invalid Password"; }
+    }
+
+    $currentIpData = $attemptsData[$ip] ?? ['count' => 0, 'last_attempt' => 0];
+
+    if ($currentIpData['count'] >= $maxAttempts && ($now - $currentIpData['last_attempt']) < $lockoutDuration) {
+        $error = "Too many failed attempts. Please try again later.";
+    } else {
+        $is_valid = false;
+        $needs_rehash = false;
+
+        if (password_verify($_POST['password'], $configData['admin_password'])) {
+            $is_valid = true;
+            if (password_needs_rehash($configData['admin_password'], PASSWORD_DEFAULT)) {
+                $needs_rehash = true;
+            }
+        } elseif ($_POST['password'] === $configData['admin_password']) {
+            $is_valid = true;
+            $needs_rehash = true;
+        }
+
+        if ($is_valid) {
+            // Reset attempts on successful login
+            unset($attemptsData[$ip]);
+            file_put_contents($attemptsFile, json_encode($attemptsData, JSON_PRETTY_PRINT));
+
+            $_SESSION['admin_logged_in'] = true;
+            if ($needs_rehash) {
+                $configData['admin_password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                file_put_contents($configFile, json_encode($configData, JSON_PRETTY_PRINT));
+            }
+            header("Location: admin.php"); exit;
+        } else {
+            $error = "Invalid Password";
+            $currentIpData['count']++;
+            $currentIpData['last_attempt'] = $now;
+            $attemptsData[$ip] = $currentIpData;
+            file_put_contents($attemptsFile, json_encode($attemptsData, JSON_PRETTY_PRINT));
+        }
+    }
 }
 if (isset($_GET['logout'])) {
     session_destroy(); header("Location: admin.php"); exit;
@@ -179,9 +212,10 @@ if (!isset($_SESSION['admin_logged_in'])) {
     </style></head><body style='font-family: \"Inter\", sans-serif; background: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; height: 100vh; margin:0;'>";
     echo "<form method='POST' style='background: var(--card-bg); padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); width: 100%; max-width: 320px;'>";
     echo "<h2 style='margin-top:0; color: var(--text-color); text-align: center; font-weight: 600;'>Admin Login</h2>";
-    if (isset($error)) echo "<p style='color: var(--danger-color); font-weight: bold; text-align: center; font-size: 0.9em;'>$error</p>";
+    if (isset($error)) echo "<p role='alert' style='color: var(--danger-color); font-weight: bold; text-align: center; font-size: 0.9em; margin-bottom: 15px;'>$error</p>";
     echo "<input type='hidden' name='csrf_token' value='" . htmlspecialchars($_SESSION['csrf_token']) . "'>";
-    echo "<input type='password' name='password' placeholder='Password' required style='padding: 12px; margin-bottom: 20px; width: 100%; box-sizing: border-box; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 8px; font-size: 16px;'><br>";
+    echo "<label for='login-password' style='display:block; text-align:left; margin-bottom:8px; font-weight:600; font-size:14px;'>Password</label>";
+    echo "<input type='password' id='login-password' name='password' placeholder='Enter password' required style='padding: 12px; margin-bottom: 20px; width: 100%; box-sizing: border-box; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 8px; font-size: 16px;'><br>";
     echo "<button type='submit' name='login' style='padding: 12px; width: 100%; cursor: pointer; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 16px;'>Login</button>";
     echo "</form></body></html>"; exit;
 }
@@ -247,7 +281,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $type = mime_content_type($tmpName);
                 $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 
-                if (in_array($type, $allowedTypes) || in_array($ext, $allowedExts)) {
+                if (in_array($type, $allowedTypes) && in_array($ext, $allowedExts)) {
                     $safeName = $fileKey . '_' . time() . '.' . $ext;
                     $dest = $audioDir . $safeName;
                     if (move_uploaded_file($tmpName, $dest)) {
@@ -702,23 +736,23 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                 <div class="card">
                     <h2>Dashboard Appearance</h2>
                     <div style="max-width: 400px;">
-                        <label>Display Theme</label>
-                        <p class="help">Choose the color scheme for the digital signage screens.</p>
-                        <select name="dash_theme" style="margin-bottom: 20px;">
+                        <label for="dash_theme_select">Display Theme</label>
+                        <p class="help" id="dash_theme_help">Choose the color scheme for the digital signage screens.</p>
+                        <select id="dash_theme_select" name="dash_theme" aria-describedby="dash_theme_help" style="margin-bottom: 20px;">
                             <option value="dark" <?= $configData['dashboard_settings']['theme'] === 'dark' ? 'selected' : '' ?>>Dark Mode (Default)</option>
                             <option value="light" <?= $configData['dashboard_settings']['theme'] === 'light' ? 'selected' : '' ?>>Light Mode</option>
                             <option value="auto" <?= $configData['dashboard_settings']['theme'] === 'auto' ? 'selected' : '' ?>>Auto (Light daytime, Dark nighttime)</option>
                         </select>
                     </div>
                     <div style="max-width: 400px; margin-top: 15px;">
-                        <label>Dashboard Access Token</label>
-                        <p class="help">If set, users must append <code>?token=YOUR_TOKEN</code> to the dashboard URL.</p>
-                        <input type="text" name="dashboard_token" value="<?= htmlspecialchars($configData['dashboard_token'] ?? '') ?>" placeholder="Leave blank for public access" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        <label for="dashboard_token_input">Dashboard Access Token</label>
+                        <p class="help" id="dashboard_token_help">If set, users must append <code>?token=YOUR_TOKEN</code> to the dashboard URL.</p>
+                        <input type="text" id="dashboard_token_input" name="dashboard_token" value="<?= htmlspecialchars($configData['dashboard_token'] ?? '') ?>" placeholder="Leave blank for public access" aria-describedby="dashboard_token_help" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
                     <div style="max-width: 400px; margin-top: 15px;">
-                        <label>Fire Danger Zone</label>
-                        <p class="help">The zone number used to extract the correct fire danger level from daily emails.</p>
-                        <input type="text" name="fire_danger_zone" value="<?= htmlspecialchars($configData['fire_danger_zone'] ?? '7') ?>" placeholder="e.g., 7" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        <label for="fire_danger_zone_input">Fire Danger Zone</label>
+                        <p class="help" id="fire_danger_zone_help">The zone number used to extract the correct fire danger level from daily emails.</p>
+                        <input type="text" id="fire_danger_zone_input" name="fire_danger_zone" value="<?= htmlspecialchars($configData['fire_danger_zone'] ?? '7') ?>" placeholder="e.g., 7" aria-describedby="fire_danger_zone_help" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
                 </div>
 
@@ -726,16 +760,16 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <h2>Audio & Alerts</h2>
                     <p class="help">Configure global audio settings and custom alert sounds.</p>
                     <div style="margin-top: 15px;">
-                        <label style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
-                            <input type="checkbox" name="audio_enabled" <?= !empty($configData['dashboard_settings']['audio_enabled']) ? 'checked' : '' ?> style="transform: scale(1.2);">
-                            Enable Audio Announcements
-                        </label>
+                        <label for="audio_enabled_input" style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
+                                <input type="checkbox" id="audio_enabled_input" name="audio_enabled" <?= !empty($configData['dashboard_settings']['audio_enabled']) ? 'checked' : '' ?> style="transform: scale(1.2);">
+                                Enable Audio Announcements
+                            </label>
                         <p class="help" style="margin-bottom: 15px;">If enabled, the dashboard will attempt to play audio for alerts.</p>
 
-                        <label style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
-                            <input type="checkbox" name="tts_enabled" <?= !empty($configData['dashboard_settings']['tts_enabled']) ? 'checked' : '' ?> style="transform: scale(1.2);">
-                            Enable Text-to-Speech (TTS)
-                        </label>
+                        <label for="tts_enabled_input" style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
+                                <input type="checkbox" id="tts_enabled_input" name="tts_enabled" <?= !empty($configData['dashboard_settings']['tts_enabled']) ? 'checked' : '' ?> style="transform: scale(1.2);">
+                                Enable Text-to-Speech (TTS)
+                            </label>
                         <p class="help" style="margin-bottom: 20px;">If enabled, Google TTS or browser fallback will read alerts aloud.</p>
 
                         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
@@ -774,12 +808,12 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             $duration = $pagesSettings[$key]['duration'];
                         ?>
                         <div style="border: 1px solid var(--border-color); padding: 15px; border-radius: 6px; flex: 1; min-width: 200px;">
-                            <label style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
-                                <input type="checkbox" name="page_<?= $key ?>_enabled" <?= $enabled ? 'checked' : '' ?> style="transform: scale(1.2);">
+                            <label for="page_<?= $key ?>_enabled_input" style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
+                                <input type="checkbox" id="page_<?= $key ?>_enabled_input" name="page_<?= $key ?>_enabled" <?= $enabled ? 'checked' : '' ?> style="transform: scale(1.2);">
                                 <?= $label ?>
                             </label>
-                            <label style="font-size: 0.9em; color: var(--muted-text); display: block; margin-bottom: 5px;">Duration (seconds)</label>
-                            <input type="number" name="page_<?= $key ?>_duration" value="<?= htmlspecialchars((string)$duration) ?>" min="1" style="width: 100px; padding: 6px; border: 1px solid #c3c3c3; border-radius: 4px;">
+                            <label for="page_<?= $key ?>_duration_input" style="font-size: 0.9em; color: var(--muted-text); display: block; margin-bottom: 5px;">Duration (seconds)</label>
+                            <input type="number" id="page_<?= $key ?>_duration_input" name="page_<?= $key ?>_duration" value="<?= htmlspecialchars((string)$duration) ?>" min="1" style="width: 100px; padding: 6px; border: 1px solid #c3c3c3; border-radius: 4px;">
                         </div>
                         <?php endforeach; ?>
                     </div>
@@ -790,23 +824,23 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <p class="help">Enter the public .ics URLs for each calendar to display on the dashboard.</p>
 
                     <div style="margin-top: 15px;">
-                        <label>Main Schedule Calendar</label>
-                        <input type="text" name="cal_main" value="<?= htmlspecialchars($configData['calendar_urls']['main'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        <label for="cal_main_input">Main Schedule Calendar</label>
+                        <input type="text" id="cal_main_input" name="cal_main" value="<?= htmlspecialchars($configData['calendar_urls']['main'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
 
                     <div style="margin-top: 15px;">
-                        <label>Burn Permits Calendar</label>
-                        <input type="text" name="cal_burn_permits" value="<?= htmlspecialchars($configData['calendar_urls']['burn_permits'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        <label for="cal_burn_permits_input">Burn Permits Calendar</label>
+                        <input type="text" id="cal_burn_permits_input" name="cal_burn_permits" value="<?= htmlspecialchars($configData['calendar_urls']['burn_permits'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
 
                     <div style="margin-top: 15px;">
-                        <label>Town Meetings Calendar</label>
-                        <input type="text" name="cal_town_meetings" value="<?= htmlspecialchars($configData['calendar_urls']['town_meetings'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        <label for="cal_town_meetings_input">Town Meetings Calendar</label>
+                        <input type="text" id="cal_town_meetings_input" name="cal_town_meetings" value="<?= htmlspecialchars($configData['calendar_urls']['town_meetings'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
 
                     <div style="margin-top: 15px;">
-                        <label>Holidays Calendar</label>
-                        <input type="text" name="cal_holidays" value="<?= htmlspecialchars($configData['calendar_urls']['holidays'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        <label for="cal_holidays_input">Holidays Calendar</label>
+                        <input type="text" id="cal_holidays_input" name="cal_holidays" value="<?= htmlspecialchars($configData['calendar_urls']['holidays'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
                 </div>
                 <script>function runPreSubmitHooks() {}</script>
@@ -814,8 +848,8 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
             <?php elseif ($page === 'dept_info'): ?>
                 <div class="card">
                     <h2>Department Information</h2>
-                    <label>Department Name</label>
-                    <input type="text" name="dept_name" value="<?= htmlspecialchars($configData['department_info']['name']) ?>" required style="margin-bottom: 25px; font-size: 1.2em;">
+                    <label for="dept_name_input">Department Name</label>
+                    <input type="text" id="dept_name_input" name="dept_name" value="<?= htmlspecialchars($configData['department_info']['name']) ?>" required style="margin-bottom: 25px; font-size: 1.2em;">
 
                     <h3>Stations & Rooms</h3>
                     <p class="help">Manage your stations and available rental rooms.</p>
@@ -966,11 +1000,11 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             foreach($configData['department_info']['apparatus'] as $app) {
                                 $abbr = htmlspecialchars($app['abbr']);
                                 $checked = in_array($abbr, $selectedApps) ? 'checked' : '';
-                                echo "<label><input type='checkbox' name='app[{$i}][]' value='{$abbr}' onchange='updateMultiSelect({$i})' {$checked}> {$abbr}</label>";
+                                echo "<label for='app_{$i}_{$abbr}'><input type='checkbox' id='app_{$i}_{$abbr}' name='app[{$i}][]' value='{$abbr}' onchange='updateMultiSelect({$i})' {$checked}> {$abbr}</label>";
                             }
                             echo "</div></div>";
 
-                            echo "<label>Other (Optional)</label><input type='text' name='other[]' value='{$oth}'>";
+                            echo "<label for='other_{$i}'>Other (Optional)</label><input type='text' id='other_{$i}' name='other[]' value='{$oth}'>";
                             echo "</div>";
                         }
                         ?>
@@ -985,17 +1019,17 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <div class="flex-row">
                         <div class="flex-col config-box">
                             <h3 style="margin-top: 0;">✅ Check Trucks</h3>
-                            <label>Anchor Sunday Date</label>
-                            <input type="date" name="truck_check_anchor" value="<?= $configData['truck_check']['anchor'] ?>" required onchange="enforceSunday(this)" style="margin-bottom: 15px;">
-                            <label>Repeats Every (Weeks)</label>
-                            <input type="number" name="truck_check_interval" value="<?= $configData['truck_check']['interval'] ?>" min="1" required onchange="renderAppPreview()">
+                            <label for="truck_check_anchor_input">Anchor Sunday Date</label>
+                            <input type="date" id="truck_check_anchor_input" name="truck_check_anchor" value="<?= $configData['truck_check']['anchor'] ?>" required onchange="enforceSunday(this)" style="margin-bottom: 15px;">
+                            <label for="truck_check_interval_input">Repeats Every (Weeks)</label>
+                            <input type="number" id="truck_check_interval_input" name="truck_check_interval" value="<?= $configData['truck_check']['interval'] ?>" min="1" required onchange="renderAppPreview()">
                         </div>
                         <div class="flex-col config-box">
                             <h3 style="margin-top: 0;">🧽 Wash Trucks</h3>
-                            <label>Anchor Sunday Date</label>
-                            <input type="date" name="truck_wash_anchor" value="<?= $configData['truck_wash']['anchor'] ?>" required onchange="enforceSunday(this)" style="margin-bottom: 15px;">
-                            <label>Repeats Every (Weeks)</label>
-                            <input type="number" name="truck_wash_interval" value="<?= $configData['truck_wash']['interval'] ?>" min="1" required onchange="renderAppPreview()">
+                            <label for="truck_wash_anchor_input">Anchor Sunday Date</label>
+                            <input type="date" id="truck_wash_anchor_input" name="truck_wash_anchor" value="<?= $configData['truck_wash']['anchor'] ?>" required onchange="enforceSunday(this)" style="margin-bottom: 15px;">
+                            <label for="truck_wash_interval_input">Repeats Every (Weeks)</label>
+                            <input type="number" id="truck_wash_interval_input" name="truck_wash_interval" value="<?= $configData['truck_wash']['interval'] ?>" min="1" required onchange="renderAppPreview()">
                         </div>
                     </div>
                 </div>
@@ -1180,13 +1214,13 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 <div class="r-weekly-opts" style="display: ${rec==='weekly'?'block':'none'}; margin-top: 10px;">
                                     <label>Repeats On:</label>
                                     <div class="day-checkboxes">
-                                        <label><input type="checkbox" value="0" class="sc-rwk" ${rWkDays.includes('0')?'checked':''} onchange="renderChorePreview()"> S</label>
-                                        <label><input type="checkbox" value="1" class="sc-rwk" ${rWkDays.includes('1')?'checked':''} onchange="renderChorePreview()"> M</label>
-                                        <label><input type="checkbox" value="2" class="sc-rwk" ${rWkDays.includes('2')?'checked':''} onchange="renderChorePreview()"> T</label>
-                                        <label><input type="checkbox" value="3" class="sc-rwk" ${rWkDays.includes('3')?'checked':''} onchange="renderChorePreview()"> W</label>
-                                        <label><input type="checkbox" value="4" class="sc-rwk" ${rWkDays.includes('4')?'checked':''} onchange="renderChorePreview()"> T</label>
-                                        <label><input type="checkbox" value="5" class="sc-rwk" ${rWkDays.includes('5')?'checked':''} onchange="renderChorePreview()"> F</label>
-                                        <label><input type="checkbox" value="6" class="sc-rwk" ${rWkDays.includes('6')?'checked':''} onchange="renderChorePreview()"> S</label>
+                                        <label for="sc-rwk_0_${id}"><input type="checkbox" id="sc-rwk_0_${id}" value="0" class="sc-rwk" ${rWkDays.includes('0')?'checked':''} onchange="renderChorePreview()"> S</label>
+                                        <label for="sc-rwk_1_${id}"><input type="checkbox" id="sc-rwk_1_${id}" value="1" class="sc-rwk" ${rWkDays.includes('1')?'checked':''} onchange="renderChorePreview()"> M</label>
+                                        <label for="sc-rwk_2_${id}"><input type="checkbox" id="sc-rwk_2_${id}" value="2" class="sc-rwk" ${rWkDays.includes('2')?'checked':''} onchange="renderChorePreview()"> T</label>
+                                        <label for="sc-rwk_3_${id}"><input type="checkbox" id="sc-rwk_3_${id}" value="3" class="sc-rwk" ${rWkDays.includes('3')?'checked':''} onchange="renderChorePreview()"> W</label>
+                                        <label for="sc-rwk_4_${id}"><input type="checkbox" id="sc-rwk_4_${id}" value="4" class="sc-rwk" ${rWkDays.includes('4')?'checked':''} onchange="renderChorePreview()"> T</label>
+                                        <label for="sc-rwk_5_${id}"><input type="checkbox" id="sc-rwk_5_${id}" value="5" class="sc-rwk" ${rWkDays.includes('5')?'checked':''} onchange="renderChorePreview()"> F</label>
+                                        <label for="sc-rwk_6_${id}"><input type="checkbox" id="sc-rwk_6_${id}" value="6" class="sc-rwk" ${rWkDays.includes('6')?'checked':''} onchange="renderChorePreview()"> S</label>
                                     </div>
                                 </div>
                                 <div class="r-monthly-opts" style="display: ${rec==='monthly'?'block':'none'}; margin-top: 10px;">
@@ -1777,13 +1811,13 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 <div class="r-weekly-opts" style="display: ${rec==='weekly'?'block':'none'}; margin-top: 15px;">
                                     <label>Repeats On:</label>
                                     <div class="day-checkboxes">
-                                        <label><input type="checkbox" value="0" class="e-rwk" ${rWkDays.includes('0')?'checked':''}> S</label>
-                                        <label><input type="checkbox" value="1" class="e-rwk" ${rWkDays.includes('1')?'checked':''}> M</label>
-                                        <label><input type="checkbox" value="2" class="e-rwk" ${rWkDays.includes('2')?'checked':''}> T</label>
-                                        <label><input type="checkbox" value="3" class="e-rwk" ${rWkDays.includes('3')?'checked':''}> W</label>
-                                        <label><input type="checkbox" value="4" class="e-rwk" ${rWkDays.includes('4')?'checked':''}> T</label>
-                                        <label><input type="checkbox" value="5" class="e-rwk" ${rWkDays.includes('5')?'checked':''}> F</label>
-                                        <label><input type="checkbox" value="6" class="e-rwk" ${rWkDays.includes('6')?'checked':''}> S</label>
+                                        <label for="e-rwk_0_${id}"><input type="checkbox" id="e-rwk_0_${id}" value="0" class="e-rwk" ${rWkDays.includes('0')?'checked':''}> S</label>
+                                        <label for="e-rwk_1_${id}"><input type="checkbox" id="e-rwk_1_${id}" value="1" class="e-rwk" ${rWkDays.includes('1')?'checked':''}> M</label>
+                                        <label for="e-rwk_2_${id}"><input type="checkbox" id="e-rwk_2_${id}" value="2" class="e-rwk" ${rWkDays.includes('2')?'checked':''}> T</label>
+                                        <label for="e-rwk_3_${id}"><input type="checkbox" id="e-rwk_3_${id}" value="3" class="e-rwk" ${rWkDays.includes('3')?'checked':''}> W</label>
+                                        <label for="e-rwk_4_${id}"><input type="checkbox" id="e-rwk_4_${id}" value="4" class="e-rwk" ${rWkDays.includes('4')?'checked':''}> T</label>
+                                        <label for="e-rwk_5_${id}"><input type="checkbox" id="e-rwk_5_${id}" value="5" class="e-rwk" ${rWkDays.includes('5')?'checked':''}> F</label>
+                                        <label for="e-rwk_6_${id}"><input type="checkbox" id="e-rwk_6_${id}" value="6" class="e-rwk" ${rWkDays.includes('6')?'checked':''}> S</label>
                                     </div>
                                 </div>
 
