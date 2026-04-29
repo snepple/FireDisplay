@@ -1343,11 +1343,13 @@ if (!empty($dashboardToken)) {
                 container.innerHTML = '';
                 if (activePermits.length > 0) {
                     hasBurnPermits = true;
+                    const fragment = document.createDocumentFragment();
                     if (permitsSource === 'email') {
-                        activePermits.forEach(e => renderBurnPermitJsonEvent(e, container));
+                        activePermits.forEach(e => renderBurnPermitJsonEvent(e, fragment));
                     } else {
-                        activePermits.forEach(e => renderBurnPermitEvent(e, container));
+                        activePermits.forEach(e => renderBurnPermitEvent(e, fragment));
                     }
+                    container.appendChild(fragment);
                 } else {
                     hasBurnPermits = false;
                     container.innerHTML = '<div class="no-burn-permits"><img src="assets/images/no_burn_permits.png" alt="No Burn Permits"><p>No active online burn permits at this time.</p></div>';
@@ -1744,7 +1746,9 @@ if (!empty($dashboardToken)) {
             onDutyNow.sort((a, b) => a.startDate.toJSDate() - b.startDate.toJSDate());
             const combinedOnDutyNow = combineConsecutiveShifts(onDutyNow);
             if (combinedOnDutyNow.length > 0) {
-                combinedOnDutyNow.forEach(e => renderEvent(e, onDutyContainer));
+                const nowFragment = document.createDocumentFragment();
+                combinedOnDutyNow.forEach(e => renderEvent(e, nowFragment));
+                onDutyContainer.appendChild(nowFragment);
             } else {
                 onDutyContainer.innerHTML = '<p class="no-events">No personnel on duty.</p>';
             }
@@ -1753,7 +1757,9 @@ if (!empty($dashboardToken)) {
             const combinedOnDutyLater = combineConsecutiveShifts(onDutyLater);
             if (combinedOnDutyLater.length > 0) {
                 onDutyLaterWrapper.style.display = 'block';
-                combinedOnDutyLater.forEach(e => renderEvent(e, onDutyLaterContainer));
+                const laterFragment = document.createDocumentFragment();
+                combinedOnDutyLater.forEach(e => renderEvent(e, laterFragment));
+                onDutyLaterContainer.appendChild(laterFragment);
             } else {
                 onDutyLaterWrapper.style.display = 'none';
             }
