@@ -47,6 +47,10 @@ beforeAll((done) => {
     const destFile = path.join(TMP_API_DIR, 'speak.php');
     fs.writeFileSync(destFile, speakPhpContent);
 
+    // Provide a mock security_check.php since it is required by speak.php
+    const securityCheckDest = path.join(TMP_API_DIR, 'security_check.php');
+    fs.writeFileSync(securityCheckDest, "<?php function verify_dashboard_token() {} ?>");
+
     // 4. Create a mock config.json
     const mockConfig = {
         api_integrations: {
