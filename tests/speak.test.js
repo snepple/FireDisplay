@@ -35,6 +35,11 @@ beforeAll((done) => {
     });
     mockTtsServer.listen(MOCK_TTS_PORT);
 
+    // Copy security_check.php to TMP_API_DIR
+    const secFileSrc = path.join(__dirname, '../api/security_check.php');
+    const secFileDest = path.join(TMP_API_DIR, 'security_check.php');
+    fs.copyFileSync(secFileSrc, secFileDest);
+
     // 3. Copy and patch api/speak.php to point to mock server
     const srcFile = path.join(__dirname, '../api/speak.php');
     let speakPhpContent = fs.readFileSync(srcFile, 'utf8');
