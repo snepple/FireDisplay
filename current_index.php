@@ -611,21 +611,30 @@ if (!empty($dashboardToken)) {
         function pruneDashboard() {
             const container = document.getElementById('burnPermitsList');
             if (!container) return;
-            if (container.clientHeight === 0) return;
-            while (container.scrollHeight > container.clientHeight + 2 && container.children.length > 0) {
-                let excessHeight = container.scrollHeight - container.clientHeight - 2;
-                const children = Array.from(container.children);
-                let itemsToRemove = 0;
-                for (let i = children.length - 1; i >= 0; i--) {
-                    if (excessHeight <= 0) break;
-                    excessHeight -= (children[i].offsetHeight || 20);
-                    itemsToRemove++;
-                }
-                itemsToRemove = Math.max(1, itemsToRemove);
-                for (let i = 0; i < itemsToRemove; i++) {
-                    if (container.lastElementChild) {
-                        container.removeChild(container.lastElementChild);
-                    }
+            const containerClientHeight = container.clientHeight;
+            if (containerClientHeight === 0) return;
+
+            let excessHeight = container.scrollHeight - containerClientHeight - 2;
+            if (excessHeight <= 0) return;
+
+            const children = Array.from(container.children);
+            let itemsToRemove = 0;
+
+            // Batch read
+            const childHeights = children.map(child => child.offsetHeight || 20);
+
+            // Compute
+            for (let i = children.length - 1; i >= 0; i--) {
+                if (excessHeight <= 0) break;
+                excessHeight -= childHeights[i];
+                itemsToRemove++;
+            }
+            itemsToRemove = Math.max(1, itemsToRemove);
+
+            // Batch write
+            for (let i = 0; i < itemsToRemove; i++) {
+                if (container.lastElementChild) {
+                    container.removeChild(container.lastElementChild);
                 }
             }
         }
@@ -633,50 +642,63 @@ if (!empty($dashboardToken)) {
         function pruneCalendar() {
             const pageCalendar = document.getElementById('page-calendar');
             const grid = document.getElementById('calendar-grid');
-            if (pageCalendar && grid && pageCalendar.clientHeight > 0) {
-                const days = grid.querySelectorAll('.calendar-day');
-                if (days.length > 0) {
-                    let todayIndex = -1;
-                    for (let i = 0; i < days.length; i++) {
-                        if (days[i].classList.contains('is-today')) {
-                            todayIndex = i;
-                            break;
+            const pageClientHeight = pageCalendar ? pageCalendar.clientHeight : 0;
+
+            if (pageCalendar && grid && pageClientHeight > 0) {
+                let excessPageHeight = pageCalendar.scrollHeight - pageClientHeight - 2;
+
+                if (excessPageHeight > 0) {
+                    const days = grid.querySelectorAll('.calendar-day');
+                    if (days.length > 0) {
+                        let todayIndex = -1;
+                        for (let i = 0; i < days.length; i++) {
+                            if (days[i].classList.contains('is-today')) {
+                                todayIndex = i;
+                                break;
+                            }
                         }
-                    }
 
-                    if (todayIndex >= 7) {
-                        let currentWeekIndex = Math.floor(todayIndex / 7);
-                        let hiddenRows = 0;
+                        if (todayIndex >= 7) {
+                            let currentWeekIndex = Math.floor(todayIndex / 7);
+                            let hiddenRows = 0;
 
-                        while (pageCalendar.scrollHeight > pageCalendar.clientHeight + 2 && hiddenRows < currentWeekIndex) {
-                            let excessPageHeight = pageCalendar.scrollHeight - pageCalendar.clientHeight - 2;
-                            let rowsToHide = 0;
-                            let accumulatedHeight = 0;
-                            for (let r = hiddenRows; r < currentWeekIndex; r++) {
-                                const startIndex = r * 7;
-                                let maxRowHeight = 0;
-                                for (let i = 0; i < 7; i++) {
-                                    if (days[startIndex + i] && days[startIndex + i].offsetHeight > maxRowHeight) {
-                                        maxRowHeight = days[startIndex + i].offsetHeight;
+                            // Compute all rows needed to hide
+                            while (excessPageHeight > 0 && hiddenRows < currentWeekIndex) {
+                                let rowsToHide = 0;
+                                let accumulatedHeight = 0;
+
+                                for (let r = hiddenRows; r < currentWeekIndex; r++) {
+                                    const startIndex = r * 7;
+                                    let maxRowHeight = 0;
+                                    // Batch Read heights for this row
+                                    for (let i = 0; i < 7; i++) {
+                                        if (days[startIndex + i] && days[startIndex + i].offsetHeight > maxRowHeight) {
+                                            maxRowHeight = days[startIndex + i].offsetHeight;
+                                        }
+                                    }
+                                    accumulatedHeight += (maxRowHeight || 50);
+                                    rowsToHide++;
+                                    if (excessPageHeight - accumulatedHeight <= 0) break;
+                                }
+
+                                rowsToHide = Math.max(1, rowsToHide);
+
+                                // Batch Write style.display='none'
+                                for (let r = 0; r < rowsToHide && hiddenRows + r < currentWeekIndex; r++) {
+                                    const startIndex = (hiddenRows + r) * 7;
+                                    for (let i = 0; i < 7; i++) {
+                                        if (days[startIndex + i]) {
+                                            days[startIndex + i].style.display = 'none';
+                                        }
                                     }
                                 }
-                                accumulatedHeight += (maxRowHeight || 50);
-                                rowsToHide++;
-                                if (excessPageHeight - accumulatedHeight <= 0) break;
+                                hiddenRows += rowsToHide;
+                                excessPageHeight -= accumulatedHeight;
+
+                                const totalWeeks = days.length / 7;
+                                const remainingWeeks = totalWeeks - hiddenRows;
+                                grid.style.gridTemplateRows = `repeat(${remainingWeeks}, minmax(0, 1fr))`;
                             }
-                            rowsToHide = Math.max(1, rowsToHide);
-                            for (let r = 0; r < rowsToHide && hiddenRows + r < currentWeekIndex; r++) {
-                                const startIndex = (hiddenRows + r) * 7;
-                                for (let i = 0; i < 7; i++) {
-                                    if (days[startIndex + i]) {
-                                        days[startIndex + i].style.display = 'none';
-                                    }
-                                }
-                            }
-                            hiddenRows += rowsToHide;
-                            const totalWeeks = days.length / 7;
-                            const remainingWeeks = totalWeeks - hiddenRows;
-                            grid.style.gridTemplateRows = `repeat(${remainingWeeks}, minmax(0, 1fr))`;
                         }
                     }
                 }
@@ -685,11 +707,30 @@ if (!empty($dashboardToken)) {
             const sidebar = document.querySelector('.calendar-sidebar');
             const list = document.getElementById('open-shifts-list');
             if (sidebar && list) {
-                if (sidebar.clientHeight === 0) return;
-                while (sidebar.scrollHeight > sidebar.clientHeight + 2 && list.querySelectorAll('.open-shift-link').length > 0) {
-                    const links = list.querySelectorAll('.open-shift-link');
-                    const lastLink = links[links.length - 1];
-                    lastLink.parentNode.removeChild(lastLink);
+                const sidebarClientHeight = sidebar.clientHeight;
+                if (sidebarClientHeight === 0) return;
+
+                let sidebarExcessHeight = sidebar.scrollHeight - sidebarClientHeight - 2;
+                if (sidebarExcessHeight > 0) {
+                    const links = Array.from(list.querySelectorAll('.open-shift-link'));
+                    // Batch read
+                    const linkHeights = links.map(link => link.offsetHeight || 20);
+                    let itemsToRemove = 0;
+
+                    // Compute
+                    for (let i = links.length - 1; i >= 0; i--) {
+                        if (sidebarExcessHeight <= 0) break;
+                        sidebarExcessHeight -= linkHeights[i];
+                        itemsToRemove++;
+                    }
+                    itemsToRemove = Math.max(1, itemsToRemove);
+
+                    // Fast batch write without layout thrashing
+                    for (let i = 0; i < itemsToRemove; i++) {
+                        if (list.lastElementChild) {
+                            list.removeChild(list.lastElementChild);
+                        }
+                    }
                 }
             }
         }
@@ -697,61 +738,87 @@ if (!empty($dashboardToken)) {
         function pruneChores() {
             const column = document.querySelector('#chores-staff-column .chore-item');
             if (column) {
-                const targets = [
-                    { id: 'chores-on-duty-later-container', wrapperId: 'chores-on-duty-later-wrapper' },
-                    { id: 'chores-on-duty-container', wrapperId: 'chores-on-duty-now-wrapper' },
-                    { id: 'town-meetings-list', wrapperId: 'town-meetings-container' },
-                    { id: 'dept-events-list', wrapperId: 'dept-events-container' }
-                ];
-                targets.forEach(target => {
-                    const container = document.getElementById(target.id);
-                    if (container) {
-                        if (column.clientHeight === 0) return;
-                        while (column.scrollHeight > column.clientHeight + 2 && container.children.length > 0) {
-                            let excessColumnHeight = column.scrollHeight - column.clientHeight - 2;
-                            const children = Array.from(container.children);
-                            let itemsToRemove = 0;
-                            for (let i = children.length - 1; i >= 0; i--) {
-                                if (excessColumnHeight <= 0) break;
-                                excessColumnHeight -= (children[i].offsetHeight || 20);
-                                itemsToRemove++;
-                            }
-                            itemsToRemove = Math.max(1, itemsToRemove);
-                            for (let i = 0; i < itemsToRemove; i++) {
-                                if (container.lastElementChild) {
-                                    container.removeChild(container.lastElementChild);
+                const columnClientHeight = column.clientHeight;
+                if (columnClientHeight > 0) {
+                    let excessColumnHeight = column.scrollHeight - columnClientHeight - 2;
+
+                    if (excessColumnHeight > 0) {
+                        const targets = [
+                            { id: 'chores-on-duty-later-container', wrapperId: 'chores-on-duty-later-wrapper' },
+                            { id: 'chores-on-duty-container', wrapperId: 'chores-on-duty-now-wrapper' },
+                            { id: 'town-meetings-list', wrapperId: 'town-meetings-container' },
+                            { id: 'dept-events-list', wrapperId: 'dept-events-container' }
+                        ];
+
+                        for (const target of targets) {
+                            if (excessColumnHeight <= 0) break;
+                            const container = document.getElementById(target.id);
+                            if (container && container.children.length > 0) {
+                                const children = Array.from(container.children);
+
+                                // Batch read
+                                const childHeights = children.map(child => child.offsetHeight || 20);
+                                let itemsToRemove = 0;
+
+                                // Compute
+                                for (let i = children.length - 1; i >= 0; i--) {
+                                    if (excessColumnHeight <= 0) break;
+                                    excessColumnHeight -= childHeights[i];
+                                    itemsToRemove++;
+                                }
+                                itemsToRemove = Math.max(1, itemsToRemove);
+
+                                // Batch write
+                                for (let i = 0; i < itemsToRemove; i++) {
+                                    if (container.lastElementChild) {
+                                        container.removeChild(container.lastElementChild);
+                                    }
+                                }
+
+                                if (container.children.length === 0) {
+                                    const wrapper = document.getElementById(target.wrapperId);
+                                    if (wrapper) wrapper.style.display = 'none';
                                 }
                             }
                         }
-                        if (container.children.length === 0) {
-                            const wrapper = document.getElementById(target.wrapperId);
-                            if (wrapper) wrapper.style.display = 'none';
-                        }
                     }
-                });
+                }
             }
 
             const annCol = document.getElementById('chores-duties-column');
             const annCont = document.getElementById('announcements-container');
             if (annCol && annCont) {
-                if (annCol.clientHeight === 0) return;
-                while (annCol.scrollHeight > annCol.clientHeight + 2 && annCont.children.length > 0) {
-                    let excessAnnColHeight = annCol.scrollHeight - annCol.clientHeight - 2;
-                    const children = Array.from(annCont.children);
-                    let itemsToRemove = 0;
-                    for (let i = children.length - 1; i >= 0; i--) {
-                        if (excessAnnColHeight <= 0) break;
-                        excessAnnColHeight -= (children[i].offsetHeight || 20);
-                        itemsToRemove++;
-                    }
-                    itemsToRemove = Math.max(1, itemsToRemove);
-                    for (let i = 0; i < itemsToRemove; i++) {
-                        if (annCont.lastElementChild) {
-                            annCont.removeChild(annCont.lastElementChild);
+                const annColClientHeight = annCol.clientHeight;
+                if (annColClientHeight > 0) {
+                    let excessAnnColHeight = annCol.scrollHeight - annColClientHeight - 2;
+
+                    if (excessAnnColHeight > 0 && annCont.children.length > 0) {
+                        const children = Array.from(annCont.children);
+
+                        // Batch read
+                        const childHeights = children.map(child => child.offsetHeight || 20);
+                        let itemsToRemove = 0;
+
+                        // Compute
+                        for (let i = children.length - 1; i >= 0; i--) {
+                            if (excessAnnColHeight <= 0) break;
+                            excessAnnColHeight -= childHeights[i];
+                            itemsToRemove++;
+                        }
+                        itemsToRemove = Math.max(1, itemsToRemove);
+
+                        // Batch write
+                        for (let i = 0; i < itemsToRemove; i++) {
+                            if (annCont.lastElementChild) {
+                                annCont.removeChild(annCont.lastElementChild);
+                            }
+                        }
+
+                        if(annCont.children.length === 0) {
+                            document.getElementById('announcements-wrapper').style.display = 'none';
                         }
                     }
                 }
-                if(annCont.children.length === 0) document.getElementById('announcements-wrapper').style.display = 'none';
             }
         }
 
