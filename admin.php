@@ -774,18 +774,18 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
                             <div style="flex: 1; min-width: 250px;">
-                                <label style="font-weight: bold;">Fire Danger Alert Audio</label>
+                                <label for="alert_audio_fire" style="font-weight: bold;">Fire Danger Alert Audio</label>
                                 <?php if (!empty($configData['dashboard_settings']['alert_audio_fire'])): ?>
                                     <p style="font-size: 0.9em; color: var(--success-color);">Current: <?= htmlspecialchars(basename($configData['dashboard_settings']['alert_audio_fire'])) ?></p>
                                 <?php endif; ?>
-                                <input type="file" name="alert_audio_fire" accept=".mp3,.wav" style="margin-top: 5px;">
+                                <input type="file" id="alert_audio_fire" name="alert_audio_fire" accept=".mp3,.wav" style="margin-top: 5px;">
                             </div>
                             <div style="flex: 1; min-width: 250px;">
-                                <label style="font-weight: bold;">New Permit Alert Audio</label>
+                                <label for="alert_audio_permit" style="font-weight: bold;">New Permit Alert Audio</label>
                                 <?php if (!empty($configData['dashboard_settings']['alert_audio_permit'])): ?>
                                     <p style="font-size: 0.9em; color: var(--success-color);">Current: <?= htmlspecialchars(basename($configData['dashboard_settings']['alert_audio_permit'])) ?></p>
                                 <?php endif; ?>
-                                <input type="file" name="alert_audio_permit" accept=".mp3,.wav" style="margin-top: 5px;">
+                                <input type="file" id="alert_audio_permit" name="alert_audio_permit" accept=".mp3,.wav" style="margin-top: 5px;">
                             </div>
                         </div>
                     </div>
@@ -856,7 +856,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <div id="stations-container">
                         <?php foreach($configData['department_info']['stations'] as $stIdx => $st): ?>
                             <div class="item-card st-card">
-                                <button type="button" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove Station</button>
+                                <button type="button" aria-label="Remove Station" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove Station</button>
                                 <input type="hidden" name="st_id[]" value="<?= $st['id'] ?>">
                                 <input type="hidden" name="st_rooms_json[]" class="st-rooms-json" value="<?= htmlspecialchars(json_encode($st['rooms'])) ?>">
 
@@ -886,7 +886,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <div id="apparatus-container">
                         <?php foreach($configData['department_info']['apparatus'] as $app): ?>
                             <div class="item-card">
-                                <button type="button" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove</button>
+                                <button type="button" aria-label="Remove" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove</button>
                                 <input type="hidden" name="app_id[]" value="<?= $app['id'] ?>">
                                 <div class="flex-row" style="margin-bottom: 0;">
                                     <div class="flex-col" style="flex:2"><label>Name of Apparatus</label><input type="text" name="app_name[]" value="<?= htmlspecialchars($app['name']) ?>" required></div>
@@ -942,7 +942,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         });
                     }
                     function addStation() {
-                        const html = `<button type="button" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove Station</button>
+                        const html = `<button type="button" aria-label="Remove Station" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove Station</button>
                             <input type="hidden" name="st_id[]" value="">
                             <input type="hidden" name="st_rooms_json[]" class="st-rooms-json" value="[]">
                             <div class="flex-row">
@@ -959,7 +959,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         document.getElementById('stations-container').appendChild(div);
                     }
                     function addApparatus() {
-                        const html = `<button type="button" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove</button>
+                        const html = `<button type="button" aria-label="Remove" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove</button>
                             <input type="hidden" name="app_id[]" value="">
                             <div class="flex-row" style="margin-bottom: 0;">
                                 <div class="flex-col" style="flex:2"><label>Name of Apparatus</label><input type="text" name="app_name[]" required></div>
@@ -1138,7 +1138,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             <div class="item-card flex-row" style="align-items: center; padding: 15px; margin-bottom: 10px;">
                                 <input type="number" name="chore_ids[]" value="<?= $chore['id'] ?>" style="width: 80px; margin:0;" min="1" required>
                                 <input type="text" name="chore_names[]" value="<?= htmlspecialchars($chore['name']) ?>" style="flex-grow: 1; margin:0;" required>
-                                <button type="button" class="delete-btn" onclick="this.parentElement.remove()" style="margin:0;">Remove</button>
+                                <button type="button" aria-label="Remove" class="delete-btn" onclick="this.parentElement.remove()" style="margin:0;">Remove</button>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -1152,7 +1152,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         <?php foreach ($configData['everyday_chores'] as $chore): ?>
                             <div class="flex-row" style="margin-bottom: 10px;">
                                 <input type="text" name="everyday_chores[]" value="<?= htmlspecialchars($chore) ?>" style="flex-grow: 1;">
-                                <button type="button" class="delete-btn" onclick="this.parentElement.remove()">Remove</button>
+                                <button type="button" aria-label="Remove" class="delete-btn" onclick="this.parentElement.remove()">Remove</button>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -1171,12 +1171,12 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                     function addEverydayChore() {
                         const div = document.createElement('div'); div.className = 'flex-row'; div.style.marginBottom = '10px';
-                        div.innerHTML = `<input type="text" name="everyday_chores[]" placeholder="Describe everyday task..." style="flex-grow: 1;" required><button type="button" class="delete-btn" onclick="this.parentElement.remove()">Remove</button>`;
+                        div.innerHTML = `<input type="text" name="everyday_chores[]" placeholder="Describe everyday task..." style="flex-grow: 1;" required><button type="button" aria-label="Remove" class="delete-btn" onclick="this.parentElement.remove()">Remove</button>`;
                         document.getElementById('everyday-container').appendChild(div);
                     }
                     function addNumberedChore() {
                         const div = document.createElement('div'); div.className = 'item-card flex-row'; div.style.padding = '15px'; div.style.marginBottom = '10px'; div.style.alignItems = 'center';
-                        div.innerHTML = `<input type="number" name="chore_ids[]" value="1" style="width: 80px; margin:0;" min="1" required><input type="text" name="chore_names[]" placeholder="Chore Description" style="flex-grow: 1; margin:0;" required><button type="button" class="delete-btn" onclick="this.parentElement.remove()" style="margin:0;">Remove</button>`;
+                        div.innerHTML = `<input type="number" name="chore_ids[]" value="1" style="width: 80px; margin:0;" min="1" required><input type="text" name="chore_names[]" placeholder="Chore Description" style="flex-grow: 1; margin:0;" required><button type="button" aria-label="Remove" class="delete-btn" onclick="this.parentElement.remove()" style="margin:0;">Remove</button>`;
                         document.getElementById('numbered-chores-container').appendChild(div);
                     }
                     function addSpecialChore(data = null) {
@@ -1186,7 +1186,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         const { rec, rInt, rWkDays, rMoType, rMoDate, rMoNth, rMoNthDay, endType, endOccur, endDateBound } = extractRecurrenceState(data);
 
                         const tmpl = `
-                            <button type="button" class="delete-btn" style="position: absolute; right: 20px; top: 20px;" onclick="this.parentElement.remove(); renderChorePreview();">Remove</button>
+                            <button type="button" aria-label="Remove" class="delete-btn" style="position: absolute; right: 20px; top: 20px;" onclick="this.parentElement.remove(); renderChorePreview();">Remove</button>
                             <input type="hidden" class="sc-id" value="${id}">
                             <div class="flex-row" style="width: 85%;">
                                 <div class="flex-col" style="flex:2;"><label>Duty / Chore Name</label><input type="text" class="sc-name" value="${name}" required onchange="renderChorePreview()"></div>
@@ -1417,7 +1417,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         const editorId = 'editor_' + Math.random().toString(36).substr(2, 9);
 
                         div.innerHTML = `
-                            <button type="button" class="delete-btn" style="position: absolute; right: 20px; top: 20px;" onclick="this.parentElement.remove()">Remove</button>
+                            <button type="button" aria-label="Remove" class="delete-btn" style="position: absolute; right: 20px; top: 20px;" onclick="this.parentElement.remove()">Remove</button>
                             <input type="hidden" class="a-id" value="${id}">
                             <div class="flex-row" style="margin-bottom: 15px; width: 60%;">
                                 <div class="flex-col"><label>Start Display Date</label><input type="date" class="a-start" value="${sd}" required></div>
@@ -1749,7 +1749,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         const { rec, rInt, rWkDays, rMoType, rMoDate, rMoNth, rMoNthDay, endType, endOccur, endDateBound } = extractRecurrenceState(data);
 
                         const tmpl = `
-                            <button type="button" class="delete-btn" style="position: absolute; right: 20px; top: 20px;" onclick="this.parentElement.remove()">Remove Event</button>
+                            <button type="button" aria-label="Remove Event" class="delete-btn" style="position: absolute; right: 20px; top: 20px;" onclick="this.parentElement.remove()">Remove Event</button>
                             <input type="hidden" class="e-id" value="${id}">
 
                             <div class="flex-row" style="margin-bottom: 15px; width: 85%;">
@@ -1983,14 +1983,14 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <form method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <div class="input-group">
-                            <label>Gemini API Key (for Geocoding fallback)</label>
-                            <input type="text" name="gemini_api_key" value="<?= htmlspecialchars($configData['api_integrations']['gemini_api_key'] ?? '') ?>" placeholder="AIzaSy..." autocomplete="off">
+                            <label for="gemini_api_key">Gemini API Key (for Geocoding fallback)</label>
+                            <input type="text" id="gemini_api_key" name="gemini_api_key" value="<?= htmlspecialchars($configData['api_integrations']['gemini_api_key'] ?? '') ?>" placeholder="AIzaSy..." autocomplete="off">
                             <p style="font-size: 0.85em; color: var(--muted-text); margin-top: 5px;">This key is used as a fallback to convert free-text burn permit locations into map coordinates when standard geocoding fails.</p>
                         </div>
 
                         <div class="input-group" style="margin-top: 15px;">
-                            <label>Google TTS API Key (for Text-to-Speech)</label>
-                            <input type="text" name="google_tts_api_key" value="<?= htmlspecialchars($configData['api_integrations']['google_tts_api_key'] ?? '') ?>" placeholder="AIzaSy..." autocomplete="off">
+                            <label for="google_tts_api_key">Google TTS API Key (for Text-to-Speech)</label>
+                            <input type="text" id="google_tts_api_key" name="google_tts_api_key" value="<?= htmlspecialchars($configData['api_integrations']['google_tts_api_key'] ?? '') ?>" placeholder="AIzaSy..." autocomplete="off">
                             <p style="font-size: 0.85em; color: var(--muted-text); margin-top: 5px;">This key is used for the Text-to-Speech integration in the dashboard.</p>
                         </div>
 
@@ -2007,13 +2007,13 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <form method="post">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <div class="form-group">
-                            <label>Fire Danger Email Address / Prefix</label>
-                            <input type="text" name="danger_address" value="<?= htmlspecialchars($configData['email_integration']['danger_address'] ?? '') ?>" placeholder="e.g. danger@yourdomain.com" autocomplete="off">
+                            <label for="danger_address">Fire Danger Email Address / Prefix</label>
+                            <input type="text" id="danger_address" name="danger_address" value="<?= htmlspecialchars($configData['email_integration']['danger_address'] ?? '') ?>" placeholder="e.g. danger@yourdomain.com" autocomplete="off">
                             <small style="display:block; color:var(--muted-text); margin-top:5px;">If not set, falls back to ICS feed if provided, else "Unknown".</small>
                         </div>
                         <div class="form-group" style="margin-top: 15px;">
-                            <label>Burn Permits Email Address / Prefix</label>
-                            <input type="text" name="permit_address" value="<?= htmlspecialchars($configData['email_integration']['permit_address'] ?? '') ?>" placeholder="e.g. permits@yourdomain.com" autocomplete="off">
+                            <label for="permit_address">Burn Permits Email Address / Prefix</label>
+                            <input type="text" id="permit_address" name="permit_address" value="<?= htmlspecialchars($configData['email_integration']['permit_address'] ?? '') ?>" placeholder="e.g. permits@yourdomain.com" autocomplete="off">
                             <small style="display:block; color:var(--muted-text); margin-top:5px;">If not set, falls back to ICS feed if provided.</small>
                         </div>
 
@@ -2242,12 +2242,12 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                 <div class="card">
                     <h2>Change Admin Password</h2>
                     <div style="max-width: 400px;">
-                        <label>Current Password</label>
-                        <input type="password" name="current_password" style="margin-bottom: 15px;" required>
-                        <label>New Password</label>
-                        <input type="password" name="new_password" style="margin-bottom: 15px;" required>
-                        <label>Confirm New Password</label>
-                        <input type="password" name="confirm_password" style="margin-bottom: 20px;" required>
+                        <label for="current_password">Current Password</label>
+                        <input type="password" id="current_password" name="current_password" style="margin-bottom: 15px;" required>
+                        <label for="new_password">New Password</label>
+                        <input type="password" id="new_password" name="new_password" style="margin-bottom: 15px;" required>
+                        <label for="confirm_password">Confirm New Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" style="margin-bottom: 20px;" required>
                     </div>
                 </div>
                 <script>function runPreSubmitHooks() {}</script>

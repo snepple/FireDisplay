@@ -12,3 +12,11 @@
 ## 2024-05-24 - Missing ARIA label on icon-only Force Reload button
 **Learning:** Found an icon-only button (a refresh button with an SVG) that was missing an `aria-label`, making it inaccessible to screen reader users, despite having a `title` attribute.
 **Action:** Always ensure that icon-only buttons (containing only SVGs or Unicode characters) have descriptive `aria-label` attributes to ensure they are accessible to screen readers.
+
+## 2024-05-24 - Missing ARIA label on multiple remove buttons
+**Learning:** Found multiple icon-only "Remove" or "Remove Station/Event" buttons in the admin panel which were completely missing an `aria-label`, making it difficult for screen readers to explain what will be removed.
+**Action:** Always ensure buttons whose labels aren't descriptive or clear on their own or use symbols have proper `aria-label` attributes.
+
+## 2024-05-24 - Missing "for" attribute linking labels to inputs
+**Learning:** There are quite a few instances across the `admin.php` page where labels for inputs are implicitly referencing the next input but aren't strictly linked using `for="id"` and matching ID on the input. This is important for screen reader accessibility to make sure the labels are attached properly to the fields.
+**Action:** Always map `<label>` tags explicitly to their `<input>` using the `for` attribute referencing the `id` of the `<input>`.
