@@ -47,6 +47,11 @@ beforeAll((done) => {
     const destFile = path.join(TMP_API_DIR, 'speak.php');
     fs.writeFileSync(destFile, speakPhpContent);
 
+    // Copy security_check.php to TMP_API_DIR
+    const securityCheckSrc = path.join(__dirname, '../api/security_check.php');
+    const securityCheckDest = path.join(TMP_API_DIR, 'security_check.php');
+    fs.copyFileSync(securityCheckSrc, securityCheckDest);
+
     // 4. Create a mock config.json
     const mockConfig = {
         api_integrations: {

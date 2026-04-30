@@ -2140,7 +2140,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                                 if ($log['status'] === 'warning') $statusColor = 'var(--warning-color)';
                                                 if ($log['status'] === 'success') $statusColor = 'var(--success-color)';
 
-                                                echo "<tr class='log-row' data-component='".htmlspecialchars($log['component'])."' data-status='".htmlspecialchars($log['status'])."' style='border-bottom: 1px solid var(--border-color);'>";
+                                                echo "<tr class='log-row' data-component='".htmlspecialchars($log['component'], ENT_QUOTES)."' data-status='".htmlspecialchars($log['status'], ENT_QUOTES)."' style='border-bottom: 1px solid var(--border-color);'>";
                                                 echo "<td style='padding: 10px; white-space: nowrap;'>" . htmlspecialchars($log['timestamp']) . "</td>";
                                                 echo "<td style='padding: 10px; font-weight: bold;'>" . htmlspecialchars($log['component']) . "</td>";
                                                 echo "<td style='padding: 10px; color: {$statusColor}; font-weight: bold;'>" . ucfirst(htmlspecialchars($log['status'])) . "</td>";

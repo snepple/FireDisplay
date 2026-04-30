@@ -43,3 +43,8 @@
 **Vulnerability:** The `admin.php` login form did not have any rate limiting or brute-force protection mechanism in place. An attacker could attempt to guess the password repeatedly without any restriction, increasing the likelihood of a successful compromise, especially given that a default password (`ChangeMe123!`) is specified in the configuration.
 **Learning:** Always implement robust rate limiting or account lockout mechanisms for authentication endpoints.
 **Prevention:** IP-based tracking was introduced to limit the number of failed attempts (e.g., maximum 5 attempts within 15 minutes) before temporarily locking the IP out. This approach requires maintaining an attempt count with a timestamp (such as in `data/login_attempts.json`).
+
+## 2024-05-24 - Cross-Site Scripting (XSS) via Unescaped Single Quotes in HTML Attributes
+**Vulnerability:** A Reflected XSS vulnerability was found in `admin.php`. When rendering log entries into HTML attributes (`data-component` and `data-status`), the variables were sanitized using `htmlspecialchars()` without the `ENT_QUOTES` flag. Because the attributes were enclosed in single quotes, an attacker could potentially inject single quotes into the log data to break out of the attribute and execute arbitrary JavaScript.
+**Learning:** `htmlspecialchars()` does not escape single quotes by default in older versions of PHP. When rendering user-controlled data (or data from files that might be manipulated) into HTML attributes, especially those enclosed in single quotes, you must explicitly use the `ENT_QUOTES` flag.
+**Prevention:** Always use `htmlspecialchars($variable, ENT_QUOTES)` when embedding data within HTML attribute values.
