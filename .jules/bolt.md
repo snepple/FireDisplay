@@ -9,3 +9,7 @@
 ## 2024-05-25 - [Layout Thrashing Fixed] Batching Read/Write for Pruning
 **Learning:** Functions like `pruneDashboard`, `pruneCalendar`, and `pruneChores` read layout properties (`clientHeight`, `scrollHeight`, `offsetHeight`) and immediately modify the DOM (`removeChild`, `style.display='none'`) repeatedly inside `while` loops. This interleaving of layout reads and DOM writes forces the browser to synchronously recalculate layout (reflow) on every iteration, causing significant "layout thrashing" and tanking UI thread performance during pruning operations.
 **Action:** To optimize pruning and DOM cleanup loops, always implement a strict "Batch Read -> Compute -> Batch Write" pattern. Read all necessary layout properties and cache them in arrays, compute the exact number of nodes to remove/hide, and then perform all DOM writes in a separate loop without any further layout reads.
+
+## 2024-05-26 - [Backend Optimization] Concurrent External API Requests
+**Learning:** Sequential calls to `file_get_contents()` for independent external APIs create cumulative network latency, slowing down backend endpoints (e.g., from ~0.45s to ~0.19s wait time reduction).
+**Action:** Always batch independent backend network requests using concurrent handlers like `curl_multi_exec` instead of making sequential blocking calls to eliminate cumulative latency.
