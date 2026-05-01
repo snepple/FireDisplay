@@ -34,8 +34,35 @@ if (!$forceRefresh && file_exists($cacheFile) && (time() - filemtime($cacheFile)
 $classDaysUrl = 'https://mainefireweather.org/admin/php/get-content.php?content=class-days&which=map';
 $indexUrl = 'https://mainefireweather.org/index.php';
 
-$classDaysJson = @file_get_contents($classDaysUrl);
-$indexHtml = @file_get_contents($indexUrl);
+// Bolt ⚡: Parallelize independent API calls using curl_multi to reduce latency
+$mh = curl_multi_init();
+$ch1 = curl_init($classDaysUrl);
+$ch2 = curl_init($indexUrl);
+
+curl_setopt($ch1, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch1, CURLOPT_TIMEOUT, 15);
+curl_setopt($ch1, CURLOPT_FAILONERROR, true);
+curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch2, CURLOPT_TIMEOUT, 15);
+curl_setopt($ch2, CURLOPT_FAILONERROR, true);
+
+curl_multi_add_handle($mh, $ch1);
+curl_multi_add_handle($mh, $ch2);
+
+$active = null;
+do {
+    $status = curl_multi_exec($mh, $active);
+    if ($active) {
+        curl_multi_select($mh);
+    }
+} while ($active && $status == CURLM_OK);
+
+$classDaysJson = curl_multi_getcontent($ch1);
+$indexHtml = curl_multi_getcontent($ch2);
+
+curl_multi_remove_handle($mh, $ch1);
+curl_multi_remove_handle($mh, $ch2);
+curl_multi_close($mh);
 
 $classDays = [];
 if ($classDaysJson) {
