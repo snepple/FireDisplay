@@ -209,7 +209,12 @@ if (!isset($_SESSION['admin_logged_in'])) {
                 --success-color: #32d74b;
             }
         }
-    </style></head><body style='font-family: \"Inter\", sans-serif; background: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; height: 100vh; margin:0;'>";
+
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+</style></head><body style='font-family: \"Inter\", sans-serif; background: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; height: 100vh; margin:0;'>";
     echo "<form method='POST' style='background: var(--card-bg); padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); width: 100%; max-width: 320px;'>";
     echo "<h2 style='margin-top:0; color: var(--text-color); text-align: center; font-weight: 600;'>Admin Login</h2>";
     if (isset($error)) echo "<p role='alert' style='color: var(--danger-color); font-weight: bold; text-align: center; font-size: 0.9em; margin-bottom: 15px;'>$error</p>";
@@ -622,7 +627,12 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
         .day-checkboxes { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;}
         .day-checkboxes label { display: inline-flex; align-items: center; background: var(--bg-color); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); font-weight: 500; margin-bottom:0; cursor: pointer; transition: 0.2s;}
         .day-checkboxes label:hover { background: var(--hover-bg);}
-    </style>
+
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+</style>
 
     <script>
         function extractRecurrenceState(data) {
