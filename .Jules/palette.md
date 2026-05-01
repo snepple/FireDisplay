@@ -20,3 +20,7 @@
 ## 2024-05-24 - Missing "for" attribute linking labels to inputs
 **Learning:** There are quite a few instances across the `admin.php` page where labels for inputs are implicitly referencing the next input but aren't strictly linked using `for="id"` and matching ID on the input. This is important for screen reader accessibility to make sure the labels are attached properly to the fields.
 **Action:** Always map `<label>` tags explicitly to their `<input>` using the `for` attribute referencing the `id` of the `<input>`.
+
+## 2026-05-01 - Keyboard Accessibility Enhancements
+**Learning:** Found that buttons and interactive elements in `admin.php`, `index.php`, and `current_index.php` were missing explicit `:focus-visible` styles, causing a poor experience for keyboard navigators, especially in dark mode where default browser outlines aren't clear.
+**Action:** Always verify that interactive elements define a high-contrast `:focus-visible` outline to guarantee keyboard accessibility is preserved across light/dark themes.

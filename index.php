@@ -307,6 +307,12 @@ if (!empty($dashboardToken)) {
         #fire-danger-toast.success { border-color: #28a745; color: #28a745; }
         #fire-danger-toast.error { border-color: #dc3545; color: #dc3545; }
         #fire-danger-toast.loading { border-color: #007bff; color: #007bff; }
+
+
+        button:focus-visible, a:focus-visible, input:focus-visible {
+            outline: 3px solid #ffc107;
+            outline-offset: 2px;
+        }
 </style>
 </head>
 <body>
