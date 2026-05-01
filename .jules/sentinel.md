@@ -43,3 +43,8 @@
 **Vulnerability:** The `admin.php` login form did not have any rate limiting or brute-force protection mechanism in place. An attacker could attempt to guess the password repeatedly without any restriction, increasing the likelihood of a successful compromise, especially given that a default password (`ChangeMe123!`) is specified in the configuration.
 **Learning:** Always implement robust rate limiting or account lockout mechanisms for authentication endpoints.
 **Prevention:** IP-based tracking was introduced to limit the number of failed attempts (e.g., maximum 5 attempts within 15 minutes) before temporarily locking the IP out. This approach requires maintaining an attempt count with a timestamp (such as in `data/login_attempts.json`).
+
+## $(date +%Y-%m-%d) - Missing CSRF Protection on Logout
+**Vulnerability:** The `admin.php` logout endpoint `?logout=true` did not have CSRF protection. A malicious website or email could include an image or link like `<img src="https://example.com/admin.php?logout=true">` which would automatically log out any authenticated administrator viewing it.
+**Learning:** Even though logging a user out is usually a low-impact action, all state-changing endpoints in an application, especially in administrative panels, should be protected against CSRF to ensure session stability and prevent annoyance or denial of service.
+**Prevention:** Always require and validate a CSRF token for all state-changing actions, including logout endpoints, using a secure comparison function like `hash_equals()`. Ensure that `!empty()` checks are performed on both the session token and the request token before comparison to prevent type errors.

@@ -176,6 +176,9 @@ if (isset($_POST['login'])) {
     }
 }
 if (isset($_GET['logout'])) {
+    if (empty($_SESSION['csrf_token']) || empty($_GET['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_GET['csrf_token'])) {
+        die("CSRF token validation failed.");
+    }
     session_destroy(); header("Location: admin.php"); exit;
 }
 
@@ -714,7 +717,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
             <li><a href="?page=password" class="<?= isPage('password', $page) ?>">Change Password</a></li>
             <li><a href="?page=system_logs" class="<?= isPage('system_logs', $page) ?>">System Logs</a></li>
         </ul>
-        <a href="?logout=true" class="logout-btn">Log Out Securely</a>
+        <a href="?logout=true&csrf_token=<?= htmlspecialchars($_SESSION['csrf_token']) ?>" class="logout-btn">Log Out Securely</a>
     </div>
 
     <div class="content">
