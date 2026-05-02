@@ -1044,12 +1044,14 @@ if (!empty($dashboardToken)) {
                 const holidaysPromise = loadHolidays();
                 const townMeetingsPromise = fetchAllTownMeetings();
 
-                await loadFireDanger();
-                await loadBurnPermits();
+                // ⚡ Bolt: Execute independent network requests concurrently to eliminate waterfall delays
+                const fireDangerPromise = loadFireDanger();
+                const burnPermitsPromise = loadBurnPermits();
+
+                await Promise.all([fireDangerPromise, burnPermitsPromise, holidaysPromise]);
 
                 currentFireEvents = await fireSchedulePromise;
                 currentTownMeetings = await townMeetingsPromise;
-                await holidaysPromise;
 
                 renderDashboard(currentFireEvents);
                 renderChoresPage(currentFireEvents, currentTownMeetings);
