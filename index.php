@@ -1053,16 +1053,24 @@ if (!empty($dashboardToken)) {
             }
 
             try {
+                // ⚡ Bolt Optimization: Initialize all independent asynchronous fetches concurrently
+                // This prevents rendering waterfall delays caused by sequentially awaiting network calls.
                 const fireSchedulePromise = fetchFireSchedule();
                 const holidaysPromise = loadHolidays();
                 const townMeetingsPromise = fetchAllTownMeetings();
+                const fireDangerPromise = loadFireDanger();
+                const burnPermitsPromise = loadBurnPermits();
 
-                await loadFireDanger();
-                await loadBurnPermits();
+                const [fireSchedule, townMeetings] = await Promise.all([
+                    fireSchedulePromise,
+                    townMeetingsPromise,
+                    holidaysPromise,
+                    fireDangerPromise,
+                    burnPermitsPromise
+                ]);
 
-                currentFireEvents = await fireSchedulePromise;
-                currentTownMeetings = await townMeetingsPromise;
-                await holidaysPromise;
+                currentFireEvents = fireSchedule;
+                currentTownMeetings = townMeetings;
 
                 renderDashboard(currentFireEvents);
                 renderChoresPage(currentFireEvents, currentTownMeetings);

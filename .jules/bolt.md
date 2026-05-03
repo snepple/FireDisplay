@@ -13,3 +13,7 @@
 ## 2024-05-26 - [Backend Optimization] Concurrent External API Requests
 **Learning:** Sequential calls to `file_get_contents()` for independent external APIs create cumulative network latency, slowing down backend endpoints (e.g., from ~0.45s to ~0.19s wait time reduction).
 **Action:** Always batch independent backend network requests using concurrent handlers like `curl_multi_exec` instead of making sequential blocking calls to eliminate cumulative latency.
+
+## 2024-05-27 - [Frontend Optimization] Concurrent Fetch Resolution
+**Learning:** Sequential `await` statements for independent network calls (e.g., `await loadFireDanger(); await loadBurnPermits();`) in the frontend create a rendering waterfall, unnecessarily delaying the dashboard's initial display while waiting for each request to finish before starting the next.
+**Action:** Always initialize independent asynchronous network requests concurrently and await them together using `Promise.all()` to minimize total latency and eliminate waterfall delays.
