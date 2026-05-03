@@ -48,3 +48,8 @@
 **Vulnerability:** The `admin.php` logout endpoint `?logout=true` did not have CSRF protection. A malicious website or email could include an image or link like `<img src="https://example.com/admin.php?logout=true">` which would automatically log out any authenticated administrator viewing it.
 **Learning:** Even though logging a user out is usually a low-impact action, all state-changing endpoints in an application, especially in administrative panels, should be protected against CSRF to ensure session stability and prevent annoyance or denial of service.
 **Prevention:** Always require and validate a CSRF token for all state-changing actions, including logout endpoints, using a secure comparison function like `hash_equals()`. Ensure that `!empty()` checks are performed on both the session token and the request token before comparison to prevent type errors.
+
+## $(date +%Y-%m-%d) - Timing Attack Vulnerability in Token Verification
+**Vulnerability:** The dashboard token verification in `api/security_check.php` and `api/get_config.php` used a strict inequality operator (`!==`) to compare the user-provided token with the expected token. This is susceptible to timing attacks, where an attacker could theoretically deduce the token by measuring the time it takes for the server to reject incorrect tokens character by character.
+**Learning:** Security tokens, passwords, and hashes should always be compared using a constant-time string comparison function.
+**Prevention:** Use `hash_equals()` to compare sensitive strings. Ensure both arguments are explicitly cast to strings (e.g., `(string)$token`) to prevent fatal TypeErrors, especially when one of the tokens is read from a JSON configuration file where it might be parsed as an integer.
