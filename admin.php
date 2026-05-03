@@ -104,7 +104,7 @@ $allRooms = [];
 foreach ($configData['department_info']['stations'] as $st) {
     foreach ($st['rooms'] as $r) { $allRooms[] = $st['number'] . ' - ' . $r; }
 }
-$roomsJson = json_encode($allRooms);
+$roomsJson = json_encode($allRooms, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
 
 // Prepare Apparatus Dropdown Options
 $appOptionsHtml = "<option value=''>-- Select Apparatus --</option>";
@@ -497,8 +497,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     file_put_contents($configFile, json_encode($configData, JSON_PRETTY_PRINT));
 }
 
-$eventsJson = json_encode($active_events);
-$specialChoresJson = json_encode($active_chores);
+$eventsJson = json_encode($active_events, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+$specialChoresJson = json_encode($active_chores, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
 
 function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; }
 ?>
@@ -1181,7 +1181,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                 </div>
                 <script>
-                    const existingSpecialChores = <?= json_encode($active_chores) ?>;
+                    const existingSpecialChores = <?= json_encode($active_chores, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 
                     function addEverydayChore() {
                         const div = document.createElement('div'); div.className = 'flex-row'; div.style.marginBottom = '10px';
@@ -1416,7 +1416,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                 </div>
 
                 <script>
-                    const existingAnns = <?= json_encode($active_announcements) ?>;
+                    const existingAnns = <?= json_encode($active_announcements, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
                     let quillEditors = [];
 
                     function addAnn(data = null) {

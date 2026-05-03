@@ -11,7 +11,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
 // CSRF check
 $input = json_decode(file_get_contents("php://input"), true);
-if (!$input || empty($input['csrf_token']) || $input['csrf_token'] !== $_SESSION['csrf_token']) {
+if (!$input || empty($input['csrf_token']) || empty($_SESSION['csrf_token']) || !hash_equals((string)$_SESSION['csrf_token'], (string)$input['csrf_token'])) {
     http_response_code(400);
     echo json_encode(['error' => 'Invalid or missing CSRF token.']);
     die();
