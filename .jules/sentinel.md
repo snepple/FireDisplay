@@ -48,3 +48,12 @@
 **Vulnerability:** The `admin.php` logout endpoint `?logout=true` did not have CSRF protection. A malicious website or email could include an image or link like `<img src="https://example.com/admin.php?logout=true">` which would automatically log out any authenticated administrator viewing it.
 **Learning:** Even though logging a user out is usually a low-impact action, all state-changing endpoints in an application, especially in administrative panels, should be protected against CSRF to ensure session stability and prevent annoyance or denial of service.
 **Prevention:** Always require and validate a CSRF token for all state-changing actions, including logout endpoints, using a secure comparison function like `hash_equals()`. Ensure that `!empty()` checks are performed on both the session token and the request token before comparison to prevent type errors.
+## $(date +%Y-%m-%d) - XSS in inline JavaScript via json_encode
+**Vulnerability:** Found `json_encode()` calls used directly within `<script>` blocks or assigned to variables that render into HTML without hex-encoding flags in `admin.php`. An attacker who can control data encoded in these JSON objects (such as chore names or announcement content) could break out of the script context and execute arbitrary JavaScript.
+**Learning:** `json_encode()` by default does not escape characters like `<`, `>`, `'`, `"` or `&`. If user-controllable data is included in the encoded JSON, an attacker could use `</script>` or malicious payloads to achieve XSS.
+**Prevention:** Always use the `JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP` flags when echoing `json_encode()` directly into inline JavaScript or HTML.
+
+## $(date +%Y-%m-%d) - Type-Juggling CSRF Bypass
+**Vulnerability:** CSRF token validation in `api/save_locations.php` checked for token match using strict equality (`!==`). If JSON decoding produced a different type, or if a token was empty, this could cause validation issues or bypasses depending on PHP versions or edge cases.
+**Learning:** Using `hash_equals()` with string-casting is the only robust way to compare security tokens to prevent timing attacks and type-juggling vulnerabilities.
+**Prevention:** Always validate CSRF tokens using `hash_equals((string)$expected, (string)$provided)` and ensure both values are checked for emptiness prior to comparison.
