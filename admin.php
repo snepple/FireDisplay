@@ -160,6 +160,7 @@ if (isset($_POST['login'])) {
             unset($attemptsData[$ip]);
             file_put_contents($attemptsFile, json_encode($attemptsData, JSON_PRETTY_PRINT));
 
+            session_regenerate_id(true);
             $_SESSION['admin_logged_in'] = true;
             if ($needs_rehash) {
                 $configData['admin_password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
