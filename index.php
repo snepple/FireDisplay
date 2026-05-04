@@ -2498,9 +2498,9 @@ if (!empty($dashboardToken)) {
             const modalOverlay = document.getElementById('permit-modal-overlay');
             const modalBody = document.getElementById('permit-modal-body');
 
-            const cleanedDetailsHtml = detailsHtml.replace(/<td[^>]*>.*?DEPARTMENT OF AGRICULTURE, CONSERVATION &amp; FORESTRY<br>\s*OPEN BURNING PERMIT.*?<\/td>/s, '');
-
-            let html = `<table><tbody>${cleanedDetailsHtml}</tbody></table>`;
+            const cleaned = detailsHtml.replace(/<td[^>]*>.*?DEPARTMENT OF AGRICULTURE, CONSERVATION &amp; FORESTRY<br>\s*OPEN BURNING PERMIT.*?<\/td>/s, '');
+            const escapedDetails = escapeHtml(cleaned).replace(/\n/g, '<br>');
+            let html = `<table><tbody><tr><td>Details:</td><td>${escapedDetails}</td></tr></tbody></table>`;
             if (lat !== null && lon !== null) {
                 html += '<div id="modalMap" style="height: 200px; width: 100%; margin-top: clamp(5px, 1.5vh, 15px); border-radius: 4px; pointer-events: none;"></div>';
             }
@@ -2574,9 +2574,9 @@ if (!empty($dashboardToken)) {
 
                                     const popupContent = `
                                         <div style="font-size: 14px; font-family: 'Inter', sans-serif; color: var(--text-color);">
-                                            <strong>${owner}</strong><br/>
-                                            ${address}<br/>
-                                            <span style="color: var(--muted-text); font-size: 12px;">Map/Lot: ${mapLot}</span>
+                                            <strong>${escapeHtml(owner)}</strong><br/>
+                                            ${escapeHtml(address)}<br/>
+                                            <span style="color: var(--muted-text); font-size: 12px;">Map/Lot: ${escapeHtml(mapLot)}</span>
                                         </div>
                                     `;
                                     layer.bindPopup(popupContent);
@@ -2663,7 +2663,7 @@ if (!empty($dashboardToken)) {
                             fillOpacity: 0.8
                         });
 
-                        marker.bindPopup(`<strong>${loc.type || 'Location'}</strong><br>${loc.address}`);
+                        marker.bindPopup(`<strong>${escapeHtml(loc.type || 'Location')}</strong><br>${escapeHtml(loc.address)}`);
                         marker.addTo(staticLocationsLayerGroup);
                     }
                 });
@@ -2715,7 +2715,7 @@ if (!empty($dashboardToken)) {
                                 zIndexOffset: 1000 // Ensure stations are always on top
                             });
 
-                            marker.bindPopup(`<strong>${station.number}</strong><br>${station.address}`);
+                            marker.bindPopup(`<strong>${escapeHtml(station.number)}</strong><br>${escapeHtml(station.address)}`);
                             marker.addTo(staticLocationsLayerGroup);
 
                             // Include in bounds calculations
@@ -2810,7 +2810,7 @@ if (!empty($dashboardToken)) {
                     const detailsHtml = permit.description.split('Details:')[1] || '';
 
                     const marker = L.marker([lat, lon], { icon: dynamicFlameIcon }).addTo(permitMap)
-                        .bindTooltip(address, {
+                        .bindTooltip(escapeHtml(address), {
                             permanent: true,
                             direction: 'right',
                             offset: [10, 0],
