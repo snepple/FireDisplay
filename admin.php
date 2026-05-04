@@ -115,7 +115,7 @@ foreach($configData['department_info']['apparatus'] as $app) {
 
 // --- HANDLE LOGIN / LOGOUT ---
 if (isset($_POST['login'])) {
-    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+    if (!isset($_POST['csrf_token']) || !hash_equals((string)$_SESSION['csrf_token'], (string)$_POST['csrf_token'])) {
         die("CSRF token validation failed.");
     }
 
@@ -176,7 +176,7 @@ if (isset($_POST['login'])) {
     }
 }
 if (isset($_GET['logout'])) {
-    if (empty($_SESSION['csrf_token']) || empty($_GET['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_GET['csrf_token'])) {
+    if (empty($_SESSION['csrf_token']) || empty($_GET['csrf_token']) || !hash_equals((string)$_SESSION['csrf_token'], (string)$_GET['csrf_token'])) {
         die("CSRF token validation failed.");
     }
     session_destroy(); header("Location: admin.php"); exit;
@@ -246,7 +246,7 @@ $page = $_GET['page'] ?? 'settings';
 $success = ""; $error_msg = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+    if (!isset($_POST['csrf_token']) || !hash_equals((string)$_SESSION['csrf_token'], (string)$_POST['csrf_token'])) {
         die("CSRF token validation failed.");
     }
 
