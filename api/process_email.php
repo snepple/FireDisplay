@@ -22,17 +22,17 @@ if ($is_test) {
 // In a real scenario, you'd use a library like PhpMimeMailParser or standard regex based on the email format.
 
 $from = '';
-if (preg_match('/^From: (.*)$/m', $email_content, $matches)) {
+if (preg_match('/^From: (.*)$/mi', $email_content, $matches)) {
     $from = trim($matches[1]);
 }
 
 $to = '';
-if (preg_match('/^To: (.*)$/m', $email_content, $matches)) {
+if (preg_match('/^To: (.*)$/mi', $email_content, $matches)) {
     $to = strtolower(trim($matches[1]));
 }
 
 $subject = '';
-if (preg_match('/^Subject: (.*)$/m', $email_content, $matches)) {
+if (preg_match('/^Subject: (.*)$/mi', $email_content, $matches)) {
     $subject = trim($matches[1]);
 }
 

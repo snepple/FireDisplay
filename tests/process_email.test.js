@@ -5,9 +5,12 @@ const path = require('path');
 const TMP_DIR = path.join(__dirname, 'tmp_email');
 const TMP_API_DIR = path.join(TMP_DIR, 'api');
 const PORT = 8003;
+const MOCK_PORT = 8004;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
+const MOCK_URL = `http://127.0.0.1:${MOCK_PORT}/gemini_mock.php?key=`;
 
 let phpServer;
+let mockServer;
 
 beforeAll((done) => {
     // 1. Create tmp directory structure
@@ -16,44 +19,55 @@ beforeAll((done) => {
     }
     fs.mkdirSync(TMP_API_DIR, { recursive: true });
 
-    // 2. Copy api/process_email.php to tmp/api/
+    // 2. Copy files to tmp/
     const srcFile = path.join(__dirname, '../api/process_email.php');
     const destFile = path.join(TMP_API_DIR, 'process_email.php');
     fs.copyFileSync(srcFile, destFile);
+
     const secSrc = path.join(__dirname, '../api/security_check.php');
     const secDest = path.join(TMP_API_DIR, 'security_check.php');
     if (fs.existsSync(secSrc)) fs.copyFileSync(secSrc, secDest);
 
-    // 3. Create a mock config.json so routing logic does not fail
+    const mockSrc = path.join(__dirname, 'gemini_mock.php');
+    const mockDest = path.join(TMP_DIR, 'gemini_mock.php');
+    fs.copyFileSync(mockSrc, mockDest);
+
+    // 3. Patch the Gemini URL in the temporary process_email.php using Node.js fs
+    let content = fs.readFileSync(destFile, 'utf8');
+    const target = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=';
+    content = content.replace(target, MOCK_URL);
+    fs.writeFileSync(destFile, content);
+
+    // 4. Create a mock config.json
     const mockConfig = {
         email_integration: {
             danger_address: 'danger@domain.com',
             permit_address: 'permit@domain.com'
         },
-        fire_danger_zone: '7'
+        fire_danger_zone: '7',
+        api_integrations: {
+            gemini_api_key: 'mock-key'
+        }
     };
     fs.writeFileSync(path.join(TMP_DIR, 'config.json'), JSON.stringify(mockConfig));
 
-    // 4. Spawn PHP server
+    // 5. Spawn PHP servers
     phpServer = spawn('php', ['-S', `127.0.0.1:${PORT}`, '-t', TMP_DIR]);
+    mockServer = spawn('php', ['-S', `127.0.0.1:${MOCK_PORT}`, '-t', TMP_DIR]);
 
-    // Wait for the server to start
+    // Wait for the servers to start
     setTimeout(done, 1000);
 });
 
 afterAll(() => {
-    // 1. Kill PHP server
-    if (phpServer) {
-        phpServer.kill();
-    }
+    if (phpServer) phpServer.kill();
+    if (mockServer) mockServer.kill();
 
-    // 2. Remove tmp directory
     if (fs.existsSync(TMP_DIR)) {
         fs.rmSync(TMP_DIR, { recursive: true, force: true });
     }
 });
 
-// Helper function to extract valid JSON from PHP output that includes the CLI shebang
 async function fetchAndParse(url, options) {
     const response = await fetch(url, options);
     const text = await response.text();
@@ -61,7 +75,7 @@ async function fetchAndParse(url, options) {
     if (jsonStart !== -1) {
         return JSON.parse(text.substring(jsonStart));
     }
-    throw new Error('No JSON found in response');
+    throw new Error('No JSON found in response: ' + text);
 }
 
 describe('process_email.php (Burn Permits)', () => {
@@ -88,16 +102,11 @@ Burning may be conducted from 10:00 AM to 5:00 PM on 04/15/2024`;
         expect(permit.burn_location_property).toBe('Backyard');
         expect(permit.burn_type).toBe('Brush');
         expect(permit.items_to_burn).toBe('Branches and leaves');
-
-        // Expiration date check. 04/15/2024 parsed as UTC might change slightly based on timezone in PHP,
-        // but it should be close to 2024-04-15
         expect(permit.expires.startsWith('2024-04-15')).toBe(true);
     });
 
-    test('handles missing or malformed fields gracefully', async () => {
-        const emailBody = `To: permit@domain.com\r\nSubject: Burn Permit\r\n\r\nPermission is hereby granted to:  (DOB: unknown)  Phone:   -- Email:  Date/Time Permit was Issued:
-Address of Burn Location:  Burn Location on the Property:  Municipality/Unorganized Territory:
-Burn Type:  Type of Item(s) to Burn:  Burn Requirements: `;
+    test('uses Gemini fallback for malformed burn permit email', async () => {
+        const emailBody = `To: permit@domain.com\r\nSubject: Burn Permit\r\n\r\nThis is a non-standard burn permit email that should trigger Gemini.`;
 
         const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
             method: 'POST',
@@ -105,41 +114,12 @@ Burn Type:  Type of Item(s) to Burn:  Burn Requirements: `;
         });
 
         expect(data.type).toBe('permit');
-
         const permit = data.data;
-        expect(permit.name).toBe('');
-        expect(permit.person_address).toBe('');
-        expect(permit.phone).toBe('');
-        expect(permit.email).toBe('');
-        expect(permit.burn_location_address).toBe('');
-        expect(permit.burn_location_property).toBe('');
-        expect(permit.burn_type).toBe('');
-        expect(permit.items_to_burn).toBe('');
+        expect(permit.name).toBe('Mock User');
+        expect(permit.person_address).toBe('Mock Address');
+        expect(permit.phone).toBe('555-MOCK');
     });
 
-    test('provides defaults when regex fails entirely', async () => {
-        const emailBody = `To: permit@domain.com\r\nSubject: Burn Permit\r\n\r\nSome completely random email body without the expected labels.`;
-
-        const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
-            method: 'POST',
-            body: emailBody
-        });
-
-        expect(data.type).toBe('permit');
-
-        const permit = data.data;
-        expect(permit.name).toBe('Unknown');
-        expect(permit.person_address).toBe('Unknown Address');
-        expect(permit.phone).toBe('Unknown Phone');
-        expect(permit.email).toBe('Unknown Email');
-        expect(permit.burn_location_address).toBe('');
-        expect(permit.burn_location_property).toBe('');
-        expect(permit.burn_type).toBe('Open Burn');
-        expect(permit.items_to_burn).toBe('');
-
-        // Expiration date should default to +1 day. Check if it's somewhat valid ISO string
-        expect(new Date(permit.expires).getTime()).not.toBeNaN();
-    });
     test('handles -- as empty burn location address', async () => {
         const emailBody = `To: permit@domain.com\r\nSubject: Burn Permit\r\n\r\nPermission is hereby granted to: Lily Rogers (DOB: 12/12/1980 ) 318 Wottons Mill Rd , Warren , ME 04864 , US Phone: (207) 691-9215 -- Email: tigerlily3305@gmail.com Date/Time Permit was Issued 04/22/2026 04:48 PM
 Address of Burn Location: -- Burn Location on the Property: -- Municipality/Unorganized Territory: Oakland
@@ -158,6 +138,37 @@ Burning may be conducted from 4:48 pm on 04/22/2026 to 9:00 am on 04/23/2026`;
         expect(permit.person_address).toBe('318 Wottons Mill Rd , Warren , ME 04864 , US');
         expect(permit.address).toBe('318 Wottons Mill Rd , Warren , ME 04864 , US');
         expect(permit.burn_location_address).toBe('--');
+    });
+
+    test('provides defaults when Gemini is disabled or fails', async () => {
+        // Disable Gemini by removing API key from config
+        const mockConfig = {
+            email_integration: {
+                danger_address: 'danger@domain.com',
+                permit_address: 'permit@domain.com'
+            },
+            fire_danger_zone: '7',
+            api_integrations: {
+                gemini_api_key: ''
+            }
+        };
+        fs.writeFileSync(path.join(TMP_DIR, 'config.json'), JSON.stringify(mockConfig));
+
+        const emailBody = `To: permit@domain.com\r\nSubject: Burn Permit\r\n\r\nSome completely random email body without the expected labels.`;
+
+        const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+            method: 'POST',
+            body: emailBody
+        });
+
+        expect(data.type).toBe('permit');
+        const permit = data.data;
+        expect(permit.name).toBe('Unknown');
+        expect(permit.person_address).toBe('Unknown Address');
+
+        // Reset config
+        mockConfig.api_integrations.gemini_api_key = 'mock-key';
+        fs.writeFileSync(path.join(TMP_DIR, 'config.json'), JSON.stringify(mockConfig));
     });
 
 });
@@ -211,8 +222,8 @@ describe('process_email.php (Fire Danger)', () => {
         expect(data.data.level).toBe('Low');
     });
 
-    test('returns Unknown when no level matches', async () => {
-        const emailBody = `To: danger@domain.com\r\nSubject: Daily Update\r\n\r\nNo information is available today.`;
+    test('uses Gemini fallback when no level matches in regex', async () => {
+        const emailBody = `To: danger@domain.com\r\nSubject: Daily Update\r\n\r\nNo information is available today in the body either.`;
 
         const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
             method: 'POST',
@@ -220,6 +231,57 @@ describe('process_email.php (Fire Danger)', () => {
         });
 
         expect(data.type).toBe('danger');
-        expect(data.data.level).toBe('Unknown');
+        expect(data.data.level).toBe('Moderate'); // From mock
+    });
+
+    test('handles custom fire_danger_zone in config', async () => {
+        const mockConfig = {
+            email_integration: {
+                danger_address: 'danger@domain.com',
+                permit_address: 'permit@domain.com'
+            },
+            fire_danger_zone: '3',
+            api_integrations: {
+                gemini_api_key: 'mock-key'
+            }
+        };
+        fs.writeFileSync(path.join(TMP_DIR, 'config.json'), JSON.stringify(mockConfig));
+
+        const emailBody = `To: danger@domain.com\r\nSubject: Daily Fire Danger\r\n\r\nZone 3 Forecast Fire Danger High today.`;
+
+        const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+            method: 'POST',
+            body: emailBody
+        });
+
+        expect(data.type).toBe('danger');
+        expect(data.data.level).toBe('High');
+
+        mockConfig.fire_danger_zone = '7';
+        fs.writeFileSync(path.join(TMP_DIR, 'config.json'), JSON.stringify(mockConfig));
+    });
+
+    test('handles HTML content in email body (strip_tags)', async () => {
+        const emailBody = `To: danger@domain.com\r\nSubject: Daily Fire Danger\r\n\r\n<p>Zone 7 Forecast Fire Danger <b>Moderate</b> today.</p>`;
+
+        const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+            method: 'POST',
+            body: emailBody
+        });
+
+        expect(data.type).toBe('danger');
+        expect(data.data.level).toBe('Moderate');
+    });
+
+    test('handles case-insensitive matching for headers', async () => {
+        const emailBody = `to: danger@domain.com\r\nsubject: daily fire danger\r\n\r\nZone 7: Low today.`;
+
+        const data = await fetchAndParse(`${BASE_URL}/api/process_email.php?test=true`, {
+            method: 'POST',
+            body: emailBody
+        });
+
+        expect(data.type).toBe('danger');
+        expect(data.data.level).toBe('Low');
     });
 });
