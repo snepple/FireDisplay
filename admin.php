@@ -104,7 +104,7 @@ $allRooms = [];
 foreach ($configData['department_info']['stations'] as $st) {
     foreach ($st['rooms'] as $r) { $allRooms[] = $st['number'] . ' - ' . $r; }
 }
-$roomsJson = json_encode($allRooms);
+$roomsJson = json_encode($allRooms, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
 
 // Prepare Apparatus Dropdown Options
 $appOptionsHtml = "<option value=''>-- Select Apparatus --</option>";
@@ -115,7 +115,11 @@ foreach($configData['department_info']['apparatus'] as $app) {
 
 // --- HANDLE LOGIN / LOGOUT ---
 if (isset($_POST['login'])) {
+<<<<<<< HEAD
+    if (empty($_SESSION['csrf_token']) || empty($_POST['csrf_token']) || !hash_equals((string)$_SESSION['csrf_token'], (string)$_POST['csrf_token'])) {
+=======
     if (!isset($_POST['csrf_token']) || !hash_equals((string)$_SESSION['csrf_token'], (string)$_POST['csrf_token'])) {
+>>>>>>> 8fa3497 (temp)
         die("CSRF token validation failed.");
     }
 
@@ -160,6 +164,7 @@ if (isset($_POST['login'])) {
             unset($attemptsData[$ip]);
             file_put_contents($attemptsFile, json_encode($attemptsData, JSON_PRETTY_PRINT));
 
+            session_regenerate_id(true);
             $_SESSION['admin_logged_in'] = true;
             if ($needs_rehash) {
                 $configData['admin_password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
@@ -246,7 +251,11 @@ $page = $_GET['page'] ?? 'settings';
 $success = ""; $error_msg = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+<<<<<<< HEAD
+    if (empty($_SESSION['csrf_token']) || empty($_POST['csrf_token']) || !hash_equals((string)$_SESSION['csrf_token'], (string)$_POST['csrf_token'])) {
+=======
     if (!isset($_POST['csrf_token']) || !hash_equals((string)$_SESSION['csrf_token'], (string)$_POST['csrf_token'])) {
+>>>>>>> 8fa3497 (temp)
         die("CSRF token validation failed.");
     }
 
@@ -497,8 +506,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     file_put_contents($configFile, json_encode($configData, JSON_PRETTY_PRINT));
 }
 
-$eventsJson = json_encode($active_events);
-$specialChoresJson = json_encode($active_chores);
+$eventsJson = json_encode($active_events, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+$specialChoresJson = json_encode($active_chores, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
 
 function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; }
 ?>
@@ -874,8 +883,8 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 <input type="hidden" name="st_rooms_json[]" class="st-rooms-json" value="<?= htmlspecialchars(json_encode($st['rooms'])) ?>">
 
                                 <div class="flex-row">
-                                    <div class="flex-col" style="flex:1"><label>Station Number/Name</label><input type="text" name="st_number[]" value="<?= htmlspecialchars($st['number']) ?>" required></div>
-                                    <div class="flex-col" style="flex:2"><label>Address</label><input type="text" name="st_address[]" value="<?= htmlspecialchars($st['address']) ?>" required></div>
+                                    <div class="flex-col" style="flex:1"><label for="st_number_<?= $stIdx ?>">Station Number/Name</label><input type="text" id="st_number_<?= $stIdx ?>" name="st_number[]" value="<?= htmlspecialchars($st['number']) ?>" required></div>
+                                    <div class="flex-col" style="flex:2"><label for="st_address_<?= $stIdx ?>">Address</label><input type="text" id="st_address_<?= $stIdx ?>" name="st_address[]" value="<?= htmlspecialchars($st['address']) ?>" required></div>
                                 </div>
                                 <label>Rooms Available (e.g., Training Room)</label>
                                 <div class="flex-row" style="margin-bottom: 10px;">
@@ -955,12 +964,13 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         });
                     }
                     function addStation() {
+                        const randId = Math.random().toString(36).substr(2, 9);
                         const html = `<button type="button" aria-label="Remove Station" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove Station</button>
                             <input type="hidden" name="st_id[]" value="">
                             <input type="hidden" name="st_rooms_json[]" class="st-rooms-json" value="[]">
                             <div class="flex-row">
-                                <div class="flex-col" style="flex:1"><label>Station Number/Name</label><input type="text" name="st_number[]" required></div>
-                                <div class="flex-col" style="flex:2"><label>Address</label><input type="text" name="st_address[]" required></div>
+                                <div class="flex-col" style="flex:1"><label for="st_number_${randId}">Station Number/Name</label><input type="text" id="st_number_${randId}" name="st_number[]" required></div>
+                                <div class="flex-col" style="flex:2"><label for="st_address_${randId}">Address</label><input type="text" id="st_address_${randId}" name="st_address[]" required></div>
                             </div>
                             <label>Rooms Available (e.g., Training Room)</label>
                             <div class="flex-row" style="margin-bottom: 10px;">
@@ -1180,7 +1190,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                 </div>
                 <script>
-                    const existingSpecialChores = <?= json_encode($active_chores) ?>;
+                    const existingSpecialChores = <?= json_encode($active_chores, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 
                     function addEverydayChore() {
                         const div = document.createElement('div'); div.className = 'flex-row'; div.style.marginBottom = '10px';
@@ -1202,8 +1212,8 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             <button type="button" aria-label="Remove" class="delete-btn" style="position: absolute; right: 20px; top: 20px;" onclick="this.parentElement.remove(); renderChorePreview();">Remove</button>
                             <input type="hidden" class="sc-id" value="${id}">
                             <div class="flex-row" style="width: 85%;">
-                                <div class="flex-col" style="flex:2;"><label>Duty / Chore Name</label><input type="text" class="sc-name" value="${name}" required onchange="renderChorePreview()"></div>
-                                <div class="flex-col"><label>Start Date</label><input type="date" class="sc-sd" value="${sd}" required onchange="renderChorePreview()"></div>
+                                <div class="flex-col" style="flex:2;"><label for="sc_name_${id}">Duty / Chore Name</label><input type="text" id="sc_name_${id}" class="sc-name" value="${name}" required onchange="renderChorePreview()"></div>
+                                <div class="flex-col"><label for="sc_sd_${id}">Start Date</label><input type="date" id="sc_sd_${id}" class="sc-sd" value="${sd}" required onchange="renderChorePreview()"></div>
                             </div>
                             <div class="recur-group">
                                 <div class="flex-row">
@@ -1415,7 +1425,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                 </div>
 
                 <script>
-                    const existingAnns = <?= json_encode($active_announcements) ?>;
+                    const existingAnns = <?= json_encode($active_announcements, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
                     let quillEditors = [];
 
                     function addAnn(data = null) {
@@ -1433,8 +1443,8 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             <button type="button" aria-label="Remove" class="delete-btn" style="position: absolute; right: 20px; top: 20px;" onclick="this.parentElement.remove()">Remove</button>
                             <input type="hidden" class="a-id" value="${id}">
                             <div class="flex-row" style="margin-bottom: 15px; width: 60%;">
-                                <div class="flex-col"><label>Start Display Date</label><input type="date" class="a-start" value="${sd}" required></div>
-                                <div class="flex-col"><label>End Display Date</label><input type="date" class="a-end" value="${ed}" required></div>
+                                <div class="flex-col"><label for="a_start_${editorId}">Start Display Date</label><input type="date" id="a_start_${editorId}" class="a-start" value="${sd}" required></div>
+                                <div class="flex-col"><label for="a_end_${editorId}">End Display Date</label><input type="date" id="a_end_${editorId}" class="a-end" value="${ed}" required></div>
                             </div>
                             <label>Announcement Content</label>
                             <div id="${editorId}"></div>
@@ -1766,10 +1776,10 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             <input type="hidden" class="e-id" value="${id}">
 
                             <div class="flex-row" style="margin-bottom: 15px; width: 85%;">
-                                <div class="flex-col" style="flex: 2;"><label>Event Title</label><input type="text" class="e-title" value="${title}" required></div>
+                                <div class="flex-col" style="flex: 2;"><label for="e_title_${id}">Event Title</label><input type="text" id="e_title_${id}" class="e-title" value="${title}" required></div>
                                 <div class="flex-col">
-                                    <label>Event Type</label>
-                                    <select class="e-type" onchange="toggleEvtType(this)">
+                                    <label for="e_type_${id}">Event Type</label>
+                                    <select id="e_type_${id}" class="e-type" onchange="toggleEvtType(this)">
                                         <option value="Training" ${eType=='Training'?'selected':''}>Training</option>
                                         <option value="Room Rental" ${eType=='Room Rental'?'selected':''}>Room Rental</option>
                                         <option value="Fire Prevention" ${eType=='Fire Prevention'?'selected':''}>Fire Prevention</option>
@@ -1786,8 +1796,8 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             </div>
 
                             <div class="flex-row" style="margin-bottom: 15px; width: 85%;">
-                                <div class="flex-col"><label>Start Date</label><input type="date" class="e-sd" value="${sd}" required onchange="syncDates(this)"></div>
-                                <div class="flex-col"><label>End Date (of first instance)</label><input type="date" class="e-ed" value="${ed}" required></div>
+                                <div class="flex-col"><label for="e_sd_${id}">Start Date</label><input type="date" id="e_sd_${id}" class="e-sd" value="${sd}" required onchange="syncDates(this)"></div>
+                                <div class="flex-col"><label for="e_ed_${id}">End Date (of first instance)</label><input type="date" id="e_ed_${id}" class="e-ed" value="${ed}" required></div>
                             </div>
 
                             <div class="flex-row" style="margin-bottom: 15px;">
@@ -1795,8 +1805,8 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                     <input type="checkbox" class="e-allday" ${ad ? 'checked' : ''} onchange="toggleTime(this)"> All Day Event
                                 </label>
                                 <div class="flex-col time-inputs" style="display: ${ad ? 'none' : 'flex'}; flex-direction:row; gap:15px;">
-                                    <div class="flex-col"><label>Start Time</label><input type="time" class="e-st" value="${st}"></div>
-                                    <div class="flex-col"><label>End Time</label><input type="time" class="e-et" value="${et}"></div>
+                                    <div class="flex-col"><label for="e_st_${id}">Start Time</label><input type="time" id="e_st_${id}" class="e-st" value="${st}"></div>
+                                    <div class="flex-col"><label for="e_et_${id}">End Time</label><input type="time" id="e_et_${id}" class="e-et" value="${et}"></div>
                                 </div>
                             </div>
 

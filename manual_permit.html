@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Manual Burn Permit</title>
+    <style>
+        :root {
+            --bg-color: #f5f5f7;
+            --card-bg: #ffffff;
+            --text-color: #1d1d1f;
+            --muted-text: #86868b;
+            --border-color: #e5e5ea;
+            --primary-color: #007aff;
+            --hover-bg: #eef2ff;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"],
+        input[type="datetime-local"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+        }
+
+        .required::after {
+            content: " *";
+            color: #ff3b30;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit {
+            background-color: #34c759;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background-color: #28a745;
+        }
+
+        .btn-cancel {
+            background-color: #e5e5ea;
+            color: var(--text-color);
+        }
+
+        .btn-cancel:hover {
+            background-color: #d1d1d6;
+        }
+
+        #message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Autocomplete styling */
+        .pac-container {
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+            font-family: 'Inter', sans-serif;
+            margin-top: 4px;
+        }
+        .pac-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .pac-item:hover {
+            background-color: var(--hover-bg);
+        }
+    </style>
+    <!-- We will need to load Google Maps API here if available, or fall back to standard text input -->
+    <script>
+        // Use a placeholder function if google maps is not loaded
+        function initAutocomplete() {
+            if (typeof google === 'object' && typeof google.maps === 'object') {
+                const addressInput = document.getElementById('address');
+                const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+                    types: ['address'],
+                    // Optionally restrict to a specific area if configured
+                });
+
+                // Allow user to enter arbitrary addresses by removing the "strictBounds"
+                // and not strictly requiring a place selection from dropdown
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Add Manual Burn Permit</h1>
+        <form id="permitForm">
+            <div class="form-group">
+                <label for="name" class="required">Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone" class="required">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="address" class="required">Address of Burn Location</label>
+                <input type="text" id="address" name="address" required placeholder="Start typing address...">
+            </div>
+
+            <div class="form-group">
+                <label for="burn_type">Burn Type</label>
+                <select id="burn_type" name="burn_type">
+                    <option value="Open Burn">Open Burn</option>
+                    <option value="Campfire">Campfire</option>
+                    <option value="Brush">Brush</option>
+                    <option value="Agricultural">Agricultural</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="display: flex; gap: 15px;">
+                <div style="flex: 1;">
+                    <label for="start_time" class="required">Start Time</label>
+                    <input type="datetime-local" id="start_time" name="start_time" required>
+                </div>
+                <div style="flex: 1;">
+                    <label for="end_time" class="required">End Time</label>
+                    <input type="datetime-local" id="end_time" name="end_time" required>
+                </div>
+            </div>
+
+            <div id="message"></div>
+
+            <div class="button-group">
+                <button type="button" class="btn-cancel" onclick="window.close()">Cancel</button>
+                <button type="submit" class="btn-submit">Submit Permit</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Set default times (start = now, end = +1 day)
+        document.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            // Format to YYYY-MM-DDThh:mm
+            const formatTime = (d) => {
+                const z = n => ('0' + n).slice(-2);
+                return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`;
+            };
+
+            const startInput = document.getElementById('start_time');
+            startInput.value = formatTime(now);
+
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(9, 0, 0, 0); // Default to 9 AM tomorrow
+
+            const endInput = document.getElementById('end_time');
+            endInput.value = formatTime(tomorrow);
+
+            // Fetch config to try loading Google Maps API
+            fetch('config.json')
+                .then(r => r.json())
+                .then(config => {
+                    window.dashboardToken = config.dashboard_token || '';
+                    if (config.api_integrations && config.api_integrations.google_maps_api_key) {
+                        const script = document.createElement('script');
+                        script.src = `https://maps.googleapis.com/maps/api/js?key=${config.api_integrations.google_maps_api_key}&libraries=places&callback=initAutocomplete`;
+                        script.async = true;
+                        script.defer = true;
+                        document.head.appendChild(script);
+                    }
+                })
+                .catch(e => console.error('Could not load config:', e));
+        });
+
+        document.getElementById('permitForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageEl = document.getElementById('message');
+            messageEl.style.display = 'none';
+            messageEl.className = '';
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            const tokenQuery = window.dashboardToken ? `?token=${encodeURIComponent(window.dashboardToken)}` : '';
+
+            try {
+                const response = await fetch(`api/add_permit.php${tokenQuery}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    messageEl.textContent = 'Permit added successfully!';
+                    messageEl.className = 'success';
+                    messageEl.style.display = 'block';
+                    e.target.reset();
+                    // Optional: auto-close after a few seconds
+                    setTimeout(() => window.close(), 2000);
+                } else {
+                    throw new Error(result.error || 'Failed to add permit');
+                }
+            } catch (error) {
+                messageEl.textContent = error.message;
+                messageEl.className = 'error';
+                messageEl.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

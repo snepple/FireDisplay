@@ -6,7 +6,7 @@ function verify_dashboard_token() {
         $dashboardToken = $config['dashboard_token'] ?? '';
         if (!empty($dashboardToken)) {
             $providedToken = $_GET['token'] ?? '';
-            if ($providedToken !== $dashboardToken) {
+            if (!hash_equals((string)$dashboardToken, (string)$providedToken)) {
                 http_response_code(403);
                 echo json_encode(['error' => 'Access Denied']);
                 die();

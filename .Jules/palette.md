@@ -24,3 +24,10 @@
 ## 2026-05-01 - Keyboard Accessibility Enhancements
 **Learning:** Found that buttons and interactive elements in `admin.php`, `index.php`, and `current_index.php` were missing explicit `:focus-visible` styles, causing a poor experience for keyboard navigators, especially in dark mode where default browser outlines aren't clear.
 **Action:** Always verify that interactive elements define a high-contrast `:focus-visible` outline to guarantee keyboard accessibility is preserved across light/dark themes.
+
+## 2024-05-30 - Unique IDs for Dynamic Form Elements
+**Learning:** Found that dynamically generated forms (like repeating "Add Station" sections or dynamically added events/chores in JavaScript) often duplicate `<label>` and `<input>` elements without providing unique `id`s, breaking the `for` association and causing accessibility and interaction issues (e.g. clicking a label focuses the first input on the page instead of the adjacent one).
+**Action:** When creating or looping over dynamic form elements, always generate a unique suffix (using `uniqid()` in PHP or a random string / iterator in JavaScript) to append to the input `id` and the label `for` attribute, ensuring explicit and unique mapping is maintained.
+## 2024-05-30 - Unique IDs for Dynamic Form Elements
+**Learning:** Found that dynamically generated forms (like repeating "Add Station" sections or dynamically added events/chores in JavaScript) often duplicate `<label>` and `<input>` elements without providing unique `id`s, breaking the `for` association and causing accessibility and interaction issues (e.g. clicking a label focuses the first input on the page instead of the adjacent one).
+**Action:** When creating or looping over dynamic form elements, always generate a unique suffix (using `uniqid()` in PHP or a random string / iterator in JavaScript) to append to the input `id` and the label `for` attribute, ensuring explicit and unique mapping is maintained.

@@ -350,12 +350,9 @@ if (!empty($dashboardToken)) {
         </div>
         <div class="container" id="combined-permits-container">
              <div id="permits-content-wrapper" style="display: flex; flex-grow: 1; min-height: 0; gap: clamp(2px, 1vh, 15px); width: 100%;">
-                 <div id="burnPermitsContainer" style="flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden;
-            display: flex; flex-direction: column;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-            min-height: 0;">
-                     <h2 style="font-size: clamp(24px, 3vh, 45px); margin: clamp(10px, 1.5vh, 20px) 0 clamp(5px, 1vh, 15px) 0; flex-shrink: 0; width: 100%;">Active Online-Issued Burn Permits</h2>
+                 <div id=\"burnPermitsContainer\" style=\"flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; -ms-overflow-style: none; scrollbar-width: none; min-height: 0; position: relative;\">
+                     <h2 style="font-size: clamp(24px, 3vh, 45px); margin: clamp(10px, 1.5vh, 20px) 0 clamp(5px, 1vh, 15px) 0; flex-shrink: 0; width: 100%;">Active Burn Permits</h2>
+<a href=\"manual_permit.html\" target=\"_blank\" title=\"Add Manual Burn Permit\" style=\"position: absolute; top: 10px; right: 10px; z-index: 1000; opacity: 0.15; color: var(--text-color); text-decoration: none; font-size: 24px; transition: opacity 0.3s;\" onmouseover=\"this.style.opacity=1\" onmouseout=\"this.style.opacity=0.15\">➕</a>
                      <div id="burnPermitsList" style="flex-grow: 1; overflow-y: auto; min-height: 0;"></div>
                  </div>
                  <div id="permitMap" style="flex: 1; border-radius: 4px;"></div>
@@ -1040,16 +1037,24 @@ if (!empty($dashboardToken)) {
             }
 
             try {
+                // ⚡ Bolt Optimization: Initialize all independent asynchronous fetches concurrently
+                // This prevents rendering waterfall delays caused by sequentially awaiting network calls.
                 const fireSchedulePromise = fetchFireSchedule();
                 const holidaysPromise = loadHolidays();
                 const townMeetingsPromise = fetchAllTownMeetings();
+                const fireDangerPromise = loadFireDanger();
+                const burnPermitsPromise = loadBurnPermits();
 
-                await loadFireDanger();
-                await loadBurnPermits();
+                const [fireSchedule, townMeetings] = await Promise.all([
+                    fireSchedulePromise,
+                    townMeetingsPromise,
+                    holidaysPromise,
+                    fireDangerPromise,
+                    burnPermitsPromise
+                ]);
 
-                currentFireEvents = await fireSchedulePromise;
-                currentTownMeetings = await townMeetingsPromise;
-                await holidaysPromise;
+                currentFireEvents = fireSchedule;
+                currentTownMeetings = townMeetings;
 
                 renderDashboard(currentFireEvents);
                 renderChoresPage(currentFireEvents, currentTownMeetings);
@@ -1425,7 +1430,7 @@ if (!empty($dashboardToken)) {
                     container.appendChild(fragment);
                 } else {
                     hasBurnPermits = false;
-                    container.innerHTML = '<div class="no-burn-permits"><img src="assets/images/no_burn_permits.png" alt="No Burn Permits"><p>No active online burn permits at this time.</p></div>';
+                    container.innerHTML = '<div class="no-burn-permits"><img src="assets/images/no_burn_permits.png" alt="No Burn Permits"><p>No active burn permits at this time.</p></div>';
                 }
 
                 updatePermitMap(activePermits);
