@@ -1090,7 +1090,7 @@ if (!empty($dashboardToken)) {
                 if (!icsData) throw new Error("ICS data is empty.");
                 const jcalData = ICAL.parse(icsData);
                 const comp = new ICAL.Component(jcalData);
-                return comp.getAllSubcomponents('vevent');
+                return comp.getAllSubcomponents('vevent').map(comp => new ICAL.Event(comp));
             } catch (error) {
                 console.error(`ERROR fetching fire schedule: ${error.message}`);
                 return [];
@@ -1196,14 +1196,14 @@ if (!empty($dashboardToken)) {
                 // Try to parse from the ICS Fire Events schedule
                 const now = new Date();
                 const todayEvents = currentFireEvents.filter(e => {
-                    const event = new ICAL.Event(e);
+                    const event = e instanceof ICAL.Event ? e : new ICAL.Event(e);
                     const start = event.startDate.toJSDate();
                     const end = event.endDate.toJSDate();
                     return now >= start && now < end && event.summary.includes("Fire Danger");
                 });
 
                 if (todayEvents.length > 0) {
-                    const summary = new ICAL.Event(todayEvents[0]).summary;
+                    const summary = todayEvents[0].summary;
                     // Try to extract level, e.g. "Today's Fire Danger: High"
                     const parts = summary.split(':');
                     if (parts.length > 1) {
@@ -1721,7 +1721,7 @@ if (!empty($dashboardToken)) {
             return allMeetings;
         }
 
-        function renderChoresPage(allEvents, townMeetings = []) {
+        function renderChoresPage(fireEvents, townMeetings = []) {
             const now = new Date();
             const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
             const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
@@ -1821,8 +1821,8 @@ if (!empty($dashboardToken)) {
             searchStart.setDate(searchStart.getDate() - 1);
 
             let onDutyNow = [], onDutyLater = [];
-            (allEvents || []).forEach(eventData => {
-                const vevent = new ICAL.Event(eventData);
+            (fireEvents || []).forEach(eventData => {
+                const vevent = eventData instanceof ICAL.Event ? eventData : new ICAL.Event(eventData);
                 processEventForDashboard(vevent, searchStart, windowEnd, now, onDutyNow, onDutyLater);
             });
 
@@ -1945,7 +1945,7 @@ if (!empty($dashboardToken)) {
             return combinedList;
         }
 
-        function renderDashboard(allEvents) {
+        function renderDashboard(fireEvents) {
         }
 
         function isTruckCheckWeek(date) {
@@ -2041,7 +2041,7 @@ if (!empty($dashboardToken)) {
             const eventsByDate = {};
 
             (allFireEvents || []).forEach(event => {
-                const vevent = new ICAL.Event(event);
+                const vevent = event instanceof ICAL.Event ? event : new ICAL.Event(event);
                 const summary = (vevent.summary || '').toLowerCase();
                 const isShift = summary.includes('career') || summary.includes('per-diem') || summary.includes('night duty');
 
