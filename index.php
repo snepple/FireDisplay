@@ -10,7 +10,7 @@ $dashboardToken = isset($config['dashboard_token']) ? $config['dashboard_token']
 // If a token is set in the config, require it
 if (!empty($dashboardToken)) {
     $providedToken = isset($_GET['token']) ? $_GET['token'] : '';
-    if ($providedToken !== $dashboardToken) {
+    if (!hash_equals((string)$dashboardToken, (string)$providedToken)) {
         http_response_code(403);
         die("<h1 style='color: #aeb6c1; text-align: center; font-family: \"Inter\", sans-serif; padding-top: 50px;'>Access Denied</h1>");
     }
