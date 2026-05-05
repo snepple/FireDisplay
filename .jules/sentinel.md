@@ -66,3 +66,8 @@
 **Vulnerability:** The login endpoint in `admin.php` set `$_SESSION['admin_logged_in'] = true;` without regenerating the session ID upon successful authentication. If an attacker could force a known session ID onto an admin before they log in, the attacker could hijack the authenticated session (Session Fixation).
 **Learning:** Establishing a new session lifecycle boundary is critical when a user's privilege level changes (e.g., transitioning from unauthenticated to authenticated).
 **Prevention:** Always call `session_regenerate_id(true);` immediately prior to setting authentication flags in `$_SESSION`.
+
+## 2026-05-05 - [Email Injection Bypass via HTTP]
+**Vulnerability:** Unauthenticated external users could bypass the mail forwarder and inject fake burn permits or fire danger statuses by sending direct HTTP POST requests to `api/process_email.php`. The script read from `php://input` (via `php://stdin`) without verifying the dashboard token when not in testing mode.
+**Learning:** Scripts designed to be executed via CLI (like email forwarders) but accessible over the web server are vulnerable to Server-Side Request Forgery/Injection if they do not explicitly restrict execution to the CLI SAPI or require HTTP authentication.
+**Prevention:** Always verify the execution context using `php_sapi_name() !== 'cli'` and enforce strict authentication (e.g., `verify_dashboard_token()`) for any non-CLI access.
