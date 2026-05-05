@@ -17,3 +17,7 @@
 ## 2024-05-27 - [Frontend Optimization] Concurrent Fetch Resolution
 **Learning:** Sequential `await` statements for independent network calls (e.g., `await loadFireDanger(); await loadBurnPermits();`) in the frontend create a rendering waterfall, unnecessarily delaying the dashboard's initial display while waiting for each request to finish before starting the next.
 **Action:** Always initialize independent asynchronous network requests concurrently and await them together using `Promise.all()` to minimize total latency and eliminate waterfall delays.
+
+## 2024-05-28 - [Frontend Optimization] Redundant ICS Component Instantiation
+**Learning:** Instantiating wrapper classes (like `new ICAL.Event(e)`) repeatedly inside frontend iterative arrays (`.forEach`, `.filter`) during calendar parsing unnecessarily bloats CPU usage and delays rendering, especially when defensive instantiations occur in downstream logic.
+**Action:** Always map raw components to their wrapper objects immediately upon fetching the data (e.g., `comp.getAllSubcomponents('vevent').map(c => new ICAL.Event(c))`). This normalizes the data array structure early and prevents repetitive instantiations downstream.

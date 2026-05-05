@@ -1196,7 +1196,7 @@ if (!empty($dashboardToken)) {
                 // Try to parse from the ICS Fire Events schedule
                 const now = new Date();
                 const todayEvents = currentFireEvents.filter(e => {
-                    const event = e instanceof ICAL.Event ? e : new ICAL.Event(e);
+                    const event = e;
                     const start = event.startDate.toJSDate();
                     const end = event.endDate.toJSDate();
                     return now >= start && now < end && event.summary.includes("Fire Danger");
@@ -1363,7 +1363,8 @@ if (!empty($dashboardToken)) {
                     const icsData = await response.text();
                     const jcalData = ICAL.parse(icsData);
                     const comp = new ICAL.Component(jcalData);
-                    const allEvents = comp.getAllSubcomponents('vevent');
+                    // ⚡ Bolt: Map ICAL.Event immediately upon fetch to avoid redundant instantiation in loops
+                    const allEvents = comp.getAllSubcomponents('vevent').map(c => new ICAL.Event(c));
                     const windowStart = new Date();
                     windowStart.setHours(9, 0, 0, 0);
                     const nowForWindow = new Date();
@@ -1372,8 +1373,7 @@ if (!empty($dashboardToken)) {
                     }
                     const windowEnd = new Date(windowStart);
                     windowEnd.setDate(windowStart.getDate() + 1);
-                    allEvents.forEach(event => {
-                        const vevent = new ICAL.Event(event);
+                    allEvents.forEach(vevent => {
                         if (vevent.startDate.toJSDate() < windowEnd && vevent.endDate.toJSDate() > windowStart) {
                             todaysPermits.push(vevent)
                         }
@@ -1695,8 +1695,8 @@ if (!empty($dashboardToken)) {
                 const icsData = await response.text();
                 const jcalData = ICAL.parse(icsData);
                 const comp = new ICAL.Component(jcalData);
-                comp.getAllSubcomponents('vevent').forEach(veventComp => {
-                    const vevent = new ICAL.Event(veventComp);
+                // ⚡ Bolt: Map ICAL.Event immediately upon fetch to avoid redundant instantiation in loops
+                comp.getAllSubcomponents('vevent').map(c => new ICAL.Event(c)).forEach(vevent => {
                     if (vevent.location && vevent.location.includes("15 Fairfield St")) {
                         if (vevent.isRecurring()) {
                             const nextYear = new Date();
@@ -1822,7 +1822,7 @@ if (!empty($dashboardToken)) {
 
             let onDutyNow = [], onDutyLater = [];
             (fireEvents || []).forEach(eventData => {
-                const vevent = eventData instanceof ICAL.Event ? eventData : new ICAL.Event(eventData);
+                const vevent = eventData;
                 processEventForDashboard(vevent, searchStart, windowEnd, now, onDutyNow, onDutyLater);
             });
 
@@ -1858,10 +1858,10 @@ if (!empty($dashboardToken)) {
                 const icsData = await response.text();
                 const jcalData = ICAL.parse(icsData);
                 const comp = new ICAL.Component(jcalData);
-                const allEvents = comp.getAllSubcomponents('vevent');
+                // ⚡ Bolt: Map ICAL.Event immediately upon fetch to avoid redundant instantiation in loops
+                const allEvents = comp.getAllSubcomponents('vevent').map(c => new ICAL.Event(c));
                 holidaysByDate = {};
-                allEvents.forEach(event => {
-                    const vevent = new ICAL.Event(event);
+                allEvents.forEach(vevent => {
                     if (vevent.startDate.isDate) {
                         const startDate = vevent.startDate;
                         const dateKey = `${startDate.year}-${String(startDate.month).padStart(2,'0')}-${String(startDate.day).padStart(2,'0')}`;
@@ -2041,7 +2041,7 @@ if (!empty($dashboardToken)) {
             const eventsByDate = {};
 
             (allFireEvents || []).forEach(event => {
-                const vevent = event instanceof ICAL.Event ? event : new ICAL.Event(event);
+                const vevent = event;
                 const summary = (vevent.summary || '').toLowerCase();
                 const isShift = summary.includes('career') || summary.includes('per-diem') || summary.includes('night duty');
 
