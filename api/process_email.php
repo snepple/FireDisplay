@@ -5,7 +5,9 @@ if (file_exists(__DIR__ . "/logger.php")) require_once __DIR__ . "/logger.php";
 // Example email addresses: danger@yourdomain.com, permits@yourdomain.com
 
 $is_test = isset($_GET['test']) && $_GET['test'] === 'true';
-if ($is_test) {
+
+// Security: Prevent unauthenticated HTTP injection while allowing mail server CLI
+if (php_sapi_name() !== 'cli') {
     require_once __DIR__ . "/security_check.php";
     verify_dashboard_token();
 }
@@ -16,23 +18,26 @@ if ($is_test) {
 } else {
     // Read the piped email from stdin
     $email_content = file_get_contents("php://stdin");
+    if (empty($email_content) && php_sapi_name() !== 'cli') {
+        $email_content = file_get_contents("php://input");
+    }
 }
 
 // Basic parsing logic (this is a simplified example, a robust email parser is better)
 // In a real scenario, you'd use a library like PhpMimeMailParser or standard regex based on the email format.
 
 $from = '';
-if (preg_match('/^From: (.*)$/m', $email_content, $matches)) {
+if (preg_match('/^From: (.*)$/im', $email_content, $matches)) {
     $from = trim($matches[1]);
 }
 
 $to = '';
-if (preg_match('/^To: (.*)$/m', $email_content, $matches)) {
+if (preg_match('/^To: (.*)$/im', $email_content, $matches)) {
     $to = strtolower(trim($matches[1]));
 }
 
 $subject = '';
-if (preg_match('/^Subject: (.*)$/m', $email_content, $matches)) {
+if (preg_match('/^Subject: (.*)$/im', $email_content, $matches)) {
     $subject = trim($matches[1]);
 }
 
