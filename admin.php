@@ -898,24 +898,24 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <h3>Apparatus Inventory</h3>
                     <p class="help">Manage your fleet. Note: Abbreviations defined here will populate dropdowns on the Calendar Headers page.</p>
                     <div id="apparatus-container">
-                        <?php foreach($configData['department_info']['apparatus'] as $app): ?>
+                        <?php foreach($configData['department_info']['apparatus'] as $appIdx => $app): ?>
                             <div class="item-card">
                                 <button type="button" aria-label="Remove" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove</button>
                                 <input type="hidden" name="app_id[]" value="<?= $app['id'] ?>">
                                 <div class="flex-row" style="margin-bottom: 0;">
-                                    <div class="flex-col" style="flex:2"><label>Name of Apparatus</label><input type="text" name="app_name[]" value="<?= htmlspecialchars($app['name']) ?>" required></div>
-                                    <div class="flex-col"><label>Abbreviation</label><input type="text" name="app_abbr[]" value="<?= htmlspecialchars($app['abbr']) ?>" required></div>
+                                    <div class="flex-col" style="flex:2"><label for="app_name_<?= $appIdx ?>">Name of Apparatus</label><input type="text" id="app_name_<?= $appIdx ?>" name="app_name[]" value="<?= htmlspecialchars($app['name']) ?>" required></div>
+                                    <div class="flex-col"><label for="app_abbr_<?= $appIdx ?>">Abbreviation</label><input type="text" id="app_abbr_<?= $appIdx ?>" name="app_abbr[]" value="<?= htmlspecialchars($app['abbr']) ?>" required></div>
                                     <div class="flex-col">
-                                        <label>Category</label>
-                                        <select name="app_category[]">
+                                        <label for="app_category_<?= $appIdx ?>">Category</label>
+                                        <select id="app_category_<?= $appIdx ?>" name="app_category[]">
                                             <option value="Fire" <?= $app['category']=='Fire'?'selected':'' ?>>Fire</option>
                                             <option value="EMS" <?= $app['category']=='EMS'?'selected':'' ?>>EMS</option>
                                             <option value="Utility" <?= $app['category']=='Utility'?'selected':'' ?>>Utility</option>
                                         </select>
                                     </div>
                                     <div class="flex-col">
-                                        <label>Type</label>
-                                        <select name="app_type[]">
+                                        <label for="app_type_<?= $appIdx ?>">Type</label>
+                                        <select id="app_type_<?= $appIdx ?>" name="app_type[]">
                                             <option value="Engine" <?= $app['type']=='Engine'?'selected':'' ?>>Engine</option>
                                             <option value="Ladder" <?= $app['type']=='Ladder'?'selected':'' ?>>Ladder</option>
                                             <option value="Rescue unit" <?= $app['type']=='Rescue unit'?'selected':'' ?>>Rescue unit</option>
@@ -925,8 +925,8 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                         </select>
                                     </div>
                                     <div class="flex-col">
-                                        <label>Status</label>
-                                        <select name="app_status[]">
+                                        <label for="app_status_<?= $appIdx ?>">Status</label>
+                                        <select id="app_status_<?= $appIdx ?>" name="app_status[]">
                                             <option value="In service" <?= $app['status']=='In service'?'selected':'' ?>>In service</option>
                                             <option value="Out of service" <?= $app['status']=='Out of service'?'selected':'' ?>>Out of service</option>
                                         </select>
@@ -974,14 +974,15 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         document.getElementById('stations-container').appendChild(div);
                     }
                     function addApparatus() {
+                        const randId = Math.random().toString(36).substr(2, 9);
                         const html = `<button type="button" aria-label="Remove" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove</button>
                             <input type="hidden" name="app_id[]" value="">
                             <div class="flex-row" style="margin-bottom: 0;">
-                                <div class="flex-col" style="flex:2"><label>Name of Apparatus</label><input type="text" name="app_name[]" required></div>
-                                <div class="flex-col"><label>Abbreviation</label><input type="text" name="app_abbr[]" required></div>
-                                <div class="flex-col"><label>Category</label><select name="app_category[]"><option value="Fire">Fire</option><option value="EMS">EMS</option><option value="Utility">Utility</option></select></div>
-                                <div class="flex-col"><label>Type</label><select name="app_type[]"><option value="Engine">Engine</option><option value="Ladder">Ladder</option><option value="Rescue unit">Rescue unit</option><option value="Ambulance">Ambulance</option><option value="Brush">Brush</option><option value="Chief">Chief</option></select></div>
-                                <div class="flex-col"><label>Status</label><select name="app_status[]"><option value="In service">In service</option><option value="Out of service">Out of service</option></select></div>
+                                <div class="flex-col" style="flex:2"><label for="app_name_${randId}">Name of Apparatus</label><input type="text" id="app_name_${randId}" name="app_name[]" required></div>
+                                <div class="flex-col"><label for="app_abbr_${randId}">Abbreviation</label><input type="text" id="app_abbr_${randId}" name="app_abbr[]" required></div>
+                                <div class="flex-col"><label for="app_category_${randId}">Category</label><select id="app_category_${randId}" name="app_category[]"><option value="Fire">Fire</option><option value="EMS">EMS</option><option value="Utility">Utility</option></select></div>
+                                <div class="flex-col"><label for="app_type_${randId}">Type</label><select id="app_type_${randId}" name="app_type[]"><option value="Engine">Engine</option><option value="Ladder">Ladder</option><option value="Rescue unit">Rescue unit</option><option value="Ambulance">Ambulance</option><option value="Brush">Brush</option><option value="Chief">Chief</option></select></div>
+                                <div class="flex-col"><label for="app_status_${randId}">Status</label><select id="app_status_${randId}" name="app_status[]"><option value="In service">In service</option><option value="Out of service">Out of service</option></select></div>
                             </div>`;
                         const div = document.createElement('div'); div.className = 'item-card'; div.innerHTML = html;
                         document.getElementById('apparatus-container').appendChild(div);
