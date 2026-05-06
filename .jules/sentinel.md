@@ -75,3 +75,8 @@
 **Vulnerability:** Unauthenticated external users could bypass the mail forwarder and inject fake burn permits or fire danger statuses by sending direct HTTP POST requests to `api/process_email.php`. The script read from `php://input` (via `php://stdin`) without verifying the dashboard token when not in testing mode.
 **Learning:** Scripts designed to be executed via CLI (like email forwarders) but accessible over the web server are vulnerable to Server-Side Request Forgery/Injection if they do not explicitly restrict execution to the CLI SAPI or require HTTP authentication.
 **Prevention:** Always verify the execution context using `php_sapi_name() !== 'cli'` and enforce strict authentication (e.g., `verify_dashboard_token()`) for any non-CLI access.
+
+## 2026-05-06 - Exposed Sensitive Data in Configuration and Data Files
+**Vulnerability:** The `config.json` file (containing API keys and hashed admin passwords) and the `data/` directory (containing system logs and PII in `permits.json`) were publicly accessible over direct HTTP requests because they lacked access control restrictions on the web server.
+**Learning:** In applications deployed on shared hosting (like Apache), placing configuration or data files within the web root without explicit `.htaccess` protections makes them completely vulnerable to direct downloading by unauthenticated attackers.
+**Prevention:** Always place sensitive files outside the web root if possible. If they must reside within the web root (common in shared hosting), always include `.htaccess` files with `Require all denied` directives to prevent direct HTTP access to these files while still allowing the backend PHP scripts to read them natively.
