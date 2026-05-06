@@ -271,7 +271,8 @@ if (!empty($dashboardToken)) {
         .announcement-content ul, .announcement-content ol { text-align: left; font-size: 16pt; margin: 0 0 10px 20px; color: var(--text-color);}
         .announcement-card { background: var(--item-bg); padding: clamp(4px, 1.5vh, 10px); border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: clamp(2px, 1vh, 10px); text-align: left;}
 
-        #admin-link:hover { opacity: 1 !important; }
+        #admin-link:hover, #admin-link:focus-visible { opacity: 1 !important; }
+        #add-permit-link:hover, #add-permit-link:focus-visible { opacity: 1 !important; }
 
         #page-chores h2 { font-size: clamp(24px, 3vh, 45px); }
         #page-chores .event { font-size: clamp(12px, 2.5vh, 35px); padding: clamp(4px, 1vh, 10px) clamp(6px, 1vw, 15px); margin-bottom: clamp(1px, 0.5vh, 5px); }
@@ -353,7 +354,7 @@ if (!empty($dashboardToken)) {
              <div id="permits-content-wrapper" style="display: flex; flex-grow: 1; min-height: 0; gap: clamp(2px, 1vh, 15px); width: 100%;">
                  <div id=\"burnPermitsContainer\" style=\"flex: 1; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; -ms-overflow-style: none; scrollbar-width: none; min-height: 0; position: relative;\">
                      <h2 style="font-size: clamp(24px, 3vh, 45px); margin: clamp(10px, 1.5vh, 20px) 0 clamp(5px, 1vh, 15px) 0; flex-shrink: 0; width: 100%;">Active Burn Permits</h2>
-<a href=\"manual_permit.html\" target=\"_blank\" title=\"Add Manual Burn Permit\" style=\"position: absolute; top: 10px; right: 10px; z-index: 1000; opacity: 0.15; color: var(--text-color); text-decoration: none; font-size: 24px; transition: opacity 0.3s;\" onmouseover=\"this.style.opacity=1\" onmouseout=\"this.style.opacity=0.15\">➕</a>
+<a href=\"manual_permit.html\" id=\"add-permit-link\" target=\"_blank\" title=\"Add Manual Burn Permit\" aria-label=\"Add Manual Burn Permit\" style=\"position: absolute; top: 10px; right: 10px; z-index: 1000; opacity: 0.15; color: var(--text-color); text-decoration: none; font-size: 24px; transition: opacity 0.3s; padding: 10px; border-radius: 5px;\">➕</a>
                      <div id="burnPermitsList" style="flex-grow: 1; overflow-y: auto; min-height: 0;"></div>
                  </div>
                  <div id="permitMap" style="flex: 2; border-radius: 4px;"></div>
