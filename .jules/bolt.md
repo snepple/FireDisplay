@@ -21,3 +21,7 @@
 ## 2024-05-28 - [Frontend Optimization] Redundant ICS Component Instantiation
 **Learning:** Instantiating wrapper classes (like `new ICAL.Event(e)`) repeatedly inside frontend iterative arrays (`.forEach`, `.filter`) during calendar parsing unnecessarily bloats CPU usage and delays rendering, especially when defensive instantiations occur in downstream logic.
 **Action:** Always map raw components to their wrapper objects immediately upon fetching the data (e.g., `comp.getAllSubcomponents('vevent').map(c => new ICAL.Event(c))`). This normalizes the data array structure early and prevents repetitive instantiations downstream.
+
+## 2024-05-29 - [Frontend Optimization] Redundant Config Parsing in Render Loops
+**Learning:** Performing array operations (like `.map()`, `Set()` creation, `.sort()`) and string manipulation (`.split('-')`, `new Date()`) on static configuration data directly inside functions that are called frequently during rendering loops (like calendar day iterations) creates severe CPU bottlenecks and blocks the main thread.
+**Action:** Always extract invariant parsing operations out of render loops, or use an internal module-level `cache` object to compute static configuration constants exactly once.
