@@ -600,7 +600,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
         /* Custom Multi-Select */
         .ms-container { position: relative; width: 100%; margin-bottom: 15px; }
-        .ms-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color); padding: 12px; border-radius: 8px; width: 100%; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; min-height: 46px; font-size: 1em;}
+        .ms-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color); padding: 12px; border-radius: 8px; width: 100%; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; min-height: 46px; font-size: 1em; font-family: inherit;}
         .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; z-index: 100; max-height: 250px; overflow-y: auto; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.1); padding: 8px; margin-top: 4px;}
         .ms-dropdown.active { display: block; }
         .ms-dropdown label { display: flex; align-items: center; padding: 10px; cursor: pointer; border-radius: 6px; font-weight: normal; color: var(--text-color); margin: 0; transition: 0.1s;}
@@ -668,7 +668,13 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.ms-container')) {
-                document.querySelectorAll('.ms-dropdown').forEach(d => d.classList.remove('active'));
+                document.querySelectorAll('.ms-dropdown').forEach(d => {
+                    d.classList.remove('active');
+                    const btn = d.previousElementSibling;
+                    if (btn && btn.classList.contains('ms-btn')) {
+                        btn.setAttribute('aria-expanded', 'false');
+                    }
+                });
             }
         });
 
@@ -880,7 +886,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 </div>
                                 <label>Rooms Available (e.g., Training Room)</label>
                                 <div class="flex-row" style="margin-bottom: 10px;">
-                                    <input type="text" class="room-input" placeholder="Room Name" style="flex:1;">
+                                    <input type="text" class="room-input" aria-label="Room Name" placeholder="Room Name" style="flex:1;">
                                     <button type="button" class="action-btn" onclick="addRoomToStation(this)">Add Room</button>
                                 </div>
                                 <div class="rooms-visual-list">
@@ -966,7 +972,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             </div>
                             <label>Rooms Available (e.g., Training Room)</label>
                             <div class="flex-row" style="margin-bottom: 10px;">
-                                <input type="text" class="room-input" placeholder="Room Name" style="flex:1;">
+                                <input type="text" class="room-input" aria-label="Room Name" placeholder="Room Name" style="flex:1;">
                                 <button type="button" class="action-btn" onclick="addRoomToStation(this)">Add Room</button>
                             </div>
                             <div class="rooms-visual-list"></div>`;
@@ -1011,8 +1017,8 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             $displayText = empty($appStr) ? "-- Select Apparatus --" : $appStr;
                             echo "<label>Apparatus</label>";
                             echo "<div class='ms-container'>";
-                            echo "<div class='ms-btn' onclick=\"this.nextElementSibling.classList.toggle('active')\"><span id='ms-txt-{$i}'>{$displayText}</span><span style='color:#86868b; font-size:0.8em;'>▼</span></div>";
-                            echo "<div class='ms-dropdown'>";
+                            echo "<button type='button' class='ms-btn' aria-haspopup='listbox' aria-expanded='false' onclick=\"const d=this.nextElementSibling; d.classList.toggle('active'); this.setAttribute('aria-expanded', d.classList.contains('active'));\"><span id='ms-txt-{$i}'>{$displayText}</span><span style='color:#86868b; font-size:0.8em;' aria-hidden='true'>▼</span></button>";
+                            echo "<div class='ms-dropdown' role='listbox'>";
                             foreach($configData['department_info']['apparatus'] as $app) {
                                 $abbr = htmlspecialchars($app['abbr']);
                                 $checked = in_array($abbr, $selectedApps) ? 'checked' : '';
