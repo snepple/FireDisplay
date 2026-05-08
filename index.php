@@ -2862,6 +2862,9 @@ if (!empty($dashboardToken)) {
             const expDate = new Date(eventData.expires);
             const timeStr = expDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+            eventDiv.setAttribute("role", "button");
+            eventDiv.setAttribute("tabindex", "0");
+            eventDiv.setAttribute("aria-label", `Burn Permit for ${escapeHtml(address)}`);
             eventDiv.innerHTML = `
                 <div class="permit-details">
                     <div class="permit-address">${escapeHtml(address)}</div>
@@ -2872,6 +2875,12 @@ if (!empty($dashboardToken)) {
                 </div>
             `;
             eventDiv.onclick = () => showPermitModal(eventData);
+            eventDiv.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    showPermitModal(eventData);
+                }
+            });
             container.appendChild(eventDiv);
         }
 
@@ -2908,6 +2917,9 @@ if (!empty($dashboardToken)) {
 
             if (detailsHtml.trim() !== '') {
                 eventDiv.classList.add('clickable');
+                eventDiv.setAttribute("role", "button");
+                eventDiv.setAttribute("tabindex", "0");
+                eventDiv.setAttribute("aria-label", `Burn Permit for ${eventData.location ? escapeHtml(eventData.location.split(',')[0].trim()) : 'Address not provided'}`);
                 eventDiv.addEventListener('click', () => {
                     let lat = null, lon = null;
                     if (eventData.location) {
@@ -2921,6 +2933,23 @@ if (!empty($dashboardToken)) {
                         }
                     }
                     showPermitDetails(detailsHtml, lat, lon);
+                });
+                eventDiv.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        let lat = null, lon = null;
+                        if (eventData.location) {
+                            const addr = eventData.location;
+                            if (geocodeCache.has(addr)) {
+                                const res = geocodeCache.get(addr);
+                                if (res && res.length > 0) {
+                                    lat = res[0].lat;
+                                    lon = res[0].lon;
+                                }
+                            }
+                        }
+                        showPermitDetails(detailsHtml, lat, lon);
+                    }
                 });
             }
 
