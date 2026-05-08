@@ -1868,16 +1868,13 @@ if (!empty($dashboardToken)) {
             }
         }
 
+        // ⚡ Bolt: Cache regex constants to prevent redundant RegExp instantiations during rendering loops
+        const summaryTimeRegex = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
+        const summaryRoleRegex = /\s*(Career|Chief|Per-Diem|Night Duty)\s*/ig;
+
         function getCleanNameFromSummary(summary) {
             if (!summary) return '';
-            const timeRegex = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
-            let cleaned = summary.replace(timeRegex, '').trim();
-            const roles = ["Career", "Chief", "Per-Diem", "Night Duty"];
-            for (const role of roles) {
-                const roleRegex = new RegExp(`\\s*${role}\\s*`, 'i');
-                cleaned = cleaned.replace(roleRegex, '').trim();
-            }
-            return cleaned.trim();
+            return summary.replace(summaryTimeRegex, '').replace(summaryRoleRegex, '').trim();
         }
 
 
