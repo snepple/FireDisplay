@@ -25,3 +25,6 @@
 ## 2024-05-29 - [Frontend Optimization] Redundant Config Parsing in Render Loops
 **Learning:** Performing array operations (like `.map()`, `Set()` creation, `.sort()`) and string manipulation (`.split('-')`, `new Date()`) on static configuration data directly inside functions that are called frequently during rendering loops (like calendar day iterations) creates severe CPU bottlenecks and blocks the main thread.
 **Action:** Always extract invariant parsing operations out of render loops, or use an internal module-level `cache` object to compute static configuration constants exactly once.
+## 2025-05-30 - [Frontend Optimization] Regex Instantiation in Render Loops
+**Learning:** Instantiating `RegExp` objects dynamically inside nested loops during frequent rendering operations (like `getCleanNameFromSummary` called repeatedly in array reduction loops) causes severe CPU overhead and garbage collection pauses.
+**Action:** Always extract invariant regular expressions (especially those constructed from static arrays like `["Career", "Chief", "Per-Diem", "Night Duty"]`) into module-level or global constants so they are compiled exactly once.
