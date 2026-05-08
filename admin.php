@@ -1730,10 +1730,19 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 if (evtHtml) div.insertAdjacentHTML('beforeend', evtHtml);
                             }
 
+                            div.setAttribute("role", "button");
+                            div.setAttribute("tabindex", "0");
+                            div.setAttribute("aria-label", `Create event for ${renderCurrent.toLocaleDateString()}`);
                             div.onclick = () => {
                                 addEvent({start_date: dateStr, end_date: dateStr});
                                 document.getElementById('events-form-area').scrollIntoView({ behavior: 'smooth' });
                             };
+                            div.addEventListener('keydown', (e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    div.click();
+                                }
+                            });
 
                             grid.appendChild(div);
                             renderCurrent.setDate(renderCurrent.getDate() + 1);
