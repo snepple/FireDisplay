@@ -310,7 +310,7 @@ if (!empty($dashboardToken)) {
         #fire-danger-toast.loading { border-color: #007bff; color: #007bff; }
 
 
-        button:focus-visible, a:focus-visible, input:focus-visible {
+        button:focus-visible, a:focus-visible, input:focus-visible, [role="button"]:focus-visible {
             outline: 3px solid #ffc107;
             outline-offset: 2px;
         }
