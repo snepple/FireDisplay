@@ -214,7 +214,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
             }
         }
 
-        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [role="button"]:focus-visible {
             outline: 2px solid var(--primary-color);
             outline-offset: 2px;
         }
@@ -632,7 +632,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
         .day-checkboxes label { display: inline-flex; align-items: center; background: var(--bg-color); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); font-weight: 500; margin-bottom:0; cursor: pointer; transition: 0.2s;}
         .day-checkboxes label:hover { background: var(--hover-bg);}
 
-        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [role="button"]:focus-visible {
             outline: 2px solid var(--primary-color);
             outline-offset: 2px;
         }
