@@ -458,8 +458,16 @@ if (!empty($dashboardToken)) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ical.js/1.5.0/ical.min.js"></script>
     <script src="js/date_utils.js"></script>
     <script>
-        const summaryTimeRegex = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
-        const summaryRoleRegex = /\s*(Career|Chief|Per-Diem|Night Duty)\s*/ig;
+        // ⚡ Bolt Optimization: Cache invariant RegExp objects to prevent repetitive instantiation
+        // during high-frequency parsing and rendering loops (e.g. renderEvent, parseCalendarEvents).
+        const TIME_RANGE_REGEX = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
+        const EVENT_ROLE_REGEXPS = [
+            { role: "Career", regex: /\s*Career\s*/i },
+            { role: "Chief", regex: /\s*Chief\s*/i },
+            { role: "Per-Diem", regex: /\s*Per-Diem\s*/i },
+            { role: "Night Duty", regex: /\s*Night Duty\s*/i }
+        ];
+        const SUMMARY_ROLE_REGEX = /\s*(Career|Chief|Per-Diem|Night Duty)\s*/ig;
 
         const originalFetch = window.fetch;
         const fetchPromises = new Map();
@@ -1874,7 +1882,7 @@ if (!empty($dashboardToken)) {
 
         function getCleanNameFromSummary(summary) {
             if (!summary) return '';
-            return summary.replace(summaryTimeRegex, '').replace(summaryRoleRegex, '').trim();
+            return summary.replace(TIME_RANGE_REGEX, '').replace(SUMMARY_ROLE_REGEX, '').trim();
         }
 
 
@@ -2103,7 +2111,7 @@ if (!empty($dashboardToken)) {
             return eventsByDate;
         }
 
-        function renderCalendarDays(grid, daysToRender, firstDayOfGrid, targetMonth, todayKey, eventsByDate, maxPubDay, timeRegex) {
+        function renderCalendarDays(grid, daysToRender, firstDayOfGrid, targetMonth, todayKey, eventsByDate, maxPubDay) {
             let currentDay = new Date(firstDayOfGrid);
             let allDaysHtml = '';
 
@@ -2147,7 +2155,7 @@ if (!empty($dashboardToken)) {
                     if (fireEvents.length > 0) {
                         fireEvents.forEach(event => {
                             const summary = (event.summary || '').toLowerCase();
-                            const name = (event.summary || '').replace(timeRegex, '').replace(/career|per-diem|night duty/ig, '').replace(/-/g, '').trim();
+                            const name = (event.summary || '').replace(TIME_RANGE_REGEX, '').replace(/career|per-diem|night duty/ig, '').replace(/-/g, '').trim();
                             const timeStr = `${formatShortTime(event.start)}-${formatShortTime(event.end)}`;
 
                             if (summary.includes('career')) roles.career.push({ name, timeStr, rawStart: event.start, rawEnd: event.end });
@@ -2247,7 +2255,6 @@ if (!empty($dashboardToken)) {
         }
 
         function renderCalendar(allFireEvents, townMeetings = []) {
-            const timeRegex = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
             const now = new Date();
             const todayInET = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
 
@@ -2294,7 +2301,7 @@ if (!empty($dashboardToken)) {
             }
 
             const todayKey = formatYMD(todayInET);
-            renderCalendarDays(grid, daysToRender, firstDayOfGrid, targetMonth, todayKey, eventsByDate, maxPubDay, timeRegex);
+            renderCalendarDays(grid, daysToRender, firstDayOfGrid, targetMonth, todayKey, eventsByDate, maxPubDay);
 
             const openShiftsList = document.getElementById('open-shifts-list');
             renderOpenShifts(openShiftsList, todayInET, maxPubDay, eventsByDate);
@@ -2441,16 +2448,13 @@ if (!empty($dashboardToken)) {
             leftColumn.classList.add('event-left');
             const nameDiv=document.createElement('div');
             nameDiv.classList.add('event-name');
-            const timeRegex=/\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
 
-            let cleanedSummary=(eventData.summary || '').replace(timeRegex,'').trim();
-            const roles=["Career","Chief","Per-Diem","Night Duty"];
+            let cleanedSummary=(eventData.summary || '').replace(TIME_RANGE_REGEX,'').trim();
             let foundRole='';
-            for(const role of roles){
-                const roleRegex=new RegExp(`\\s*${role}\\s*`,'i');
-                if(roleRegex.test(cleanedSummary)){
-                    foundRole=cleanedSummary.match(roleRegex)[0].trim();
-                    cleanedSummary=cleanedSummary.replace(roleRegex,'').trim();
+            for(const r of EVENT_ROLE_REGEXPS){
+                if(r.regex.test(cleanedSummary)){
+                    foundRole=cleanedSummary.match(r.regex)[0].trim();
+                    cleanedSummary=cleanedSummary.replace(r.regex,'').trim();
                     break;
                 }
             }

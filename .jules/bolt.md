@@ -28,3 +28,7 @@
 ## 2025-05-30 - [Frontend Optimization] Regex Instantiation in Render Loops
 **Learning:** Instantiating `RegExp` objects dynamically inside nested loops during frequent rendering operations (like `getCleanNameFromSummary` called repeatedly in array reduction loops) causes severe CPU overhead and garbage collection pauses.
 **Action:** Always extract invariant regular expressions (especially those constructed from static arrays like `["Career", "Chief", "Per-Diem", "Night Duty"]`) into module-level or global constants so they are compiled exactly once.
+
+## $(date +%Y-%m-%d) - Extract invariant RegEx from loops
+**Learning:** Dynamically instantiating `new RegExp()` inside high-frequency rendering loops (`renderEvent`) and string replacements within the application causes measurable CPU overhead and creates unnecessary garbage collection pressure, negatively impacting performance.
+**Action:** Always extract invariant Regular Expressions to module-level or global constants so they are compiled exactly once when the script loads, rather than being re-created dynamically inside loops or function calls.
