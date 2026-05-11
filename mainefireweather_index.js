@@ -18,7 +18,7 @@ var JS = {
 	zoneData: {},
 	dataByZone: null,
 	stationRefs: {},
-	stations: {},
+	stations: [],
 	zones: null,
 	classDays: null,
 	map: null,
@@ -81,8 +81,9 @@ var JS = {
             return JS.addZoneLabels();
         })
         .then((data)=>{
-
-            return JS.getStations();
+            if (JS.isFireSeason()) {
+                return JS.getStations();
+            }
         })
         .then((data)=>{
 
@@ -91,8 +92,9 @@ var JS = {
             return "Listeners added!";
         })
         .then((data)=>{
-
-            return JS.addStationMarkers();
+            if (JS.isFireSeason()) {
+                return JS.addStationMarkers();
+            }
         })
         .then((data)=>{
 
@@ -416,13 +418,15 @@ var JS = {
 			// if(data.spans.time != '') $("span#classes-as-of").html(" as of " + data.spans.time);
 		});
 		//get stations
-		$.getJSON("php/get-stations.php?level=all&flag=map&client="+JS.client, '', function(data) {
+		if (JS.isFireSeason()) {
+			$.getJSON("php/get-stations.php?level=all&flag=map&client="+JS.client, '', function(data) {
 
-            JS.stations = data.stations;
-			JS.zones = data.zones;
-            JS.lastupdate = data[0].mapupdate;
-            $('#lastupdate').html(JS.formatTime(JS.lastupdate));
-		});
+				JS.stations = data.stations;
+				JS.zones = data.zones;
+				JS.lastupdate = data[0].mapupdate;
+				$('#lastupdate').html(JS.formatTime(JS.lastupdate));
+			});
+		}
 
 	},
 
@@ -507,8 +511,9 @@ var JS = {
 		if(JS.zoneCount >= 12) {
 			JS.progressBar.updateBar(1);
 			JS.progressBar.hide();
-			// TODO hide station icons until spring
-			JS.linkMarkers();
+			if (JS.isFireSeason()) {
+				JS.linkMarkers();
+			}
 
 			return;
 		}
