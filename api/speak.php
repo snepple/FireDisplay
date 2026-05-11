@@ -41,14 +41,18 @@ $cacheFile = $cacheDir . '/' . $cacheKey . '.mp3';
 // Background cleanup of old TTS cache files
 register_shutdown_function(function() use ($cacheDir) {
     if (rand(1, 50) === 1) { // 2% chance
-        $files = glob($cacheDir . '/*.mp3');
         $now = time();
-        if ($files) {
-            foreach ($files as $f) {
-                if (is_file($f) && ($now - filemtime($f)) > 2592000) { // older than 30 days
-                    @unlink($f);
+        try {
+            $dir = new DirectoryIterator($cacheDir);
+            foreach ($dir as $fileInfo) {
+                if ($fileInfo->isFile() && $fileInfo->getExtension() === 'mp3') {
+                    if (($now - $fileInfo->getMTime()) > 2592000) { // older than 30 days
+                        @unlink($fileInfo->getRealPath());
+                    }
                 }
             }
+        } catch (Exception $e) {
+            // Silence errors during cleanup
         }
     }
 });

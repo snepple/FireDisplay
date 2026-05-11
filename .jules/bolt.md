@@ -32,3 +32,7 @@
 ## $(date +%Y-%m-%d) - Extract invariant RegEx from loops
 **Learning:** Dynamically instantiating `new RegExp()` inside high-frequency rendering loops (`renderEvent`) and string replacements within the application causes measurable CPU overhead and creates unnecessary garbage collection pressure, negatively impacting performance.
 **Action:** Always extract invariant Regular Expressions to module-level or global constants so they are compiled exactly once when the script loads, rather than being re-created dynamically inside loops or function calls.
+
+## 2025-01-24 - [Backend Optimization] Efficient Directory Cleanup
+**Learning:** Using `glob()` to list files for background cleanup tasks pre-loads the entire set of filenames into memory, which scales poorly as the cache directory grows. Additionally, performing separate `is_file()` and `filemtime()` calls inside the loop incurs redundant filesystem I/O overhead.
+**Action:** Use `DirectoryIterator` for large-scale file system cleanup tasks. It provides a memory-efficient streaming approach and allows retrieving file properties like type and modification time in a more optimized manner within a single pass.
