@@ -1,5 +1,0 @@
-[30-Mar-2026 18:03:14 America/Boise] PHP Fatal error:  Uncaught TypeError: implode(): Argument #2 ($array) must be of type ?array, string given in /home4/jobtownc/public_html/website_10fa802a/admin.php:153
-Stack trace:
-#0 /home4/jobtownc/public_html/website_10fa802a/admin.php(153): implode(' & ', '9-1')
-#1 {main}
-  thrown in /home4/jobtownc/public_html/website_10fa802a/admin.php on line 153
