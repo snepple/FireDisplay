@@ -2280,16 +2280,48 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
             <?php elseif ($page === 'password'): ?>
                 <div class="card">
                     <h2>Change Admin Password</h2>
-                    <div style="max-width: 400px;">
+                    <div style="max-width: 400px; position: relative;">
                         <label for="current_password">Current Password</label>
                         <input type="password" id="current_password" name="current_password" style="margin-bottom: 15px;" required>
+
                         <label for="new_password">New Password</label>
-                        <input type="password" id="new_password" name="new_password" style="margin-bottom: 15px;" required>
+                        <input type="password" id="new_password" name="new_password" minlength="4" style="margin-bottom: 15px;" required>
+
                         <label for="confirm_password">Confirm New Password</label>
-                        <input type="password" id="confirm_password" name="confirm_password" style="margin-bottom: 20px;" required>
+                        <input type="password" id="confirm_password" name="confirm_password" minlength="4" style="margin-bottom: 5px;" required>
+                        <div id="password_error" style="color: var(--danger-color); font-size: 0.85em; font-weight: 600; margin-bottom: 20px; display: none;" aria-live="polite">Passwords do not match.</div>
                     </div>
                 </div>
-                <script>function runPreSubmitHooks() {}</script>
+                <script>
+                    function runPreSubmitHooks() {}
+
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const newPwd = document.getElementById('new_password');
+                        const confPwd = document.getElementById('confirm_password');
+                        const errorMsg = document.getElementById('password_error');
+                        const saveBtn = document.querySelector('button[name="save_password"]');
+
+                        function validatePasswords() {
+                            if (!newPwd || !confPwd) return;
+
+                            const val1 = newPwd.value;
+                            const val2 = confPwd.value;
+
+                            if (val2.length > 0 && val1 !== val2) {
+                                confPwd.style.borderColor = 'var(--danger-color)';
+                                errorMsg.style.display = 'block';
+                                if (saveBtn) saveBtn.disabled = true;
+                            } else {
+                                confPwd.style.borderColor = '';
+                                errorMsg.style.display = 'none';
+                                if (saveBtn) saveBtn.disabled = false;
+                            }
+                        }
+
+                        if (newPwd) newPwd.addEventListener('input', validatePasswords);
+                        if (confPwd) confPwd.addEventListener('input', validatePasswords);
+                    });
+                </script>
             <?php endif; ?>
 
             <div style="display:flex; justify-content: flex-end;">
