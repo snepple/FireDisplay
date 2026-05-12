@@ -462,6 +462,15 @@ if (!empty($dashboardToken)) {
         // ⚡ Bolt Optimization: Cache invariant RegExp objects to prevent repetitive instantiation
         // during high-frequency parsing and rendering loops (e.g. renderEvent, parseCalendarEvents).
         const TIME_RANGE_REGEX = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
+        const REGEX_NW_NE_SW_SE = /\b(Nw|Ne|Sw|Se)\b/g;
+        const REGEX_MC = /\bMc([a-zA-Z])/gi;
+        const REGEX_MAC = /\bMac([a-zA-Z])/gi;
+        const REGEX_ST_ND_RD_TH = /\b(\d+)(St|Nd|Rd|Th)\b/gi;
+        const REGEX_ME = /\bMe\b/g;
+        const REGEX_PO_BOX = /\bPo Box\b/gi;
+        const REGEX_ROLE_REPLACE = /career|per-diem|night duty/ig;
+        const REGEX_DASH = /-/g;
+        const REGEX_ADDRESS_REMOVE = /\b(?:Oakland(?:\s+Maine|\s+ME)?|Maine|ME)\b/gi;
         const EVENT_ROLE_REGEXPS = [
             { role: "Career", regex: /\s*Career\s*/i },
             { role: "Chief", regex: /\s*Chief\s*/i },
@@ -868,12 +877,12 @@ if (!empty($dashboardToken)) {
                 }
             }
             let titleStr = words.join('');
-            titleStr = titleStr.replace(/\b(Nw|Ne|Sw|Se)\b/g, (match) => match.toUpperCase());
-            titleStr = titleStr.replace(/\bMc([a-zA-Z])/gi, (match, p1) => 'Mc' + p1.toUpperCase());
-            titleStr = titleStr.replace(/\bMac([a-zA-Z])/gi, (match, p1) => 'Mac' + p1.toUpperCase());
-            titleStr = titleStr.replace(/\b(\d+)(St|Nd|Rd|Th)\b/gi, (match, num, suffix) => num + suffix.toLowerCase());
-            titleStr = titleStr.replace(/\bMe\b/g, 'ME');
-            titleStr = titleStr.replace(/\bPo Box\b/gi, 'PO Box');
+            titleStr = titleStr.replace(REGEX_NW_NE_SW_SE, (match) => match.toUpperCase());
+            titleStr = titleStr.replace(REGEX_MC, (match, p1) => 'Mc' + p1.toUpperCase());
+            titleStr = titleStr.replace(REGEX_MAC, (match, p1) => 'Mac' + p1.toUpperCase());
+            titleStr = titleStr.replace(REGEX_ST_ND_RD_TH, (match, num, suffix) => num + suffix.toLowerCase());
+            titleStr = titleStr.replace(REGEX_ME, 'ME');
+            titleStr = titleStr.replace(REGEX_PO_BOX, 'PO Box');
             return titleStr;
         }
 
@@ -2161,7 +2170,7 @@ if (!empty($dashboardToken)) {
                     if (fireEvents.length > 0) {
                         fireEvents.forEach(event => {
                             const summary = (event.summary || '').toLowerCase();
-                            const name = (event.summary || '').replace(TIME_RANGE_REGEX, '').replace(/career|per-diem|night duty/ig, '').replace(/-/g, '').trim();
+                            const name = (event.summary || '').replace(TIME_RANGE_REGEX, '').replace(REGEX_ROLE_REPLACE, '').replace(REGEX_DASH, '').trim();
                             const timeStr = `${formatShortTime(event.start)}-${formatShortTime(event.end)}`;
 
                             if (summary.includes('career')) roles.career.push({ name, timeStr, rawStart: event.start, rawEnd: event.end });
@@ -2857,7 +2866,7 @@ if (!empty($dashboardToken)) {
             eventDiv.classList.add('event');
 
             const uid = eventData.uid || '';
-            let address = eventData.address ? formatAddressTitleCase(eventData.address.split(',')[0].trim()) : 'Unknown Address'; if (address !== 'Unknown Address') { address = address.replace(/\b(?:Oakland(?:\s+Maine|\s+ME)?|Maine|ME)\b/gi, '').trim(); address = formatAddressTitleCase(address); }
+            let address = eventData.address ? formatAddressTitleCase(eventData.address.split(',')[0].trim()) : 'Unknown Address'; if (address !== 'Unknown Address') { address = address.replace(REGEX_ADDRESS_REMOVE, '').trim(); address = formatAddressTitleCase(address); }
             const type = eventData.type || 'Open Burn';
 
             const expDate = new Date(eventData.expires);
@@ -2954,7 +2963,7 @@ if (!empty($dashboardToken)) {
                 });
             }
 
-            let displayAddress = eventData.location ? formatAddressTitleCase(eventData.location.split(',')[0].trim()) : 'Address not provided'; if (displayAddress !== 'Address not provided') { displayAddress = displayAddress.replace(/\b(?:Oakland(?:\s+Maine|\s+ME)?|Maine|ME)\b/gi, '').trim(); displayAddress = formatAddressTitleCase(displayAddress); }
+            let displayAddress = eventData.location ? formatAddressTitleCase(eventData.location.split(',')[0].trim()) : 'Address not provided'; if (displayAddress !== 'Address not provided') { displayAddress = displayAddress.replace(REGEX_ADDRESS_REMOVE, '').trim(); displayAddress = formatAddressTitleCase(displayAddress); }
             let burnType = 'Type not specified';
             if (eventData.description) {
                 const descriptionParts = eventData.description.split('Details:');

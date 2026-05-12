@@ -639,6 +639,9 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 </style>
 
     <script>
+        const TIME_RANGE_REGEX = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
+        const REGEX_ROLE_REPLACE = /career|per-diem|night duty/ig;
+        const REGEX_DASH = /-/g;
         function extractRecurrenceState(data) {
             return {
                 rec: data && data.recurrence ? data.recurrence : 'none',
@@ -1559,7 +1562,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                             const parseDate = new Date(); parseDate.setDate(parseDate.getDate() + 90);
 
-                            const timeRegex = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
+
 
                             const formatTime = (d) => {
                                 let h = d.getHours(); let m = d.getMinutes();
@@ -1579,7 +1582,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 if(summary.includes('per-diem')) { typeClass = 'bg-perdiem'; typeCode = 'P'; }
                                 if(summary.includes('night duty')) { typeClass = 'bg-night'; typeCode = 'N'; }
 
-                                const nameClean = (vevent.summary || '').replace(timeRegex, '').replace(/career|per-diem|night duty/ig, '').replace(/-/g, '').trim();
+                                const nameClean = (vevent.summary || '').replace(TIME_RANGE_REGEX, '').replace(REGEX_ROLE_REPLACE, '').replace(REGEX_DASH, '').trim();
 
                                 const processOccurrence = (occurrence) => {
                                     const dateKey = formatYMD(occurrence.startDate.toJSDate());
