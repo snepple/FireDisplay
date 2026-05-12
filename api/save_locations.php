@@ -1,4 +1,15 @@
 <?php
+// Secure session configuration
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on', // Set to true if using HTTPS
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
+ini_set('session.use_strict_mode', 1);
+
 session_start();
 header("Content-Type: application/json; charset=utf-8");
 
