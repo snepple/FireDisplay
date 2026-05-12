@@ -102,7 +102,7 @@ if (!empty($dashboardToken)) {
             padding-bottom: 3px;
             margin-top: 0;
             margin-bottom: clamp(1px, 0.5vh, 5px);
-            font-size: 0.6em;
+            font-size: 0.9em;
             letter-spacing: 1.5px;
             flex-shrink: 0;
         }
@@ -130,7 +130,7 @@ if (!empty($dashboardToken)) {
             scrollbar-width: none;  /* Firefox */
         }
         .event-role { font-size: 1.0em; font-weight: 500; color: var(--muted-text); text-transform: uppercase; margin-top: 1px; letter-spacing: 0.5px; }
-        .event-until { font-size: 0.9em; color: var(--muted-text); font-weight: 400; }
+        .event-until { font-size: 1.0em; color: var(--muted-text); font-weight: 400; }
 
         .permit-details { display: flex; flex-direction: column; width: 100%; gap: 4px; }
         .permit-address { font-size: clamp(1.2em, 3vw, 2.4em); font-weight: 500; color: var(--text-color); white-space: normal; }
@@ -145,7 +145,7 @@ if (!empty($dashboardToken)) {
 
 
         #fire-danger-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; box-sizing: border-box; background-color: var(--card-bg); border-radius: 4px; padding: clamp(4px, 1.5vh, 10px);}
-        #danger-meter { width: 60%; min-height: 60px; height: auto; padding: clamp(4px, 1.5vh, 10px); box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: clamp(5px, 1.5vh, 15px); display: flex; align-items: center; justify-content: center; font-size: clamp(1.2em, 3vw, 2.4em); font-weight: 700; text-transform: uppercase; }
+        #danger-meter { width: 60%; min-height: 60px; height: auto; padding: clamp(4px, 1.5vh, 10px); box-sizing: border-box; border: 2px solid var(--muted-text); border-radius: 5px; margin-bottom: clamp(5px, 1.5vh, 15px); display: flex; align-items: center; justify-content: center; font-size: clamp(1.8em, 4vw, 3.6em); font-weight: 700; text-transform: uppercase; }
         #danger-date { font-size: 0.3em; color: var(--muted-text); margin-top: clamp(1px, 0.5vh, 5px); }
         .risk-snow-cover { background-color: #ffffff; color: #000 !important; border-color:#000 !important;}
         .risk-low { background-color: #28a745; color:#fff;}
@@ -170,7 +170,7 @@ if (!empty($dashboardToken)) {
             scrollbar-width: none;
         }
         .calendar-sidebar::-webkit-scrollbar { display: none; }
-        .calendar-sidebar h3 { font-size: clamp(10px, 1.5vh, 0.9em); text-align: center; margin: 0 0 clamp(2px, 0.5vh, 10px) 0; color: var(--muted-text);  padding-bottom: clamp(1px, 0.5vh, 5px); flex-shrink: 0; }
+        .calendar-sidebar h3 { font-size: 1.0em; text-align: center; margin: 0 0 10px 0; color: var(--muted-text);  padding-bottom: 5px; flex-shrink: 0; }
 
         #open-shifts-section { display: flex; flex-direction: column; flex-grow: 1; min-height: 0; }
         #open-shifts-list { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; padding-top: 5px; min-height: 0;
@@ -195,7 +195,7 @@ if (!empty($dashboardToken)) {
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
             text-overflow: ellipsis; max-width: 100%; overflow: hidden; }
-        .open-shift-time { font-size: clamp(6px, 1vh, 0.8em); color: var(--muted-text); font-weight: 500; white-space: nowrap; }
+        .open-shift-time { font-size: 1.2em; color: var(--muted-text); font-weight: 500; white-space: nowrap; }
 
         .calendar-arrow { opacity: 0.15; cursor: pointer; transition: opacity 0.3s ease; user-select: none; padding: 0 15px; font-size: 24px; }
         .calendar-arrow:hover { opacity: 0.8; }
@@ -204,7 +204,7 @@ if (!empty($dashboardToken)) {
 
         .chores-header, .calendar-header { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; margin-bottom: clamp(1px, 0.5vh, 5px); }
         .chores-header { font-size: clamp(8pt, 1.5vh, 12pt); color: #ffc107; font-weight: bold; }
-        .calendar-header { font-size: clamp(8px, 1.2vh, 0.9em); color: var(--muted-text); }
+        .calendar-header { font-size: 1.0em; color: var(--muted-text); }
 
         .calendar-day { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: clamp(1px, 0.5vh, 5px); font-size: clamp(8px, 1.2vh, 0.9em); display: flex; flex-direction: column; overflow: hidden;
             -ms-overflow-style: none;  /* IE and Edge */
@@ -247,7 +247,7 @@ if (!empty($dashboardToken)) {
         #debug-log { display: none; }
 
         #permit-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 10000; justify-content: center; align-items: center; padding: clamp(4px, 1.5vh, 10px); box-sizing: border-box; }
-        #permit-modal-content { background-color: var(--card-bg); padding: clamp(6px, 1.5vh, 15px); border-radius: 8px; border: 1px solid var(--muted-text); width: 100%; max-width: 900px; color: var(--text-color); font-size: 0.9em; cursor: pointer; display: flex; flex-direction: column;  max-height: 90vh;}
+        #permit-modal-content { background-color: var(--card-bg); padding: clamp(6px, 1.5vh, 15px); border-radius: 8px; border: 1px solid var(--muted-text); width: 100%; max-width: 900px; color: var(--text-color); font-size: 1.0em; cursor: pointer; display: flex; flex-direction: column;  max-height: 90vh;}
         #permit-modal-header h2 { margin-top: 0; margin-bottom: clamp(1px, 0.5vh, 5px); color: var(--text-color); white-space: normal; text-align: center; font-size: 1.2em; }
         #permit-modal-body { max-height: 70vh; overflow-y: auto; line-height: 1.4; }
         #permit-modal-body table { width: 100%; border-collapse: collapse; font-size: 11pt; }
@@ -257,8 +257,8 @@ if (!empty($dashboardToken)) {
         #permit-modal-body strong { color: var(--text-color); font-weight: 500; }
         #permit-modal-footer p { font-size: 0.9em; text-align: center; color: var(--muted-text); margin-top: clamp(5px, 1.5vh, 15px); margin-bottom: 0; }
 
-
-
+        #audio-toggle-wrapper { display: none; position: absolute; top: 15px; left: 15px; z-index: 10000; opacity: 0.25; transition: opacity 0.3s ease; }
+        #audio-toggle-wrapper:hover { opacity: 1; }
         .toggle-switch { position: relative; display: inline-block; width: 32px; height: 18px; margin: 0; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-color); transition: .4s; border-radius: 18px; border: 1px solid #555; }
@@ -317,9 +317,7 @@ if (!empty($dashboardToken)) {
 </style>
 </head>
 <body>
-    <div id="audio-unlock-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); color: #fff; z-index: 100000; align-items: center; justify-content: center; font-size: 3rem; cursor: pointer;">
-        Click anywhere to enable audio for this session
-    </div>
+
     <a href="admin.php" id="admin-link" title="Open Admin Dashboard" aria-label="Open Admin Dashboard" style="position: absolute; bottom: 15px; right: 15px; z-index: 10000; opacity: 0.15; color: var(--text-color); text-decoration: none; font-size: 24px; transition: opacity 0.3s;">⚙️</a>
 
     <div id="audio-toggle-wrapper" title="Toggle Audio Announcements" style="display: none;">
@@ -328,8 +326,6 @@ if (!empty($dashboardToken)) {
             <span class="toggle-slider"></span>
         </label>
     </div>
-
-
 
     <div id="page-dashboard" class="page-container">
         <div class="main-layout" id="top-section">
@@ -345,6 +341,9 @@ if (!empty($dashboardToken)) {
                          <img id="danger-image-standby" src="" alt="" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 5px; object-fit: contain; transition: opacity 0.5s ease-in-out; opacity: 0;" />
                      </div>
                      <div id="danger-date"></div>
+                     <div id="danger-map-container" style="margin-top: clamp(5px, 1.5vh, 15px); width: 100%; display: none;">
+                         <div id="danger-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(2px, 0.5vh, 5px);"></div>
+                     </div>
                      </div>
 
                 </div>
@@ -352,12 +351,12 @@ if (!empty($dashboardToken)) {
         </div>
         <div class="container" id="combined-permits-container">
              <div id="permits-content-wrapper" style="display: flex; flex-grow: 1; min-height: 0; gap: clamp(2px, 1vh, 15px); width: 100%;">
-                 <div id=\"burnPermitsContainer\" style=\"flex: 1; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; -ms-overflow-style: none; scrollbar-width: none; min-height: 0; position: relative;\">
+                 <div id=\"burnPermitsContainer\" style=\"flex: 2; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; -ms-overflow-style: none; scrollbar-width: none; min-height: 0; position: relative;\">
                      <h2 style="font-size: clamp(24px, 3vh, 45px); margin: clamp(10px, 1.5vh, 20px) 0 clamp(5px, 1vh, 15px) 0; flex-shrink: 0; width: 100%;">Active Burn Permits</h2>
 <a href=\"manual_permit.html\" id=\"add-permit-link\" target=\"_blank\" title=\"Add Manual Burn Permit\" aria-label=\"Add Manual Burn Permit\" style=\"position: absolute; top: 10px; right: 10px; z-index: 1000; opacity: 0.15; color: var(--text-color); text-decoration: none; font-size: 24px; transition: opacity 0.3s; padding: 10px; border-radius: 5px;\">➕</a>
                      <div id="burnPermitsList" style="flex-grow: 1; overflow-y: auto; min-height: 0;"></div>
                  </div>
-                 <div id="permitMap" style="flex: 2; border-radius: 4px;"></div>
+                 <div id="permitMap" style="flex: 1; border-radius: 4px;"></div>
              </div>
         </div>
     </div>
@@ -585,7 +584,7 @@ if (!empty($dashboardToken)) {
 
         let hasFireDanger = false;
         let hasBurnPermits = false;
-
+        let audioEnabled = false;
 
         let currentFireEvents = [];
         let currentTownMeetings = [];
@@ -948,17 +947,6 @@ if (!empty($dashboardToken)) {
 
                 applyTheme();
 
-                // Play silent audio on user interaction to unlock audio context
-                document.body.addEventListener('click', function unlockAudio() {
-                    if (appConfig.dashboard_settings && appConfig.dashboard_settings.audio_enabled) {
-                        alertPlayer.play().catch(e => {});
-                        voicePlayer.play().catch(e => {});
-                        document.body.removeEventListener('click', unlockAudio);
-                        const overlay = document.getElementById('audio-unlock-overlay');
-                        if (overlay) overlay.style.display = 'none';
-                    }
-                }, { once: true });
-
                 if (appConfig.headers && appConfig.headers.length === 7) {
                     const headerDivs = document.querySelectorAll('.chores-header div');
                     appConfig.headers.forEach((text, i) => {
@@ -994,8 +982,7 @@ if (!empty($dashboardToken)) {
                 eventSource.close();
             }
 
-            const token = encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '');
-            eventSource = new EventSource('api/stream_updates.php?token=' + token);
+            eventSource = new EventSource('api/stream_updates.php');
 
             eventSource.addEventListener('update', function(e) {
                 console.log("SSE Update received:", e.data);
@@ -1101,8 +1088,7 @@ if (!empty($dashboardToken)) {
 
         async function fetchFireSchedule() {
             const scheduleUrl = `${appConfig.calendar_urls?.main || 'https://calendar.google.com/calendar/ical/c303c9aa08e0a090db126a0b15eb0bc0e8b66cc1af810aa971059b7b01b6d25a@group.calendar.google.com/public/basic.ics'}?nocache=${Date.now()}`;
-            const token = encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '');
-            const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(scheduleUrl)}&_cb=${Date.now()}&token=${token}`;
+            const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(scheduleUrl)}&_cb=${Date.now()}`;
             try {
                 const response = await fetch(proxyUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
                 if (!response.ok) throw new Error(`Network response was not ok (${response.status})`);
@@ -1258,20 +1244,27 @@ if (!empty($dashboardToken)) {
                 const newSrc = baseSrc + "?t=" + Date.now();
 
                 let currentPath = "";
-                try { currentPath = new URL(imgActive.src, window.location.href).pathname; } catch(e){}
+                if (imgActive && imgActive.src) {
+                    try { currentPath = new URL(imgActive.src, window.location.href).pathname; } catch(e){}
+                }
 
-                if (!currentPath.includes(baseSrc)) {
+                if (imgActive && imgStandby && imgContainer && !currentPath.includes(baseSrc)) {
+                    // Temporarily remove transition from standby so we can snap it to opacity 0 instantly without animating
                     imgStandby.style.transition = 'none';
                     imgStandby.style.opacity = '0';
+
+                    // Force a reflow to ensure the 'none' transition takes effect
                     void imgStandby.offsetWidth;
 
                     imgStandby.src = newSrc;
                     imgStandby.onload = () => {
+                        // Restore transition and begin fade in
                         imgStandby.style.transition = 'opacity 0.5s ease-in-out';
                         imgStandby.style.opacity = '1';
                         imgActive.style.opacity = '0';
 
                         setTimeout(() => {
+                            // Snap active to new src and reset opacities instantly
                             imgActive.style.transition = 'none';
                             imgActive.src = newSrc;
                             imgActive.style.opacity = '1';
@@ -1280,21 +1273,47 @@ if (!empty($dashboardToken)) {
 
                             imgContainer.style.display = 'block';
 
+                            // Restore transitions for the next time
                             void imgActive.offsetWidth;
                             imgActive.style.transition = 'opacity 0.5s ease-in-out';
                         }, 500); // match transition duration
                     };
-                } else {
+                } else if (imgContainer) {
                     if (imgActive) imgActive.src = newSrc;
-                    if (imgContainer) imgContainer.style.display = 'block';
+                    imgContainer.style.display = 'block';
                 }
+
                 if (lastUpdateStr !== "") {
                     dateDiv.textContent = `Published by Maine Forest Service (${lastUpdateStr})`;
                 } else {
                     dateDiv.textContent = "Published by Maine Forest Service";
                 }
 
+                const mapContainer = document.getElementById('danger-map-container');
+                const dangerGrid = document.getElementById('danger-grid');
+                dangerGrid.innerHTML = '';
+                if (window.lastMwfData && window.lastMwfData.classdays) {
+                    const levelsMap = { 1: "Snow Cover", 2: "Low", 3: "Moderate", 4: "High", 5: "Very High", 6: "Extreme" };
+                    for (let z = 1; z <= 12; z++) {
+                        const lvlInt = parseInt(window.lastMwfData.classdays[z]);
+                        const lvlText = levelsMap[lvlInt] || "Unknown";
+                        const cssClass = "risk-" + lvlText.toLowerCase().replace(/ /g, '-');
 
+                        const cell = document.createElement('div');
+                        cell.style.padding = "5px";
+                        cell.style.textAlign = "center";
+                        cell.style.borderRadius = "3px";
+                        cell.style.fontSize = "0.85em";
+                        cell.style.fontWeight = "bold";
+                        cell.className = cssClass;
+                        cell.innerHTML = `Zone ${z}<br>${lvlText}`;
+
+                        dangerGrid.appendChild(cell);
+                    }
+                    mapContainer.style.display = 'block';
+                } else {
+                    mapContainer.style.display = 'none';
+                }
 
 
                 if (meterDiv.dataset.lastLevel !== riskLevel) {
@@ -1318,7 +1337,7 @@ if (!empty($dashboardToken)) {
                 const imgContainer = document.getElementById('danger-image-container');
                 if (imgContainer) imgContainer.style.display = 'none';
                 dateDiv.textContent = "Will be available once published by the state (usually after 9a).";
-
+                document.getElementById('danger-map-container').style.display = 'none';
 
                 delete meterDiv.dataset.lastLevel;
                 if (force) {
@@ -1374,9 +1393,10 @@ if (!empty($dashboardToken)) {
                 if (permitsSource === 'ics') {
                     todaysPermits = [];
                     activePermits = [];
-                    const calendarUrl = `${appConfig.calendar_urls?.burn_permits || 'https://calendar.google.com/calendar/ical/permitsburn@gmail.com/public/basic.ics'}?nocache=${Date.now()}`;
-                    const token = encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '');
-                    const fetchUrl = `api/fetch_calendar.php?url=${encodeURIComponent(calendarUrl)}&_cb=${Date.now()}&token=${token}`;
+                    const calendarUrl = `${appConfig.calendar_urls?.burn_permits || 'https://calendar.google.com/calendar/ical/permitsburn@gmail.com/public/basic.ics'
+                }
+?nocache=${Date.now()}`;
+                    const fetchUrl = `api/fetch_calendar.php?url=${encodeURIComponent(calendarUrl)}&_cb=${Date.now()}`;
 
                     const response = await fetch(fetchUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
                     if (!response.ok) { throw new Error(`Network response was not ok`) }
@@ -1446,11 +1466,9 @@ if (!empty($dashboardToken)) {
 
     <script>
         async function playGoogleTTS(textToRead) {
-            const settings = appConfig?.dashboard_settings || {};
-            if (!settings.audio_enabled || !settings.tts_enabled) return;
+            if (!audioEnabled) return;
             try {
-                const token = encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '');
-                const response = await fetch('api/speak.php?token=' + token, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: textToRead }) });
+                const response = await fetch('api/speak.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: textToRead }) });
                 if (!response.ok) { fallbackTTS(textToRead); return; }
                 const arrayBuffer = await response.arrayBuffer();
                 const blob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
@@ -1461,8 +1479,7 @@ if (!empty($dashboardToken)) {
         }
 
         function fallbackTTS(textToRead) {
-            const settings = appConfig?.dashboard_settings || {};
-            if (!settings.audio_enabled || !settings.tts_enabled || !window.speechSynthesis) return;
+            if (!audioEnabled || !window.speechSynthesis) return;
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(textToRead);
             utterance.lang = 'en-US';
@@ -1471,42 +1488,22 @@ if (!empty($dashboardToken)) {
         }
 
         function announceFireDanger(level) {
-            const settings = appConfig?.dashboard_settings || {};
-            if (!settings.audio_enabled) return;
+            if (!audioEnabled) return;
             try {
-                alertPlayer.src = settings.alert_audio_fire || 'https://cdn.freesound.org/previews/219/219244_4032688-lq.mp3';
+                alertPlayer.src = 'https://cdn.freesound.org/previews/219/219244_4032688-lq.mp3';
                 alertPlayer.volume = 0.5;
-                alertPlayer.play().catch(e => {
-                    if (e.name === 'NotAllowedError') {
-                        const overlay = document.getElementById('audio-unlock-overlay');
-                        if (overlay) overlay.style.display = 'flex';
-                    }
-                });
-                alertPlayer.onended = () => {
-                    if (settings.tts_enabled) {
-                        playGoogleTTS(`Today's Fire Danger is: ${level}`);
-                    }
-                };
+                alertPlayer.play().catch(e => {});
+                alertPlayer.onended = () => { playGoogleTTS(`Today's Fire Danger is: ${level}`); };
             } catch (e) { console.error(e); }
         }
 
         function announceNewBurnPermit(address) {
-            const settings = appConfig?.dashboard_settings || {};
-            if (!settings.audio_enabled) return;
+            if (!audioEnabled) return;
             try {
-                alertPlayer.src = settings.alert_audio_permit || 'https://cdn.freesound.org/previews/415/415763_6142149-lq.mp3';
+                alertPlayer.src = 'https://cdn.freesound.org/previews/415/415763_6142149-lq.mp3';
                 alertPlayer.volume = 0.6;
-                alertPlayer.play().catch(e => {
-                    if (e.name === 'NotAllowedError') {
-                        const overlay = document.getElementById('audio-unlock-overlay');
-                        if (overlay) overlay.style.display = 'flex';
-                    }
-                });
-                alertPlayer.onended = () => {
-                    if (settings.tts_enabled) {
-                        playGoogleTTS(`New Permit Issued for ${address}`);
-                    }
-                };
+                alertPlayer.play().catch(e => {});
+                alertPlayer.onended = () => { playGoogleTTS(`New Permit Issued for ${address}`); };
             } catch (e) { console.error(e); }
         }
 
@@ -1672,14 +1669,13 @@ if (!empty($dashboardToken)) {
         }
 
         function createMeetingEventHtml(meeting, isDeptEvent=false) {
-            let summary = escapeHtml(meeting.summary || 'Meeting');
+            let summary = meeting.summary || 'Meeting';
 
             if (isDeptEvent && meeting.eventType) {
-                const loc = escapeHtml(meeting.location || '');
                 if (meeting.eventType === 'Room Rental') {
-                    summary = `Room Rental${loc ? ' (' + loc + ')' : ''} - ${summary}`;
+                    summary = `Room Rental${meeting.location ? ' (' + meeting.location + ')' : ''} - ${summary}`;
                 } else if (meeting.eventType !== 'Training') {
-                    summary = `${summary}${loc ? ' - ' + loc : ''}`;
+                    summary = `${summary}${meeting.location ? ' - ' + meeting.location : ''}`;
                 }
             }
 
@@ -1700,14 +1696,13 @@ if (!empty($dashboardToken)) {
             const dotColor = isDeptEvent ? '#20c997' : '#007bff';
             return `<div class="event" style="padding: 15px 18px; border-left: 4px solid ${dotColor};">
                 <div class="event-left"><div class="event-name" style="font-size:1em;">${summary}</div></div>
-                <div class="event-right"><div class="event-until" style="font-size:0.9em;">${escapeHtml(timeStr)}</div></div>
+                <div class="event-right"><div class="event-until" style="font-size:0.9em;">${timeStr}</div></div>
             </div>`;
         }
 
         async function fetchAllTownMeetings() {
             const calendarUrl = `${appConfig.calendar_urls?.town_meetings || 'https://calendar.google.com/calendar/ical/amarshall@oaklandme.gov/public/basic.ics'}?nocache=${Date.now()}`;
-            const token = encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '');
-            const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(calendarUrl)}&_cb=${Date.now()}&token=${token}`;
+            const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(calendarUrl)}&_cb=${Date.now()}`;
             const allMeetings = [];
             try {
                 const response = await fetch(proxyUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
@@ -1756,7 +1751,7 @@ if (!empty($dashboardToken)) {
                 appConfig.announcements.forEach(ann => {
                     if (ann.start_date <= todayStr && ann.end_date >= todayStr) {
                         hasAnn = true;
-                        annHtml += `<div class="announcement-card announcement-content">${escapeHtml(ann.content)}</div>`;
+                        annHtml += `<div class="announcement-card announcement-content">${ann.content}</div>`;
                     }
                 });
                 if(annHtml) annCont.insertAdjacentHTML('beforeend', annHtml);
@@ -1870,8 +1865,7 @@ if (!empty($dashboardToken)) {
 
         async function loadHolidays() {
             const holidayUrl = `${appConfig.calendar_urls?.holidays || 'https://calendars.icloud.com/holidays/us_en-us.ics'}?nocache=${Date.now()}`;
-            const token = encodeURIComponent(new URLSearchParams(window.location.search).get('token') || '');
-            const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(holidayUrl)}&_cb=${Date.now()}&token=${token}`;
+            const proxyUrl = `api/fetch_calendar.php?url=${encodeURIComponent(holidayUrl)}&_cb=${Date.now()}`;
             try {
                 const response = await fetch(proxyUrl, { headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }, cache: 'no-store' });
                 if (!response.ok) return;
@@ -1919,7 +1913,7 @@ if (!empty($dashboardToken)) {
             const todaysChores = appConfig.chores ? appConfig.chores.filter(c => c.id == choreNum) : [];
             if (todaysChores.length > 0) {
                 let choresHtml = "";
-                todaysChores.forEach(c => { choresHtml += `<li>Clean ${escapeHtml(c.name)} (#${choreNum})</li>`; });
+                todaysChores.forEach(c => { choresHtml += `<li>Clean ${c.name} (#${choreNum})</li>`; });
                 choreList.insertAdjacentHTML('beforeend', choresHtml);
             } else {
                  choreList.insertAdjacentHTML('beforeend', `<li>Clean (#${choreNum})</li>`);
@@ -1930,7 +1924,7 @@ if (!empty($dashboardToken)) {
             const todaysSpecialChores = getTodaysSpecialChores(now);
             let spHtml = "";
             todaysSpecialChores.forEach(scName => {
-                spHtml += `<li style="color:#20c997;">${escapeHtml(scName)}</li>`;
+                spHtml += `<li style="color:#20c997;">${scName}</li>`;
             });
             if(spHtml) choreList.insertAdjacentHTML('beforeend', spHtml);
         }
@@ -1938,7 +1932,7 @@ if (!empty($dashboardToken)) {
         function renderEverydayChores(choreList) {
             const everyDayTasks = appConfig.everyday_chores || ["Clean Bathrooms", "Empty Trash Cans", "Wash Coffee Pot and Dishes"];
             let html = "";
-            everyDayTasks.forEach(task => { html += `<li>${escapeHtml(task)}</li>`; });
+            everyDayTasks.forEach(task => { html += `<li>${task}</li>`; });
             if(html) choreList.insertAdjacentHTML('beforeend', html);
         }
 
@@ -2496,7 +2490,7 @@ if (!empty($dashboardToken)) {
                 const day=eventEnd.toLocaleDateString([],{weekday:'short'});
                 const m=eventEnd.getMonth()+1;
                 const d=eventEnd.getDate();
-                nextDaySpan=` <span style="font-size: 0.60em; opacity: 0.7;">(${day} ${m}/${d})</span>`;
+                nextDaySpan=` <span style="font-size: 0.9em; opacity: 0.7;">(${day} ${m}/${d})</span>`;
             }
 
             if(container.id==='onDutyLaterContainer' || container.id === 'chores-on-duty-later-container'){
@@ -2515,29 +2509,15 @@ if (!empty($dashboardToken)) {
             container.appendChild(eventDiv);
         }
 
-        function showPermitDetails(detailsHtml, lat = null, lon = null) {
+        function showPermitDetails(detailsHtml) {
             pauseRotation();
             const modalOverlay = document.getElementById('permit-modal-overlay');
             const modalBody = document.getElementById('permit-modal-body');
 
             const cleanedDetailsHtml = detailsHtml.replace(/<td[^>]*>.*?DEPARTMENT OF AGRICULTURE, CONSERVATION &amp; FORESTRY<br>\s*OPEN BURNING PERMIT.*?<\/td>/s, '');
 
-            let html = `<table><tbody>${cleanedDetailsHtml}</tbody></table>`;
-            if (lat !== null && lon !== null) {
-                html += '<div id="modalMap" style="height: 200px; width: 100%; margin-top: clamp(5px, 1.5vh, 15px); border-radius: 4px; pointer-events: none;"></div>';
-            }
-            modalBody.innerHTML = html;
+            modalBody.innerHTML = `<table><tbody>${cleanedDetailsHtml}</tbody></table>`;
             modalOverlay.style.display = 'flex';
-
-            if (lat !== null && lon !== null) {
-                const modalMapInstance = L.map('modalMap', {zoomControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false}).setView([lat, lon], 15);
-                const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-                L.tileLayer(tileUrl, {
-                    maxZoom: 19
-                }).addTo(modalMapInstance);
-                L.marker([lat, lon], { icon: flameIcon }).addTo(modalMapInstance);
-                setTimeout(() => { modalMapInstance.invalidateSize(); }, 100);
-            }
 
             const modalContent = document.getElementById('permit-modal-content');
             modalContent.addEventListener('click', closePermitDetails, { once: true });
@@ -2805,25 +2785,6 @@ if (!empty($dashboardToken)) {
 
             const results = await Promise.all(geocodePromises);
             const locations = [];
-
-            const dynamicIconSize = permits.length > 5 ? 24 : 48;
-            const dynamicIconAnchor = dynamicIconSize / 2;
-            const dynamicFlameIcon = L.divIcon({
-                className: "custom-tv-marker",
-                html: "<div style=\"width: 25px; height: 25px; background-color: #ff3b30; border: 3px solid white; border-radius: 50%; box-shadow: 0 0 10px rgba(255, 59, 48, 0.8);\"></div>",
-                iconSize: [25, 25],
-                iconAnchor: [12, 12],
-                popupAnchor: [0, -12],
-                tooltipAnchor: [15, 0]
-            });
-            /*
-                iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2Y5NzQwNiIgc3Ryb2tlPSIjZGMyNjI2IiBzdHJva2Utd2lkdGg9IjEuNSI+PHBhdGggZD0iTT EyIDJDMTIgMiA4IDYuNSA4IDExYzAgNCA0IDggNCA4czQtNCA0LThjMC00LjUtNC05LTQtOXoiLz48cGF0aCBkPSJNMTIgNGMtMS41IDEuNS0yIDQtMiA2cy41IDQuNSAyIDYiLz48cGF0aCBkPSJNMTQuNSAxM2MuNS0xLjUgMS0zLjUgMC01LjUiLz48L3N2Zz4=',
-                iconSize: [dynamicIconSize, dynamicIconSize],
-                iconAnchor: [dynamicIconAnchor, dynamicIconSize],
-                popupAnchor: [0, -dynamicIconSize],
-                tooltipAnchor: [dynamicIconAnchor, -Math.floor(dynamicIconSize * 0.6)]
-            }); */
-
             results.forEach((result, index) => {
                 if (result && result.length > 0) {
                     const { lat, lon } = result[0];
@@ -2831,7 +2792,7 @@ if (!empty($dashboardToken)) {
                     const address = formatMapTooltipAddress(permit.location);
                     const detailsHtml = permit.description.split('Details:')[1] || '';
 
-                    const marker = L.marker([lat, lon], { icon: dynamicFlameIcon }).addTo(permitMap)
+                    const marker = L.marker([lat, lon], { icon: flameIcon }).addTo(permitMap)
                         .bindTooltip(address, {
                             permanent: true,
                             direction: 'right',
@@ -2841,7 +2802,7 @@ if (!empty($dashboardToken)) {
 
                     if (detailsHtml.trim() !== '') {
                         marker.on('click', () => {
-                            showPermitDetails(detailsHtml, lat, lon);
+                            showPermitDetails(detailsHtml);
                         });
                     }
 
@@ -2930,35 +2891,11 @@ if (!empty($dashboardToken)) {
                 eventDiv.setAttribute("role", "button");
                 eventDiv.setAttribute("tabindex", "0");
                 eventDiv.setAttribute("aria-label", `Burn Permit for ${eventData.location ? escapeHtml(eventData.location.split(',')[0].trim()) : 'Address not provided'}`);
-                eventDiv.addEventListener('click', () => {
-                    let lat = null, lon = null;
-                    if (eventData.location) {
-                        const addr = eventData.location;
-                        if (geocodeCache.has(addr)) {
-                            const res = geocodeCache.get(addr);
-                            if (res && res.length > 0) {
-                                lat = res[0].lat;
-                                lon = res[0].lon;
-                            }
-                        }
-                    }
-                    showPermitDetails(detailsHtml, lat, lon);
-                });
+                eventDiv.addEventListener('click', () => showPermitDetails(detailsHtml));
                 eventDiv.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        let lat = null, lon = null;
-                        if (eventData.location) {
-                            const addr = eventData.location;
-                            if (geocodeCache.has(addr)) {
-                                const res = geocodeCache.get(addr);
-                                if (res && res.length > 0) {
-                                    lat = res[0].lat;
-                                    lon = res[0].lon;
-                                }
-                            }
-                        }
-                        showPermitDetails(detailsHtml, lat, lon);
+                        showPermitDetails(detailsHtml);
                     }
                 });
             }

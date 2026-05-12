@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+console.time("RegExp in loop");
+let foundRole1 = '';
+for(let i=0; i<10000; i++) {
+    const roles=["Career","Chief","Per-Diem","Night Duty"];
+    let cleanedSummary="Career 7a - 7a";
+    for(const role of roles){
+        const roleRegex=new RegExp(`\\s*${role}\\s*`,'i');
+        if(roleRegex.test(cleanedSummary)){
+            foundRole1=cleanedSummary.match(roleRegex)[0].trim();
+            cleanedSummary=cleanedSummary.replace(roleRegex,'').trim();
+            break;
+        }
+    }
+}
+console.timeEnd("RegExp in loop");
+
+console.time("RegExp global");
+const rolesRegexps = [
+    { role: "Career", regex: /\s*Career\s*/i },
+    { role: "Chief", regex: /\s*Chief\s*/i },
+    { role: "Per-Diem", regex: /\s*Per-Diem\s*/i },
+    { role: "Night Duty", regex: /\s*Night Duty\s*/i }
+];
+let foundRole2 = '';
+for(let i=0; i<10000; i++) {
+    let cleanedSummary="Career 7a - 7a";
+    for(const r of rolesRegexps){
+        if(r.regex.test(cleanedSummary)){
+            foundRole2=cleanedSummary.match(r.regex)[0].trim();
+            cleanedSummary=cleanedSummary.replace(r.regex,'').trim();
+            break;
+        }
+    }
+}
+console.timeEnd("RegExp global");
+</script>
+</body>
+</html>

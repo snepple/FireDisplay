@@ -214,7 +214,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
             }
         }
 
-        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [role=\"button\"]:focus-visible {
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [role="button"]:focus-visible {
             outline: 2px solid var(--primary-color);
             outline-offset: 2px;
         }
@@ -639,6 +639,9 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 </style>
 
     <script>
+        const TIME_RANGE_REGEX = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
+        const REGEX_ROLE_REPLACE = /career|per-diem|night duty/ig;
+        const REGEX_DASH = /-/g;
         function extractRecurrenceState(data) {
             return {
                 rec: data && data.recurrence ? data.recurrence : 'none',
@@ -1559,7 +1562,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                             const parseDate = new Date(); parseDate.setDate(parseDate.getDate() + 90);
 
-                            const timeRegex = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
+
 
                             const formatTime = (d) => {
                                 let h = d.getHours(); let m = d.getMinutes();
@@ -1579,7 +1582,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 if(summary.includes('per-diem')) { typeClass = 'bg-perdiem'; typeCode = 'P'; }
                                 if(summary.includes('night duty')) { typeClass = 'bg-night'; typeCode = 'N'; }
 
-                                const nameClean = (vevent.summary || '').replace(timeRegex, '').replace(/career|per-diem|night duty/ig, '').replace(/-/g, '').trim();
+                                const nameClean = (vevent.summary || '').replace(TIME_RANGE_REGEX, '').replace(REGEX_ROLE_REPLACE, '').replace(REGEX_DASH, '').trim();
 
                                 const processOccurrence = (occurrence) => {
                                     const dateKey = formatYMD(occurrence.startDate.toJSDate());
@@ -2108,7 +2111,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <div class="form-group">
                         <textarea id="test_email_content" rows="10" style="font-family: Inter, monospace; font-size: 0.85em; background: var(--bg-color); color: var(--text-color); width: 100%; border: 1px solid var(--border-color); padding: 10px; border-radius: 4px;"></textarea>
                     </div>
-                    <button type="button" id="testEmailExtractionBtn" class="btn btn-secondary" style="margin-top: 10px; padding: 10px 20px; font-weight: bold; background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;" onclick="testEmailExtraction()">Test Extraction</button>
+                    <button type="button" class="btn btn-secondary" style="margin-top: 10px; padding: 10px 20px; font-weight: bold; background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;" onclick="testEmailExtraction()">Test Extraction</button>
 
                     <div id="test_email_results" style="margin-top: 20px; padding: 15px; border-radius: 6px; background: #f8f9fa; border: 1px solid #dee2e6; display: none;">
                         <h4 style="margin-top: 0; border-bottom: 1px solid #dee2e6; padding-bottom: 8px; margin-bottom: 12px; color: #495057;">Extraction Results</h4>
@@ -2231,11 +2234,6 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         resultsDiv.style.display = 'block';
                         resultsContent.innerHTML = '<em>Testing extraction...</em>';
 
-                        const btn = document.getElementById('testEmailExtractionBtn');
-                        const originalText = btn.textContent;
-                        btn.disabled = true;
-                        btn.textContent = 'Testing...';
-
                         try {
                             const response = await fetch('api/process_email.php?test=true&token=' + encodeURIComponent(document.querySelector('input[name="dashboard_token"]') ? document.querySelector('input[name="dashboard_token"]').value : ''), {
                                 method: 'POST',
@@ -2271,9 +2269,6 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                         } catch (e) {
                             resultsContent.innerHTML = `<div style="color: #dc3545;"><strong>Error during extraction:</strong> ${e.message}</div>`;
-                        } finally {
-                            btn.disabled = false;
-                            btn.textContent = originalText;
                         }
                     }
                 </script>
