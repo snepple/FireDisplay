@@ -450,7 +450,7 @@ if (!empty($dashboardToken)) {
             </div>
             <div id="permit-modal-body"></div>
             <div id="permit-modal-footer">
-                <p>Click this window to close (auto-closes in 1 minute)</p>
+                <p>Click this window or press Escape to close (auto-closes in 1 minute)</p>
             </div>
         </div>
     </div>
@@ -2542,6 +2542,14 @@ if (!empty($dashboardToken)) {
             const modalContent = document.getElementById('permit-modal-content');
             modalContent.addEventListener('click', closePermitDetails, { once: true });
 
+            if (window._permitModalEscapeHandler) {
+                document.removeEventListener('keydown', window._permitModalEscapeHandler);
+            }
+            window._permitModalEscapeHandler = (e) => {
+                if (e.key === 'Escape') closePermitDetails();
+            };
+            document.addEventListener('keydown', window._permitModalEscapeHandler);
+
             if (modalCloseTimer) clearTimeout(modalCloseTimer);
             modalCloseTimer = setTimeout(closePermitDetails, 60000);
         }
@@ -2553,6 +2561,10 @@ if (!empty($dashboardToken)) {
                 if (modalCloseTimer) {
                     clearTimeout(modalCloseTimer);
                     modalCloseTimer = null;
+                }
+                if (window._permitModalEscapeHandler) {
+                    document.removeEventListener('keydown', window._permitModalEscapeHandler);
+                    window._permitModalEscapeHandler = null;
                 }
                 resumeRotation();
             }
@@ -2895,6 +2907,7 @@ if (!empty($dashboardToken)) {
         }
 
         function showPermitModal(permitData) {
+            pauseRotation();
             const modalOverlay = document.getElementById('permit-modal-overlay');
             const modalBody = document.getElementById('permit-modal-body');
 
@@ -2910,6 +2923,20 @@ if (!empty($dashboardToken)) {
             `;
             modalBody.innerHTML = tableHTML;
             modalOverlay.style.display = 'flex';
+
+            const modalContent = document.getElementById('permit-modal-content');
+            modalContent.addEventListener('click', closePermitDetails, { once: true });
+
+            if (window._permitModalEscapeHandler) {
+                document.removeEventListener('keydown', window._permitModalEscapeHandler);
+            }
+            window._permitModalEscapeHandler = (e) => {
+                if (e.key === 'Escape') closePermitDetails();
+            };
+            document.addEventListener('keydown', window._permitModalEscapeHandler);
+
+            if (modalCloseTimer) clearTimeout(modalCloseTimer);
+            modalCloseTimer = setTimeout(closePermitDetails, 60000);
         }
 
 
