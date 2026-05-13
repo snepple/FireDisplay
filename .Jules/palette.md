@@ -31,3 +31,6 @@
 ## 2024-05-30 - Unique IDs for Dynamic Form Elements
 **Learning:** Found that dynamically generated forms (like repeating "Add Station" sections or dynamically added events/chores in JavaScript) often duplicate `<label>` and `<input>` elements without providing unique `id`s, breaking the `for` association and causing accessibility and interaction issues (e.g. clicking a label focuses the first input on the page instead of the adjacent one).
 **Action:** When creating or looping over dynamic form elements, always generate a unique suffix (using `uniqid()` in PHP or a random string / iterator in JavaScript) to append to the input `id` and the label `for` attribute, ensuring explicit and unique mapping is maintained.
+## 2026-05-13 - Added Escape key support to Modals
+**Learning:** Found that custom modals (like the Burn Permit modal in `index.php`) lacked keyboard accessibility for closing. While a click listener was added to the content area, users who rely on keyboard navigation could not dismiss the modal without interacting with the mouse.
+**Action:** Always ensure that custom modal implementations track and listen for the 'Escape' key (`keydown` event), and explicitly remove the listener when the modal closes to prevent duplicate events or memory leaks.
