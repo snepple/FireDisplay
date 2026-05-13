@@ -1,4 +1,6 @@
 <?php
+ini_set('session.use_strict_mode', 1);
+session_set_cookie_params(['httponly' => true, 'samesite' => 'Strict']);
 session_start();
 header("Content-Type: application/json; charset=utf-8");
 
