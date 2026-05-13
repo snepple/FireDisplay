@@ -80,3 +80,8 @@
 **Vulnerability:** The `config.json` file (containing API keys and hashed admin passwords) and the `data/` directory (containing system logs and PII in `permits.json`) were publicly accessible over direct HTTP requests because they lacked access control restrictions on the web server.
 **Learning:** In applications deployed on shared hosting (like Apache), placing configuration or data files within the web root without explicit `.htaccess` protections makes them completely vulnerable to direct downloading by unauthenticated attackers.
 **Prevention:** Always place sensitive files outside the web root if possible. If they must reside within the web root (common in shared hosting), always include `.htaccess` files with `Require all denied` directives to prevent direct HTTP access to these files while still allowing the backend PHP scripts to read them natively.
+
+## $(date +%Y-%m-%d) - Enforce Secure Session Parameters
+**Vulnerability:** Sessions initialized with `session_start()` without secure configuration (like `session.use_strict_mode` and strict cookie parameters) are vulnerable to session fixation and session hijacking via XSS or insecure transmission.
+**Learning:** By default, PHP sessions might accept uninitialized session IDs provided by the client (fixation) and might not restrict session cookies to HTTP-only or SameSite boundaries.
+**Prevention:** Always enforce secure session initialization by explicitly calling `ini_set('session.use_strict_mode', 1);` and `session_set_cookie_params(['httponly' => true, 'samesite' => 'Strict']);` immediately before every `session_start()` call.

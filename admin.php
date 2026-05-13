@@ -1,4 +1,6 @@
 <?php
+ini_set('session.use_strict_mode', 1);
+session_set_cookie_params(['httponly' => true, 'samesite' => 'Strict']);
 session_start();
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -214,7 +216,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
             }
         }
 
-        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [role="button"]:focus-visible {
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [role='button']:focus-visible {
             outline: 2px solid var(--primary-color);
             outline-offset: 2px;
         }
