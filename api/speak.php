@@ -38,17 +38,21 @@ if (!is_dir($cacheDir)) {
 $cacheKey = md5($text);
 $cacheFile = $cacheDir . '/' . $cacheKey . '.mp3';
 
-// Background cleanup of old TTS cache files
+// ⚡ Bolt Optimization: Use DirectoryIterator instead of glob() for cache cleanup
+// This avoids reading the entire directory into memory at once and allows combining
+// file checks (type, extension, age) into a single pass per item without redundant stat() calls.
 register_shutdown_function(function() use ($cacheDir) {
     if (rand(1, 50) === 1) { // 2% chance
-        $files = glob($cacheDir . '/*.mp3');
-        $now = time();
-        if ($files) {
-            foreach ($files as $f) {
-                if (is_file($f) && ($now - filemtime($f)) > 2592000) { // older than 30 days
-                    @unlink($f);
+        try {
+            $iterator = new DirectoryIterator($cacheDir);
+            $now = time();
+            foreach ($iterator as $fileinfo) {
+                if ($fileinfo->isFile() && $fileinfo->getExtension() === 'mp3' && ($now - $fileinfo->getMTime()) > 2592000) { // older than 30 days
+                    @unlink($fileinfo->getPathname());
                 }
             }
+        } catch (Exception $e) {
+            // Ignore directory iteration errors (e.g., dir doesn't exist yet)
         }
     }
 });

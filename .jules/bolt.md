@@ -32,3 +32,6 @@
 ## 2026-05-12 - Extract invariant RegEx from loops
 **Learning:** Dynamically instantiating `new RegExp()` inside high-frequency rendering loops (`renderEvent`) and string replacements within the application causes measurable CPU overhead and creates unnecessary garbage collection pressure, negatively impacting performance.
 **Action:** Always extract invariant Regular Expressions to module-level or global constants so they are compiled exactly once when the script loads, rather than being re-created dynamically inside loops or function calls.
+## 2024-06-05 - [Backend Optimization] Efficient Directory Cleanup
+**Learning:** Using `glob()` to iterate over large directories for cleanup tasks loads the entire matched file list into an array in memory. This causes high memory consumption and poor performance. Additionally, performing sequential `is_file()` and `filemtime()` calls adds significant overhead due to redundant system `stat()` operations.
+**Action:** For caching cleanup tasks, always use `DirectoryIterator` instead of `glob()`. It yields one file at a time, minimizing memory usage. Combine file property checks (`isFile()`, `getExtension()`, `getMTime()`) directly on the `$fileinfo` object in a single pass to eliminate redundant `stat()` calls.
