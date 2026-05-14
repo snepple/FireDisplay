@@ -891,7 +891,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 </div>
                                 <label>Rooms Available (e.g., Training Room)</label>
                                 <div class="flex-row" style="margin-bottom: 10px;">
-                                    <input type="text" class="room-input" aria-label="Room Name" placeholder="Room Name" style="flex:1;">
+                                    <input type="text" class="room-input" aria-label="Room Name" placeholder="Room Name" style="flex:1;" onkeydown="if(event.key === 'Enter') { event.preventDefault(); addRoomToStation(this.nextElementSibling); }">
                                     <button type="button" class="action-btn" onclick="addRoomToStation(this)">Add Room</button>
                                 </div>
                                 <div class="rooms-visual-list">
@@ -977,7 +977,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             </div>
                             <label>Rooms Available (e.g., Training Room)</label>
                             <div class="flex-row" style="margin-bottom: 10px;">
-                                <input type="text" class="room-input" aria-label="Room Name" placeholder="Room Name" style="flex:1;">
+                                <input type="text" class="room-input" aria-label="Room Name" placeholder="Room Name" style="flex:1;" onkeydown="if(event.key === 'Enter') { event.preventDefault(); addRoomToStation(this.nextElementSibling); }">
                                 <button type="button" class="action-btn" onclick="addRoomToStation(this)">Add Room</button>
                             </div>
                             <div class="rooms-visual-list"></div>`;
