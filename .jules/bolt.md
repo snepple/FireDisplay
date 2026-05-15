@@ -32,3 +32,6 @@
 ## 2026-05-12 - Extract invariant RegEx from loops
 **Learning:** Dynamically instantiating `new RegExp()` inside high-frequency rendering loops (`renderEvent`) and string replacements within the application causes measurable CPU overhead and creates unnecessary garbage collection pressure, negatively impacting performance.
 **Action:** Always extract invariant Regular Expressions to module-level or global constants so they are compiled exactly once when the script loads, rather than being re-created dynamically inside loops or function calls.
+## 2024-05-31 - [Intl DateTimeFormat Optimization]
+**Learning:** Calling `toLocaleDateString()` and `toLocaleTimeString()` repeatedly inside a loop is slow because it instantiates a new locale formatter every time.
+**Action:** When formatting dates/times in a loop (like generating calendar days), instantiate `new Intl.DateTimeFormat()` once before the loop and reuse its `format()` method.
