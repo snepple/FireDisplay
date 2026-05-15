@@ -71,14 +71,17 @@ $cacheFile = $cacheDir . '/calendar_cache_' . md5($cacheUrl) . '.ics';
 // Background cleanup of old cache files
 register_shutdown_function(function() use ($cacheDir) {
     if (rand(1, 20) === 1) { // 5% chance
-        $files = glob($cacheDir . '/calendar_cache_*.ics');
-        $now = time();
-        if ($files) {
-            foreach ($files as $f) {
-                if (is_file($f) && ($now - filemtime($f)) > 86400) { // older than 24 hours
-                    @unlink($f);
+        try {
+            // ⚡ Bolt: Use DirectoryIterator instead of glob() to prevent loading entire directory into memory.
+            $dir = new DirectoryIterator($cacheDir);
+            $now = time();
+            foreach ($dir as $fileinfo) {
+                if ($fileinfo->isFile() && $fileinfo->getExtension() === 'ics' && strpos($fileinfo->getFilename(), 'calendar_cache_') === 0 && ($now - $fileinfo->getMTime()) > 86400) { // older than 24 hours
+                    @unlink($fileinfo->getPathname());
                 }
             }
+        } catch (Exception $e) {
+            // Ignore directory read errors
         }
     }
 });
