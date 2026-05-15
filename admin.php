@@ -1,4 +1,10 @@
 <?php
+// Security headers
+header('X-Frame-Options: DENY');
+header('X-XSS-Protection: 1; mode=block');
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+
 ini_set('session.use_strict_mode', 1);
 session_set_cookie_params(['httponly' => true, 'samesite' => 'Strict']);
 session_start();
