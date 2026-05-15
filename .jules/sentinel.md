@@ -85,3 +85,8 @@
 **Vulnerability:** Sessions initialized with `session_start()` without secure configuration (like `session.use_strict_mode` and strict cookie parameters) are vulnerable to session fixation and session hijacking via XSS or insecure transmission.
 **Learning:** By default, PHP sessions might accept uninitialized session IDs provided by the client (fixation) and might not restrict session cookies to HTTP-only or SameSite boundaries.
 **Prevention:** Always enforce secure session initialization by explicitly calling `ini_set('session.use_strict_mode', 1);` and `session_set_cookie_params(['httponly' => true, 'samesite' => 'Strict']);` immediately before every `session_start()` call.
+
+## 2026-05-15 - Adding Security Headers for Defense in Depth
+**Vulnerability:** The application was missing basic security headers (`X-Frame-Options`, `X-XSS-Protection`, `X-Content-Type-Options`, `Referrer-Policy`) on the sensitive administrative interface (`admin.php`), potentially exposing it to clickjacking, MIME-type sniffing, or cross-site scripting risks depending on browser behavior.
+**Learning:** Adding fundamental security headers is a necessary layer of defense in depth for web applications, especially for administrative interfaces where high-privilege actions are performed.
+**Prevention:** Always implement common security headers (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `X-XSS-Protection: 1; mode=block`, etc.) as early as possible in the request lifecycle or directly in the web server configuration to protect endpoints from basic web vulnerabilities.
