@@ -17,7 +17,7 @@ function sys_log($component, $message, $status = 'info', $details = []) {
     // Create file if it doesn't exist
     if (!file_exists($logFile)) {
         file_put_contents($logFile, '');
-        chmod($logFile, 0666);
+        chmod($logFile, 0640);
     }
 
     // Check size and rotate if needed
@@ -25,7 +25,7 @@ function sys_log($component, $message, $status = 'info', $details = []) {
         $backupFile = $logFile . '.old';
         rename($logFile, $backupFile);
         file_put_contents($logFile, '');
-        chmod($logFile, 0666);
+        chmod($logFile, 0640);
     }
 
     // Append to log
