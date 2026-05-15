@@ -641,6 +641,14 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 </style>
 
     <script>
+        // ⚡ Bolt Optimization: Cache Intl.DateTimeFormat instances
+        const dateFormatterMonthLong = new Intl.DateTimeFormat([], { month: 'long', year: 'numeric' });
+        const dateFormatterMonthDayShort = new Intl.DateTimeFormat([], { month: 'short', day: 'numeric' });
+        const dateFormatterMonthDayYearShort = new Intl.DateTimeFormat([], { month: 'short', day: 'numeric', year: 'numeric' });
+        const dateFormatterWeekdayMonthDayYearLong = new Intl.DateTimeFormat([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        const dateFormatterWeekdayMonthDayShort = new Intl.DateTimeFormat([], { weekday: 'short', month: 'short', day: 'numeric' });
+        const dateTimeFormatterShort = new Intl.DateTimeFormat('en-US', { year: '2-digit', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+
         const TIME_RANGE_REGEX = /\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm|a|p)?/gi;
         const REGEX_ROLE_REPLACE = /career|per-diem|night duty/ig;
         const REGEX_DASH = /-/g;
@@ -1085,7 +1093,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                         let now = new Date();
                         let targetMonth = new Date(now.getFullYear(), now.getMonth() + appMoOffset, 1);
-                        document.getElementById('appMonthTitle').textContent = targetMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
+                        document.getElementById('appMonthTitle').textContent = dateFormatterMonthLong.format(targetMonth);
 
                         let firstDay = new Date(targetMonth);
                         firstDay.setDate(1 - firstDay.getDay());
@@ -1306,7 +1314,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                         let now = new Date();
                         let targetMonth = new Date(now.getFullYear(), now.getMonth() + choreMoOffset, 1);
-                        document.getElementById('choreMonthTitle').textContent = targetMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
+                        document.getElementById('choreMonthTitle').textContent = dateFormatterMonthLong.format(targetMonth);
 
                         let firstDay = new Date(targetMonth);
                         firstDay.setDate(1 - firstDay.getDay());
@@ -1622,7 +1630,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             const daysInMonth = new Date(calAnchorDate.getFullYear(), calAnchorDate.getMonth() + 1, 0).getDate();
                             const weeks = Math.ceil((new Date(calAnchorDate.getFullYear(), calAnchorDate.getMonth(), 1).getDay() + daysInMonth) / 7);
                             daysToRender = weeks * 7;
-                            document.getElementById('adminMonthTitle').textContent = calAnchorDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+                            document.getElementById('adminMonthTitle').textContent = dateFormatterMonthLong.format(calAnchorDate);
                             labelsContainer.style.display = 'grid'; labelsContainer.style.gridTemplateColumns = 'repeat(7, 1fr)';
                             labelsContainer.innerHTML = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="admin-cal-lbl">${d}</div>`).join('');
                             grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
@@ -1631,14 +1639,14 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             startDate.setDate(startDate.getDate() - startDate.getDay());
                             daysToRender = 7;
                             let endWk = new Date(startDate); endWk.setDate(endWk.getDate() + 6);
-                            document.getElementById('adminMonthTitle').textContent = `${startDate.toLocaleDateString([], {month:'short', day:'numeric'})} - ${endWk.toLocaleDateString([], {month:'short', day:'numeric', year:'numeric'})}`;
+                            document.getElementById('adminMonthTitle').textContent = `${dateFormatterMonthDayShort.format(startDate)} - ${dateFormatterMonthDayYearShort.format(endWk)}`;
                             labelsContainer.style.display = 'grid'; labelsContainer.style.gridTemplateColumns = 'repeat(7, 1fr)';
                             labelsContainer.innerHTML = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="admin-cal-lbl">${d}</div>`).join('');
                             grid.style.gridTemplateColumns = 'repeat(7, 1fr)';
                         }
                         else if (calViewMode === 'day') {
                             daysToRender = 1;
-                            document.getElementById('adminMonthTitle').textContent = startDate.toLocaleDateString([], {weekday:'long', month:'long', day:'numeric', year:'numeric'});
+                            document.getElementById('adminMonthTitle').textContent = dateFormatterWeekdayMonthDayYearLong.format(startDate);
                             labelsContainer.style.display = 'none'; grid.style.gridTemplateColumns = '1fr';
                         }
 
@@ -1714,7 +1722,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                             const dateStr = formatYMD(renderCurrent);
                             let headerText = renderCurrent.getDate();
-                            if (calViewMode === 'week' || calViewMode === 'day') headerText = renderCurrent.toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'});
+                            if (calViewMode === 'week' || calViewMode === 'day') headerText = dateFormatterWeekdayMonthDayShort.format(renderCurrent);
                             div.innerHTML = `<div class="admin-cal-day-header">${headerText}</div>`;
 
                             // Render Employee Shifts as text blocks
@@ -1737,7 +1745,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                             div.setAttribute("role", "button");
                             div.setAttribute("tabindex", "0");
-                            div.setAttribute("aria-label", `Create event for ${renderCurrent.toLocaleDateString()}`);
+                            div.setAttribute("aria-label", `Create event for ${dateFormatterMonthDayYearShort.format(renderCurrent)}`);
                             div.onclick = () => {
                                 addEvent({start_date: dateStr, end_date: dateStr});
                                 document.getElementById('events-form-area').scrollIntoView({ behavior: 'smooth' });

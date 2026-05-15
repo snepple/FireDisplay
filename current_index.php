@@ -478,6 +478,15 @@ if (!empty($dashboardToken)) {
         ];
         const SUMMARY_ROLE_REGEX = /\s*(Career|Chief|Per-Diem|Night Duty)\s*/ig;
 
+        // ⚡ Bolt Optimization: Cache Intl.DateTimeFormat instances
+        const timeFormatterShort = new Intl.DateTimeFormat([], { hour: 'numeric', minute: '2-digit' });
+        const timeFormatter2Digit = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit' });
+        const dateFormatterWeekdayShort = new Intl.DateTimeFormat([], { weekday: 'short' });
+        const dateFormatterMonthShort = new Intl.DateTimeFormat([], { month: 'short' });
+        const dateFormatterMonthLong = new Intl.DateTimeFormat([], { month: 'long' });
+        const dateFormatterWeekdayMonthDay = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' });
+        const dateTimeFormatterShort = new Intl.DateTimeFormat('en-US', { year: '2-digit', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+
         const originalFetch = window.fetch;
         const fetchPromises = new Map();
 
@@ -1684,11 +1693,11 @@ if (!empty($dashboardToken)) {
                 let startTime = ''; let endTime = '';
                 if (meeting.startDate) {
                     const s = meeting.startDate.toJSDate ? meeting.startDate.toJSDate() : new Date(meeting.startDate);
-                    if(s.getHours()!==0 || s.getMinutes()!==0) startTime = s.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(' AM','a').replace(' PM','p');
+                    if(s.getHours()!==0 || s.getMinutes()!==0) startTime = timeFormatterShort.format(s).replace(' AM','a').replace(' PM','p');
                 }
                 if (meeting.endDate) {
                     const e = meeting.endDate.toJSDate ? meeting.endDate.toJSDate() : new Date(meeting.endDate);
-                    if(e.getHours()!==0 || e.getMinutes()!==0) endTime = e.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(' AM','a').replace(' PM','p');
+                    if(e.getHours()!==0 || e.getMinutes()!==0) endTime = timeFormatterShort.format(e).replace(' AM','a').replace(' PM','p');
                 }
                 timeStr = (startTime && endTime) ? `${startTime} - ${endTime}` : (startTime || 'All Day');
             }
@@ -2135,7 +2144,7 @@ if (!empty($dashboardToken)) {
 
                 if (i === 0 || currentDay.getDate() === 1) {
                     dayClass += ' new-month';
-                    const monthName = currentDay.toLocaleString('default', { month: 'short' });
+                    const monthName = dateFormatterMonthShort.format(currentDay);
                     dayNumberDisplay = `<span>${monthName} ${currentDay.getDate()}</span>`;
                 } else {
                     dayNumberDisplay = `<span>${currentDay.getDate()}</span>`;
@@ -2186,7 +2195,7 @@ if (!empty($dashboardToken)) {
                 meetings.sort((a, b) => a.startDate.toJSDate() - b.startDate.toJSDate());
                 if (meetings.length > 0) {
                     meetings.forEach(meeting => {
-                        const time = meeting.startDate.toJSDate().toLocaleTimeString([], { hour: 'numeric', minute:'2-digit' }).replace(' AM','a').replace(' PM','p');
+                        const time = timeFormatterShort.format(meeting.startDate.toJSDate()).replace(' AM','a').replace(' PM','p');
                         dayHtml += `<div class="calendar-event event-town-meeting" title="${meeting.summary}">${time} - ${meeting.summary}</div>`;
                     });
                 }
@@ -2196,7 +2205,7 @@ if (!empty($dashboardToken)) {
                     deptEvents.forEach(evt => {
                         let timeStr = "";
                         if(!evt.allDay && (evt.startDate.getHours() !== 0 || evt.startDate.getMinutes() !== 0)) {
-                            timeStr = evt.startDate.toLocaleTimeString([], { hour: 'numeric', minute:'2-digit' }).replace(' AM','a').replace(' PM','p') + " - ";
+                            timeStr = timeFormatterShort.format(evt.startDate).replace(' AM','a').replace(' PM','p') + " - ";
                         }
                         dayHtml += `<div class="calendar-event event-dept" title="${evt.summary}">${timeStr}${evt.summary}</div>`;
                     });
@@ -2234,7 +2243,7 @@ if (!empty($dashboardToken)) {
                     });
                 }
 
-                const dateString = checkDate.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric'});
+                const dateString = dateFormatterWeekdayMonthDay.format(checkDate);
 
                 if (rolesCount.career === 0) { allOpenShifts.push({ date: dateString, role: 'Career', time: '7a - 7a' }); }
                 if (rolesCount.perDiem === 0) { allOpenShifts.push({ date: dateString, role: 'Per Diem', time: '7a - 5p' }); }
@@ -2273,7 +2282,7 @@ if (!empty($dashboardToken)) {
             firstDayOfGrid.setDate(1 - firstDayOfGrid.getDay());
             firstDayOfGrid.setHours(0, 0, 0, 0);
 
-            const startMonthStr = targetMonth.toLocaleString('default', { month: 'long' });
+            const startMonthStr = dateFormatterMonthLong.format(targetMonth);
             const startYearStr = targetMonth.getFullYear();
 
             document.getElementById('calendar-month-year').textContent = `${startMonthStr} ${startYearStr}`;
@@ -2487,18 +2496,18 @@ if (!empty($dashboardToken)) {
             let nextDaySpan='';
 
             if(eventEnd.getDate()!==eventStart.getDate()){
-                const day=eventEnd.toLocaleDateString([],{weekday:'short'});
+                const day=dateFormatterWeekdayShort.format(eventEnd);
                 const m=eventEnd.getMonth()+1;
                 const d=eventEnd.getDate();
                 nextDaySpan=` <span style="font-size: 0.9em; opacity: 0.7;">(${day} ${m}/${d})</span>`;
             }
 
             if(container.id==='onDutyLaterContainer' || container.id === 'chores-on-duty-later-container'){
-                const startTime=eventStart.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
-                const endTime=eventEnd.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+                const startTime=timeFormatterShort.format(eventStart);
+                const endTime=timeFormatterShort.format(eventEnd);
                 timeText=`${startTime} - ${endTime}`;
             }else{
-                const endTime=eventEnd.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+                const endTime=timeFormatterShort.format(eventEnd);
                 timeText=`Until ${endTime}`;
             }
 
@@ -2843,7 +2852,7 @@ if (!empty($dashboardToken)) {
             const type = eventData.type || 'Open Burn';
 
             const expDate = new Date(eventData.expires);
-            const timeStr = expDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const timeStr = timeFormatter2Digit.format(expDate);
 
             eventDiv.setAttribute("role", "button");
             eventDiv.setAttribute("tabindex", "0");
@@ -2937,9 +2946,8 @@ if (!empty($dashboardToken)) {
 
             const eventStart = eventData.startDate.toJSDate();
             const eventEnd = eventData.endDate.toJSDate();
-            const timeOptions = { year: '2-digit', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' };
-            const startTime = eventStart.toLocaleString('en-US', timeOptions);
-            const endTime = eventEnd.toLocaleString('en-US', timeOptions);
+            const startTime = dateTimeFormatterShort.format(eventStart);
+            const endTime = dateTimeFormatterShort.format(eventEnd);
 
             eventDiv.innerHTML = `
                 <div class="permit-details">

@@ -46,3 +46,53 @@
 {"timestamp":"2026-05-13 10:58:11","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/calendars.icloud.com\/holidays\/us_en-us.ics?nocache=1778669890784"}}
 {"timestamp":"2026-05-13 10:58:11","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/calendar.google.com\/calendar\/ical\/amarshall@oaklandme.gov\/public\/basic.ics?nocache=1778669890784"}}
 {"timestamp":"2026-05-13 10:58:11","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/calendar.google.com\/calendar\/ical\/permitsburn@gmail.com\/public\/basic.ics?nocache=1778669890786"}}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics"}}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Successfully fetched ICS calendar","status":"success","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics","bytes":45}}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/example.com\/not-allowed.ics"}}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Fetch failed: URL missing","status":"error","details":[]}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics?test=123"}}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Successfully fetched ICS calendar","status":"success","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics?test=123","bytes":45}}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/calendar.google.com\/calendar\/ical\/permitsburn@gmail.com\/public\/basic.ics"}}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Successfully fetched ICS calendar","status":"success","details":{"url":"https:\/\/calendar.google.com\/calendar\/ical\/permitsburn@gmail.com\/public\/basic.ics","bytes":1154655}}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/example.com\/malicious.ics?fake=http:\/\/127.0.0.1:8082\/mock-calendar.ics"}}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar-with-qs.ics"}}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Successfully fetched ICS calendar","status":"success","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar-with-qs.ics","bytes":45}}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar-with-qs.ics?different=2"}}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Successfully fetched ICS calendar","status":"success","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar-with-qs.ics?different=2","bytes":45}}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics\/..\/evil.ics"}}
+{"timestamp":"2026-05-15 09:57:02","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics#evil"}}
+{"timestamp":"2026-05-15 10:40:27","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics"}}
+{"timestamp":"2026-05-15 10:40:27","component":"ICS","message":"Successfully fetched ICS calendar","status":"success","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics","bytes":45}}
+{"timestamp":"2026-05-15 10:40:27","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/example.com\/not-allowed.ics"}}
+{"timestamp":"2026-05-15 10:40:27","component":"ICS","message":"Fetch failed: URL missing","status":"error","details":[]}
+{"timestamp":"2026-05-15 10:40:27","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics?test=123"}}
+{"timestamp":"2026-05-15 10:40:27","component":"ICS","message":"Successfully fetched ICS calendar","status":"success","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics?test=123","bytes":45}}
+{"timestamp":"2026-05-15 10:40:27","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/calendar.google.com\/calendar\/ical\/permitsburn@gmail.com\/public\/basic.ics"}}
+{"timestamp":"2026-05-15 10:40:28","component":"ICS","message":"Successfully fetched ICS calendar","status":"success","details":{"url":"https:\/\/calendar.google.com\/calendar\/ical\/permitsburn@gmail.com\/public\/basic.ics","bytes":1154655}}
+{"timestamp":"2026-05-15 10:40:28","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/example.com\/malicious.ics?fake=http:\/\/127.0.0.1:8082\/mock-calendar.ics"}}
+{"timestamp":"2026-05-15 10:40:28","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar-with-qs.ics"}}
+{"timestamp":"2026-05-15 10:40:28","component":"ICS","message":"Successfully fetched ICS calendar","status":"success","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar-with-qs.ics","bytes":45}}
+{"timestamp":"2026-05-15 10:40:28","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar-with-qs.ics?different=2"}}
+{"timestamp":"2026-05-15 10:40:28","component":"ICS","message":"Successfully fetched ICS calendar","status":"success","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar-with-qs.ics?different=2","bytes":45}}
+{"timestamp":"2026-05-15 10:40:28","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics\/..\/evil.ics"}}
+{"timestamp":"2026-05-15 10:40:28","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics#evil"}}
+{"timestamp":"2026-05-15 10:50:11","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics"}}
+{"timestamp":"2026-05-15 10:50:11","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/example.com\/not-allowed.ics"}}
+{"timestamp":"2026-05-15 10:50:11","component":"ICS","message":"Fetch failed: URL missing","status":"error","details":[]}
+{"timestamp":"2026-05-15 10:50:11","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics?test=123"}}
+{"timestamp":"2026-05-15 10:50:11","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/calendar.google.com\/calendar\/ical\/permitsburn@gmail.com\/public\/basic.ics"}}
+{"timestamp":"2026-05-15 10:50:11","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/example.com\/malicious.ics?fake=http:\/\/127.0.0.1:8082\/mock-calendar.ics"}}
+{"timestamp":"2026-05-15 10:50:11","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar-with-qs.ics"}}
+{"timestamp":"2026-05-15 10:50:12","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar-with-qs.ics?different=2"}}
+{"timestamp":"2026-05-15 10:50:12","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics\/..\/evil.ics"}}
+{"timestamp":"2026-05-15 10:50:12","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics#evil"}}
+{"timestamp":"2026-05-15 10:54:47","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics"}}
+{"timestamp":"2026-05-15 10:54:47","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/example.com\/not-allowed.ics"}}
+{"timestamp":"2026-05-15 10:54:47","component":"ICS","message":"Fetch failed: URL missing","status":"error","details":[]}
+{"timestamp":"2026-05-15 10:54:47","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics?test=123"}}
+{"timestamp":"2026-05-15 10:54:47","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/calendar.google.com\/calendar\/ical\/permitsburn@gmail.com\/public\/basic.ics"}}
+{"timestamp":"2026-05-15 10:54:47","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"https:\/\/example.com\/malicious.ics?fake=http:\/\/127.0.0.1:8082\/mock-calendar.ics"}}
+{"timestamp":"2026-05-15 10:54:47","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar-with-qs.ics"}}
+{"timestamp":"2026-05-15 10:54:47","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar-with-qs.ics?different=2"}}
+{"timestamp":"2026-05-15 10:54:47","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics\/..\/evil.ics"}}
+{"timestamp":"2026-05-15 10:54:47","component":"ICS","message":"Fetching ICS calendar","status":"info","details":{"url":"http:\/\/127.0.0.1:8082\/mock-calendar.ics#evil"}}
