@@ -1494,10 +1494,10 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             <h2 id="adminMonthTitle" style="border:none; padding:0; margin:0; min-width: 200px; text-align:center;"></h2>
                             <button type="button" id="nextBtn" aria-label="Next date" onclick="changeAdminDate(1)" class="action-btn">&#10095;</button>
                         </div>
-                        <div class="btn-group">
-                            <button type="button" class="action-btn" onclick="setCalView('day')" id="btnDay">Day</button>
-                            <button type="button" class="action-btn" onclick="setCalView('week')" id="btnWeek">Week</button>
-                            <button type="button" class="action-btn" onclick="setCalView('month')" id="btnMonth">Month</button>
+                        <div class="btn-group" role="group" aria-label="Calendar View">
+                            <button type="button" class="action-btn" onclick="setCalView('day')" id="btnDay" aria-pressed="false">Day</button>
+                            <button type="button" class="action-btn" onclick="setCalView('week')" id="btnWeek" aria-pressed="false">Week</button>
+                            <button type="button" class="action-btn" onclick="setCalView('month')" id="btnMonth" aria-pressed="true">Month</button>
                         </div>
                     </div>
                     <div class="admin-cal-grid" id="adminCalLabels"></div>
@@ -1523,8 +1523,11 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     function setCalView(mode) {
                         calViewMode = mode;
                         document.getElementById('btnDay').style.opacity = mode === 'day' ? '1' : '0.5';
+                        document.getElementById('btnDay').setAttribute('aria-pressed', mode === 'day' ? 'true' : 'false');
                         document.getElementById('btnWeek').style.opacity = mode === 'week' ? '1' : '0.5';
+                        document.getElementById('btnWeek').setAttribute('aria-pressed', mode === 'week' ? 'true' : 'false');
                         document.getElementById('btnMonth').style.opacity = mode === 'month' ? '1' : '0.5';
+                        document.getElementById('btnMonth').setAttribute('aria-pressed', mode === 'month' ? 'true' : 'false');
                         buildAdminCalendar();
                     }
 
