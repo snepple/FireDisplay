@@ -90,3 +90,8 @@
 **Vulnerability:** The application was missing basic security headers (`X-Frame-Options`, `X-XSS-Protection`, `X-Content-Type-Options`, `Referrer-Policy`) on the sensitive administrative interface (`admin.php`), potentially exposing it to clickjacking, MIME-type sniffing, or cross-site scripting risks depending on browser behavior.
 **Learning:** Adding fundamental security headers is a necessary layer of defense in depth for web applications, especially for administrative interfaces where high-privilege actions are performed.
 **Prevention:** Always implement common security headers (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `X-XSS-Protection: 1; mode=block`, etc.) as early as possible in the request lifecycle or directly in the web server configuration to protect endpoints from basic web vulnerabilities.
+
+## 2026-05-16 - Stored XSS via htmlspecialchars missing ENT_QUOTES
+**Vulnerability:** Many dynamically generated variables were injected into HTML attributes (e.g. `<option value='...'>`) in `admin.php` using `htmlspecialchars()` without specifying the `ENT_QUOTES` flag. Because these attributes used single quotes, and `htmlspecialchars` by default only escapes double quotes, an attacker could potentially inject a single quote and append malicious HTML attributes to achieve Stored XSS.
+**Learning:** When using `htmlspecialchars` to output variables into HTML attributes, especially those delimited by single quotes, the `ENT_QUOTES` flag is absolutely critical to prevent quote breakout.
+**Prevention:** Always use `htmlspecialchars($var, ENT_QUOTES)` consistently when outputting dynamic data into HTML.
