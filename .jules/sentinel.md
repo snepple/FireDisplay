@@ -44,20 +44,20 @@
 **Learning:** Always implement robust rate limiting or account lockout mechanisms for authentication endpoints.
 **Prevention:** IP-based tracking was introduced to limit the number of failed attempts (e.g., maximum 5 attempts within 15 minutes) before temporarily locking the IP out. This approach requires maintaining an attempt count with a timestamp (such as in `data/login_attempts.json`).
 
-## $(date +%Y-%m-%d) - Missing CSRF Protection on Logout
+## 2024-05-24 - Missing CSRF Protection on Logout
 **Vulnerability:** The `admin.php` logout endpoint `?logout=true` did not have CSRF protection. A malicious website or email could include an image or link like `<img src="https://example.com/admin.php?logout=true">` which would automatically log out any authenticated administrator viewing it.
 **Learning:** Even though logging a user out is usually a low-impact action, all state-changing endpoints in an application, especially in administrative panels, should be protected against CSRF to ensure session stability and prevent annoyance or denial of service.
 **Prevention:** Always require and validate a CSRF token for all state-changing actions, including logout endpoints, using a secure comparison function like `hash_equals()`. Ensure that `!empty()` checks are performed on both the session token and the request token before comparison to prevent type errors.
-## $(date +%Y-%m-%d) - XSS in inline JavaScript via json_encode
+## 2024-05-24 - XSS in inline JavaScript via json_encode
 **Vulnerability:** Found `json_encode()` calls used directly within `<script>` blocks or assigned to variables that render into HTML without hex-encoding flags in `admin.php`. An attacker who can control data encoded in these JSON objects (such as chore names or announcement content) could break out of the script context and execute arbitrary JavaScript.
 **Learning:** `json_encode()` by default does not escape characters like `<`, `>`, `'`, `"` or `&`. If user-controllable data is included in the encoded JSON, an attacker could use `</script>` or malicious payloads to achieve XSS.
 **Prevention:** Always use the `JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP` flags when echoing `json_encode()` directly into inline JavaScript or HTML.
 
-## $(date +%Y-%m-%d) - Type-Juggling CSRF Bypass
+## 2024-05-24 - Type-Juggling CSRF Bypass
 **Vulnerability:** CSRF token validation in `api/save_locations.php` checked for token match using strict equality (`!==`). If JSON decoding produced a different type, or if a token was empty, this could cause validation issues or bypasses depending on PHP versions or edge cases.
 **Learning:** Using `hash_equals()` with string-casting is the only robust way to compare security tokens to prevent timing attacks and type-juggling vulnerabilities.
 **Prevention:** Always validate CSRF tokens using `hash_equals((string)$expected, (string)$provided)` and ensure both values are checked for emptiness prior to comparison.
-## $(date +%Y-%m-%d) - CSRF Protection in API endpoints
+## 2024-05-24 - CSRF Protection in API endpoints
 **Vulnerability:** Although a token query parameter is expected in `api/add_permit.php` to authorize the action against the `dashboard_token`, adding manual records (like burn permits) via a POST request from a web interface normally requires a CSRF token as well, depending on whether the `dashboard_token` itself is treated as sufficient CSRF protection (since it acts as a bearer token).
 **Learning:** For endpoints acting as APIs protected by bearer tokens, standard CSRF using session state might not apply if they are truly stateless, but if they rely on cookies or implicit session auth, explicit CSRF tokens are still needed. Since `api/add_permit.php` uses `verify_dashboard_token()` from `api/security_check.php` which checks `$_GET['token']`, it functions essentially as an API token, mitigating CSRF so long as the token isn't leaked or predictable.
 **Prevention:** Ensured the backend requires the API token explicitly, and the frontend fetches this token and appends it to the URL, keeping the action authenticated without requiring full session-based CSRF checks which aren't currently implemented across all API endpoints in this system.
@@ -81,7 +81,7 @@
 **Learning:** In applications deployed on shared hosting (like Apache), placing configuration or data files within the web root without explicit `.htaccess` protections makes them completely vulnerable to direct downloading by unauthenticated attackers.
 **Prevention:** Always place sensitive files outside the web root if possible. If they must reside within the web root (common in shared hosting), always include `.htaccess` files with `Require all denied` directives to prevent direct HTTP access to these files while still allowing the backend PHP scripts to read them natively.
 
-## $(date +%Y-%m-%d) - Enforce Secure Session Parameters
+## 2024-05-24 - Enforce Secure Session Parameters
 **Vulnerability:** Sessions initialized with `session_start()` without secure configuration (like `session.use_strict_mode` and strict cookie parameters) are vulnerable to session fixation and session hijacking via XSS or insecure transmission.
 **Learning:** By default, PHP sessions might accept uninitialized session IDs provided by the client (fixation) and might not restrict session cookies to HTTP-only or SameSite boundaries.
 **Prevention:** Always enforce secure session initialization by explicitly calling `ini_set('session.use_strict_mode', 1);` and `session_set_cookie_params(['httponly' => true, 'samesite' => 'Strict']);` immediately before every `session_start()` call.
@@ -90,3 +90,8 @@
 **Vulnerability:** The application was missing basic security headers (`X-Frame-Options`, `X-XSS-Protection`, `X-Content-Type-Options`, `Referrer-Policy`) on the sensitive administrative interface (`admin.php`), potentially exposing it to clickjacking, MIME-type sniffing, or cross-site scripting risks depending on browser behavior.
 **Learning:** Adding fundamental security headers is a necessary layer of defense in depth for web applications, especially for administrative interfaces where high-privilege actions are performed.
 **Prevention:** Always implement common security headers (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `X-XSS-Protection: 1; mode=block`, etc.) as early as possible in the request lifecycle or directly in the web server configuration to protect endpoints from basic web vulnerabilities.
+
+## 2024-05-24 - XSS via Attribute Injection in admin.php
+**Vulnerability:** A Reflected XSS vulnerability via Attribute Injection was found in `admin.php`. Several variables derived from user input or config files (such as `$oth`, `$abbr`, `$success`, `$error_msg`) were embedded directly into HTML attributes or within HTML tags using `echo` and without using `ENT_QUOTES` in `htmlspecialchars`. For example, `echo "<input type='text' value='{$oth}'>"` could allow an attacker to provide a single-quote (`'`) to break out of the attribute and inject malicious event handlers (like `onmouseover='alert(1)'`).
+**Learning:** `htmlspecialchars` without `ENT_QUOTES` does not escape single quotes (`'`), which leaves any attribute enclosed in single quotes completely vulnerable to attribute injection. When creating dynamic HTML strings in PHP via `echo` or variable interpolation, explicit escaping with `ENT_QUOTES` is always necessary to ensure variables cannot break out of their expected context.
+**Prevention:** Always use `htmlspecialchars($var, ENT_QUOTES)` when escaping user data that will be placed inside an HTML attribute, regardless of whether the attribute uses single or double quotes. Also, ensure any variables concatenated or interpolated into HTML output are appropriately escaped.
