@@ -229,8 +229,8 @@ if (!isset($_SESSION['admin_logged_in'])) {
 </style></head><body style='font-family: \"Inter\", sans-serif; background: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; height: 100vh; margin:0;'>";
     echo "<form method='POST' style='background: var(--card-bg); padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); width: 100%; max-width: 320px;'>";
     echo "<h2 style='margin-top:0; color: var(--text-color); text-align: center; font-weight: 600;'>Admin Login</h2>";
-    if (isset($error)) echo "<p role='alert' style='color: var(--danger-color); font-weight: bold; text-align: center; font-size: 0.9em; margin-bottom: 15px;'>$error</p>";
-    echo "<input type='hidden' name='csrf_token' value='" . htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) . "'>";
+    if (isset($error)) echo "<p role='alert' style='color: var(--danger-color); font-weight: bold; text-align: center; font-size: 0.9em; margin-bottom: 15px;'>" . htmlspecialchars($error, ENT_QUOTES) . "</p>";
+    echo "<input type='hidden' name='csrf_token' value='" . htmlspecialchars($_SESSION['csrf_token']) . "'>";
     echo "<label for='login-password' style='display:block; text-align:left; margin-bottom:8px; font-weight:600; font-size:14px;'>Password</label>";
     echo "<input type='password' id='login-password' name='password' placeholder='Enter password' required style='padding: 12px; margin-bottom: 20px; width: 100%; box-sizing: border-box; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 8px; font-size: 16px;'><br>";
     echo "<button type='submit' name='login' style='padding: 12px; width: 100%; cursor: pointer; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 16px;'>Login</button>";
@@ -764,11 +764,11 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                 <button type="submit" name="save_<?= htmlspecialchars(explode('_', $page)[0], ENT_QUOTES) ?>" class="save-btn">Save Changes</button>
             </div>
 
-            <?php if($success) echo "<div class='success'>$success</div>"; ?>
-            <?php if($error_msg) echo "<div class='error'>$error_msg</div>"; ?>
+            <?php if($success) echo "<div class='success'>" . htmlspecialchars($success, ENT_QUOTES) . "</div>"; ?>
+            <?php if($error_msg) echo "<div class='error'>" . htmlspecialchars($error_msg, ENT_QUOTES) . "</div>"; ?>
 
             <datalist id="room-list">
-                <?php foreach(json_decode($roomsJson) as $r) echo "<option value=\"$r\">"; ?>
+                <?php foreach(json_decode($roomsJson) as $r) echo "<option value=\"" . htmlspecialchars($r, ENT_QUOTES) . "\">"; ?>
             </datalist>
 
             <?php if ($page === 'settings'): ?>
@@ -1031,7 +1031,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             $oth = htmlspecialchars($parts[1] ?? '', ENT_QUOTES);
 
                             echo "<div class='config-box'>";
-                            echo "<h4 style='margin:0 0 12px 0; text-align: center; color: var(--text-color);'>{$days[$i]}</h4>";
+                            echo "<h4 style='margin:0 0 12px 0; text-align: center; color: var(--text-color);'>" . htmlspecialchars($days[$i], ENT_QUOTES) . "</h4>";
 
                             $displayText = empty($appStr) ? "-- Select Apparatus --" : $appStr;
                             echo "<label>Apparatus</label>";
