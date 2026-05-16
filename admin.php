@@ -877,7 +877,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         <?php foreach($configData['department_info']['stations'] as $stIdx => $st): ?>
                             <div class="item-card st-card">
                                 <button type="button" aria-label="Remove Station" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove Station</button>
-                                <input type="hidden" name="st_id[]" value="<?= $st['id'] ?>">
+                                <input type="hidden" name="st_id[]" value="<?= htmlspecialchars((string)$st['id'], ENT_QUOTES) ?>">
                                 <input type="hidden" name="st_rooms_json[]" class="st-rooms-json" value="<?= htmlspecialchars(json_encode($st['rooms'])) ?>">
 
                                 <div class="flex-row">
@@ -907,7 +907,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         <?php foreach($configData['department_info']['apparatus'] as $appIdx => $app): ?>
                             <div class="item-card">
                                 <button type="button" aria-label="Remove" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove</button>
-                                <input type="hidden" name="app_id[]" value="<?= $app['id'] ?>">
+                                <input type="hidden" name="app_id[]" value="<?= htmlspecialchars((string)$app['id'], ENT_QUOTES) ?>">
                                 <div class="flex-row" style="margin-bottom: 0;">
                                     <div class="flex-col" style="flex:2"><label for="app_name_<?= $appIdx ?>">Name of Apparatus</label><input type="text" id="app_name_<?= $appIdx ?>" name="app_name[]" value="<?= htmlspecialchars($app['name']) ?>" required></div>
                                     <div class="flex-col"><label for="app_abbr_<?= $appIdx ?>">Abbreviation</label><input type="text" id="app_abbr_<?= $appIdx ?>" name="app_abbr[]" value="<?= htmlspecialchars($app['abbr']) ?>" required></div>
@@ -1042,14 +1042,14 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         <div class="flex-col config-box">
                             <h3 style="margin-top: 0;">✅ Check Trucks</h3>
                             <label for="truck_check_anchor_input">Anchor Sunday Date</label>
-                            <input type="date" id="truck_check_anchor_input" name="truck_check_anchor" value="<?= $configData['truck_check']['anchor'] ?>" required onchange="enforceSunday(this)" style="margin-bottom: 15px;">
+                            <input type="date" id="truck_check_anchor_input" name="truck_check_anchor" value="<?= htmlspecialchars((string)$configData['truck_check']['anchor'], ENT_QUOTES) ?>" required onchange="enforceSunday(this)" style="margin-bottom: 15px;">
                             <label for="truck_check_interval_input">Repeats Every (Weeks)</label>
                             <input type="number" id="truck_check_interval_input" name="truck_check_interval" value="<?= $configData['truck_check']['interval'] ?>" min="1" required onchange="renderAppPreview()">
                         </div>
                         <div class="flex-col config-box">
                             <h3 style="margin-top: 0;">🧽 Wash Trucks</h3>
                             <label for="truck_wash_anchor_input">Anchor Sunday Date</label>
-                            <input type="date" id="truck_wash_anchor_input" name="truck_wash_anchor" value="<?= $configData['truck_wash']['anchor'] ?>" required onchange="enforceSunday(this)" style="margin-bottom: 15px;">
+                            <input type="date" id="truck_wash_anchor_input" name="truck_wash_anchor" value="<?= htmlspecialchars((string)$configData['truck_wash']['anchor'], ENT_QUOTES) ?>" required onchange="enforceSunday(this)" style="margin-bottom: 15px;">
                             <label for="truck_wash_interval_input">Repeats Every (Weeks)</label>
                             <input type="number" id="truck_wash_interval_input" name="truck_wash_interval" value="<?= $configData['truck_wash']['interval'] ?>" min="1" required onchange="renderAppPreview()">
                         </div>
@@ -1957,7 +1957,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             <div class="item-card flex-row" style="align-items: center; justify-content: space-between;">
                                 <div>
                                     <h3 style="margin:0 0 5px 0; color: var(--text-color);"><?= htmlspecialchars($evt['name']) ?></h3>
-                                    <div style="font-size: 0.9em; color: var(--muted-text);">Start: <?= $evt['start_date'] ?></div>
+                                    <div style="font-size: 0.9em; color: var(--muted-text);">Start: <?= htmlspecialchars((string)$evt['start_date'], ENT_QUOTES) ?></div>
                                 </div>
                                 <button type="submit" form="delFormChore_<?= $evt['id'] ?>" name="delete_archived_chore" class="delete-btn" onclick="return confirm('Permanently delete this duty?');">Permanently Delete</button>
                             </div>
@@ -1977,7 +1977,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             <div class="item-card flex-row" style="align-items: center; justify-content: space-between;">
                                 <div>
                                     <h3 style="margin:0 0 5px 0; color: var(--text-color);"><?= htmlspecialchars($evt['title']) ?></h3>
-                                    <div style="font-size: 0.9em; color: var(--muted-text);">Start: <?= $evt['start_date'] ?></div>
+                                    <div style="font-size: 0.9em; color: var(--muted-text);">Start: <?= htmlspecialchars((string)$evt['start_date'], ENT_QUOTES) ?></div>
                                 </div>
                                 <button type="submit" form="delFormEvt_<?= $evt['id'] ?>" name="delete_archived_event" class="delete-btn" onclick="return confirm('Permanently delete this event?');">Permanently Delete</button>
                             </div>
@@ -1996,7 +1996,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         <?php foreach($archived_announcements as $ann): ?>
                             <div class="item-card flex-row" style="align-items: center; justify-content: space-between;">
                                 <div style="flex-grow: 1; max-width: 70%; max-height: 60px; overflow: hidden;">
-                                    <div style="font-size: 0.9em; color: var(--muted-text); margin-bottom: 5px; font-weight: bold;">Ran: <?= $ann['start_date'] ?> to <?= $ann['end_date'] ?></div>
+                                    <div style="font-size: 0.9em; color: var(--muted-text); margin-bottom: 5px; font-weight: bold;">Ran: <?= htmlspecialchars((string)$ann['start_date'], ENT_QUOTES) ?> to <?= htmlspecialchars((string)$ann['end_date'], ENT_QUOTES) ?></div>
                                     <div style="color: var(--muted-text); font-size: 0.9em;"><?= strip_tags($ann['content']) ?></div>
                                 </div>
                                 <button type="submit" form="delFormAnn_<?= $ann['id'] ?>" name="delete_archived_ann" class="delete-btn" onclick="return confirm('Permanently delete this announcement?');">Permanently Delete</button>
@@ -2291,15 +2291,15 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
         <?php if ($page === 'archived_chores'): ?>
             <?php foreach($archived_chores as $evt): ?>
-                <form id="delFormChore_<?= $evt['id'] ?>" method="POST"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"><input type="hidden" name="delete_id" value="<?= $evt['id'] ?>"></form>
+                <form id="delFormChore_<?= htmlspecialchars((string)$evt['id'], ENT_QUOTES) ?>" method="POST"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"><input type="hidden" name="delete_id" value="<?= htmlspecialchars((string)$evt['id'], ENT_QUOTES) ?>"></form>
             <?php endforeach; ?>
         <?php elseif ($page === 'archived_events'): ?>
             <?php foreach($archived_events as $evt): ?>
-                <form id="delFormEvt_<?= $evt['id'] ?>" method="POST"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"><input type="hidden" name="delete_id" value="<?= $evt['id'] ?>"></form>
+                <form id="delFormEvt_<?= htmlspecialchars((string)$evt['id'], ENT_QUOTES) ?>" method="POST"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"><input type="hidden" name="delete_id" value="<?= htmlspecialchars((string)$evt['id'], ENT_QUOTES) ?>"></form>
             <?php endforeach; ?>
         <?php elseif ($page === 'archived_anns'): ?>
             <?php foreach($archived_announcements as $ann): ?>
-                <form id="delFormAnn_<?= $ann['id'] ?>" method="POST"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"><input type="hidden" name="delete_id" value="<?= $ann['id'] ?>"></form>
+                <form id="delFormAnn_<?= htmlspecialchars((string)$ann['id'], ENT_QUOTES) ?>" method="POST"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"><input type="hidden" name="delete_id" value="<?= htmlspecialchars((string)$ann['id'], ENT_QUOTES) ?>"></form>
             <?php endforeach; ?>
         <?php endif; ?>
 
