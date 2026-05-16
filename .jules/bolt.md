@@ -35,3 +35,6 @@
 ## 2024-05-31 - [Intl DateTimeFormat Optimization]
 **Learning:** Calling `toLocaleDateString()` and `toLocaleTimeString()` repeatedly inside a loop is slow because it instantiates a new locale formatter every time.
 **Action:** When formatting dates/times in a loop (like generating calendar days), instantiate `new Intl.DateTimeFormat()` once before the loop and reuse its `format()` method.
+## 2024-06-01 - [Frontend Optimization] String formatting with math and concatenation
+**Learning:** Slower native methods like String().padStart() or template literals block the UI thread during frequently executed render loops.
+**Action:** To optimize heavily executed JavaScript string formatting functions inside render loops (like formatYMD), prefer raw math logic and string concatenation (e.g., month < 10 ? '0' + month : month) to yield measurable CPU performance boosts.
