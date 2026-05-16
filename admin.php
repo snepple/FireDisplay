@@ -1959,7 +1959,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                     <h3 style="margin:0 0 5px 0; color: var(--text-color);"><?= htmlspecialchars($evt['name']) ?></h3>
                                     <div style="font-size: 0.9em; color: var(--muted-text);">Start: <?= htmlspecialchars((string)$evt['start_date'], ENT_QUOTES) ?></div>
                                 </div>
-                                <button type="submit" form="delFormChore_<?= $evt['id'] ?>" name="delete_archived_chore" class="delete-btn" onclick="return confirm('Permanently delete this duty?');">Permanently Delete</button>
+                                <button type="submit" form="delFormChore_<?= htmlspecialchars((string)$evt['id'], ENT_QUOTES) ?>" name="delete_archived_chore" class="delete-btn" onclick="return confirm('Permanently delete this duty?');">Permanently Delete</button>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -1979,7 +1979,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                     <h3 style="margin:0 0 5px 0; color: var(--text-color);"><?= htmlspecialchars($evt['title']) ?></h3>
                                     <div style="font-size: 0.9em; color: var(--muted-text);">Start: <?= htmlspecialchars((string)$evt['start_date'], ENT_QUOTES) ?></div>
                                 </div>
-                                <button type="submit" form="delFormEvt_<?= $evt['id'] ?>" name="delete_archived_event" class="delete-btn" onclick="return confirm('Permanently delete this event?');">Permanently Delete</button>
+                                <button type="submit" form="delFormEvt_<?= htmlspecialchars((string)$evt['id'], ENT_QUOTES) ?>" name="delete_archived_event" class="delete-btn" onclick="return confirm('Permanently delete this event?');">Permanently Delete</button>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -1999,7 +1999,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                     <div style="font-size: 0.9em; color: var(--muted-text); margin-bottom: 5px; font-weight: bold;">Ran: <?= htmlspecialchars((string)$ann['start_date'], ENT_QUOTES) ?> to <?= htmlspecialchars((string)$ann['end_date'], ENT_QUOTES) ?></div>
                                     <div style="color: var(--muted-text); font-size: 0.9em;"><?= strip_tags($ann['content']) ?></div>
                                 </div>
-                                <button type="submit" form="delFormAnn_<?= $ann['id'] ?>" name="delete_archived_ann" class="delete-btn" onclick="return confirm('Permanently delete this announcement?');">Permanently Delete</button>
+                                <button type="submit" form="delFormAnn_<?= htmlspecialchars((string)$ann['id'], ENT_QUOTES) ?>" name="delete_archived_ann" class="delete-btn" onclick="return confirm('Permanently delete this announcement?');">Permanently Delete</button>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
