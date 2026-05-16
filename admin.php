@@ -117,7 +117,7 @@ $roomsJson = json_encode($allRooms, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT
 // Prepare Apparatus Dropdown Options
 $appOptionsHtml = "<option value=''>-- Select Apparatus --</option>";
 foreach($configData['department_info']['apparatus'] as $app) {
-    $appOptionsHtml .= "<option value='" . htmlspecialchars($app['abbr']) . "'>" . htmlspecialchars($app['abbr']) . "</option>";
+    $appOptionsHtml .= "<option value='" . htmlspecialchars($app['abbr'], ENT_QUOTES) . "'>" . htmlspecialchars($app['abbr'], ENT_QUOTES) . "</option>";
 }
 
 
@@ -753,15 +753,15 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
             <li><a href="?page=password" class="<?= isPage('password', $page) ?>">Change Password</a></li>
             <li><a href="?page=system_logs" class="<?= isPage('system_logs', $page) ?>">System Logs</a></li>
         </ul>
-        <a href="?logout=true&csrf_token=<?= htmlspecialchars($_SESSION['csrf_token']) ?>" class="logout-btn">Log Out Securely</a>
+        <a href="?logout=true&csrf_token=<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>" class="logout-btn">Log Out Securely</a>
     </div>
 
     <div class="content">
         <form method="POST" id="mainConfigForm" onsubmit="runPreSubmitHooks()">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>">
             <div class="header-bar">
-                <h1 style="text-transform: capitalize;"><?= htmlspecialchars(str_replace('_', ' ', $page)) ?></h1>
-                <button type="submit" name="save_<?= htmlspecialchars(explode('_', $page)[0]) ?>" class="save-btn">Save Changes</button>
+                <h1 style="text-transform: capitalize;"><?= htmlspecialchars(str_replace('_', ' ', $page), ENT_QUOTES) ?></h1>
+                <button type="submit" name="save_<?= htmlspecialchars(explode('_', $page)[0], ENT_QUOTES) ?>" class="save-btn">Save Changes</button>
             </div>
 
             <?php if($success) echo "<div class='success'>" . htmlspecialchars($success, ENT_QUOTES) . "</div>"; ?>
@@ -786,12 +786,12 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <div style="max-width: 400px; margin-top: 15px;">
                         <label for="dashboard_token_input">Dashboard Access Token</label>
                         <p class="help" id="dashboard_token_help">If set, users must append <code>?token=YOUR_TOKEN</code> to the dashboard URL.</p>
-                        <input type="text" id="dashboard_token_input" name="dashboard_token" value="<?= htmlspecialchars($configData['dashboard_token'] ?? '') ?>" placeholder="Leave blank for public access" aria-describedby="dashboard_token_help" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        <input type="text" id="dashboard_token_input" name="dashboard_token" value="<?= htmlspecialchars($configData['dashboard_token'] ?? '', ENT_QUOTES) ?>" placeholder="Leave blank for public access" aria-describedby="dashboard_token_help" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
                     <div style="max-width: 400px; margin-top: 15px;">
                         <label for="fire_danger_zone_input">Fire Danger Zone</label>
                         <p class="help" id="fire_danger_zone_help">The zone number used to extract the correct fire danger level from daily emails.</p>
-                        <input type="text" id="fire_danger_zone_input" name="fire_danger_zone" value="<?= htmlspecialchars($configData['fire_danger_zone'] ?? '7') ?>" placeholder="e.g., 7" aria-describedby="fire_danger_zone_help" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        <input type="text" id="fire_danger_zone_input" name="fire_danger_zone" value="<?= htmlspecialchars($configData['fire_danger_zone'] ?? '7', ENT_QUOTES) ?>" placeholder="e.g., 7" aria-describedby="fire_danger_zone_help" style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
                 </div>
 
@@ -815,14 +815,14 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             <div style="flex: 1; min-width: 250px;">
                                 <label for="alert_audio_fire" style="font-weight: bold;">Fire Danger Alert Audio</label>
                                 <?php if (!empty($configData['dashboard_settings']['alert_audio_fire'])): ?>
-                                    <p style="font-size: 0.9em; color: var(--success-color);">Current: <?= htmlspecialchars(basename($configData['dashboard_settings']['alert_audio_fire'])) ?></p>
+                                    <p style="font-size: 0.9em; color: var(--success-color);">Current: <?= htmlspecialchars(basename($configData['dashboard_settings']['alert_audio_fire']), ENT_QUOTES) ?></p>
                                 <?php endif; ?>
                                 <input type="file" id="alert_audio_fire" name="alert_audio_fire" accept=".mp3,.wav" style="margin-top: 5px;">
                             </div>
                             <div style="flex: 1; min-width: 250px;">
                                 <label for="alert_audio_permit" style="font-weight: bold;">New Permit Alert Audio</label>
                                 <?php if (!empty($configData['dashboard_settings']['alert_audio_permit'])): ?>
-                                    <p style="font-size: 0.9em; color: var(--success-color);">Current: <?= htmlspecialchars(basename($configData['dashboard_settings']['alert_audio_permit'])) ?></p>
+                                    <p style="font-size: 0.9em; color: var(--success-color);">Current: <?= htmlspecialchars(basename($configData['dashboard_settings']['alert_audio_permit']), ENT_QUOTES) ?></p>
                                 <?php endif; ?>
                                 <input type="file" id="alert_audio_permit" name="alert_audio_permit" accept=".mp3,.wav" style="margin-top: 5px;">
                             </div>
@@ -852,7 +852,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 <?= $label ?>
                             </label>
                             <label for="page_<?= $key ?>_duration_input" style="font-size: 0.9em; color: var(--muted-text); display: block; margin-bottom: 5px;">Duration (seconds)</label>
-                            <input type="number" id="page_<?= $key ?>_duration_input" name="page_<?= $key ?>_duration" value="<?= htmlspecialchars((string)$duration) ?>" min="1" style="width: 100px; padding: 6px; border: 1px solid #c3c3c3; border-radius: 4px;">
+                            <input type="number" id="page_<?= $key ?>_duration_input" name="page_<?= $key ?>_duration" value="<?= htmlspecialchars((string)$duration, ENT_QUOTES) ?>" min="1" style="width: 100px; padding: 6px; border: 1px solid #c3c3c3; border-radius: 4px;">
                         </div>
                         <?php endforeach; ?>
                     </div>
@@ -864,22 +864,22 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                     <div style="margin-top: 15px;">
                         <label for="cal_main_input">Main Schedule Calendar</label>
-                        <input type="text" id="cal_main_input" name="cal_main" value="<?= htmlspecialchars($configData['calendar_urls']['main'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        <input type="text" id="cal_main_input" name="cal_main" value="<?= htmlspecialchars($configData['calendar_urls']['main'] ?? '', ENT_QUOTES) ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
 
                     <div style="margin-top: 15px;">
                         <label for="cal_burn_permits_input">Burn Permits Calendar</label>
-                        <input type="text" id="cal_burn_permits_input" name="cal_burn_permits" value="<?= htmlspecialchars($configData['calendar_urls']['burn_permits'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        <input type="text" id="cal_burn_permits_input" name="cal_burn_permits" value="<?= htmlspecialchars($configData['calendar_urls']['burn_permits'] ?? '', ENT_QUOTES) ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
 
                     <div style="margin-top: 15px;">
                         <label for="cal_town_meetings_input">Town Meetings Calendar</label>
-                        <input type="text" id="cal_town_meetings_input" name="cal_town_meetings" value="<?= htmlspecialchars($configData['calendar_urls']['town_meetings'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        <input type="text" id="cal_town_meetings_input" name="cal_town_meetings" value="<?= htmlspecialchars($configData['calendar_urls']['town_meetings'] ?? '', ENT_QUOTES) ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
 
                     <div style="margin-top: 15px;">
                         <label for="cal_holidays_input">Holidays Calendar</label>
-                        <input type="text" id="cal_holidays_input" name="cal_holidays" value="<?= htmlspecialchars($configData['calendar_urls']['holidays'] ?? '') ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
+                        <input type="text" id="cal_holidays_input" name="cal_holidays" value="<?= htmlspecialchars($configData['calendar_urls']['holidays'] ?? '', ENT_QUOTES) ?>" placeholder="https://..." style="width:100%; padding:8px; box-sizing: border-box; border: 1px solid #c3c3c3; border-radius: 4px;">
                     </div>
                 </div>
                 <script>function runPreSubmitHooks() {}</script>
@@ -888,7 +888,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                 <div class="card">
                     <h2>Department Information</h2>
                     <label for="dept_name_input">Department Name</label>
-                    <input type="text" id="dept_name_input" name="dept_name" value="<?= htmlspecialchars($configData['department_info']['name']) ?>" required style="margin-bottom: 25px; font-size: 1.2em;">
+                    <input type="text" id="dept_name_input" name="dept_name" value="<?= htmlspecialchars($configData['department_info']['name'], ENT_QUOTES) ?>" required style="margin-bottom: 25px; font-size: 1.2em;">
 
                     <h3>Stations & Rooms</h3>
                     <p class="help">Manage your stations and available rental rooms.</p>
@@ -897,11 +897,11 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             <div class="item-card st-card">
                                 <button type="button" aria-label="Remove Station" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove Station</button>
                                 <input type="hidden" name="st_id[]" value="<?= $st['id'] ?>">
-                                <input type="hidden" name="st_rooms_json[]" class="st-rooms-json" value="<?= htmlspecialchars(json_encode($st['rooms'])) ?>">
+                                <input type="hidden" name="st_rooms_json[]" class="st-rooms-json" value="<?= htmlspecialchars(json_encode($st['rooms']), ENT_QUOTES) ?>">
 
                                 <div class="flex-row">
-                                    <div class="flex-col" style="flex:1"><label for="st_number_<?= $stIdx ?>">Station Number/Name</label><input type="text" id="st_number_<?= $stIdx ?>" name="st_number[]" value="<?= htmlspecialchars($st['number']) ?>" required></div>
-                                    <div class="flex-col" style="flex:2"><label for="st_address_<?= $stIdx ?>">Address</label><input type="text" id="st_address_<?= $stIdx ?>" name="st_address[]" value="<?= htmlspecialchars($st['address']) ?>" required></div>
+                                    <div class="flex-col" style="flex:1"><label for="st_number_<?= $stIdx ?>">Station Number/Name</label><input type="text" id="st_number_<?= $stIdx ?>" name="st_number[]" value="<?= htmlspecialchars($st['number'], ENT_QUOTES) ?>" required></div>
+                                    <div class="flex-col" style="flex:2"><label for="st_address_<?= $stIdx ?>">Address</label><input type="text" id="st_address_<?= $stIdx ?>" name="st_address[]" value="<?= htmlspecialchars($st['address'], ENT_QUOTES) ?>" required></div>
                                 </div>
                                 <label>Rooms Available (e.g., Training Room)</label>
                                 <div class="flex-row" style="margin-bottom: 10px;">
@@ -910,7 +910,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 </div>
                                 <div class="rooms-visual-list">
                                     <?php foreach($st['rooms'] as $r): ?>
-                                        <div class="room-tag"><span><?= htmlspecialchars($r) ?></span><button type="button" aria-label="Remove" onclick="this.parentElement.remove()">x</button></div>
+                                        <div class="room-tag"><span><?= htmlspecialchars($r, ENT_QUOTES) ?></span><button type="button" aria-label="Remove" onclick="this.parentElement.remove()">x</button></div>
                                     <?php endforeach; ?>
                                 </div>
                             </div>
@@ -928,8 +928,8 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 <button type="button" aria-label="Remove" class="delete-btn" style="position:absolute; right:20px; top:20px;" onclick="this.parentElement.remove()">Remove</button>
                                 <input type="hidden" name="app_id[]" value="<?= $app['id'] ?>">
                                 <div class="flex-row" style="margin-bottom: 0;">
-                                    <div class="flex-col" style="flex:2"><label for="app_name_<?= $appIdx ?>">Name of Apparatus</label><input type="text" id="app_name_<?= $appIdx ?>" name="app_name[]" value="<?= htmlspecialchars($app['name']) ?>" required></div>
-                                    <div class="flex-col"><label for="app_abbr_<?= $appIdx ?>">Abbreviation</label><input type="text" id="app_abbr_<?= $appIdx ?>" name="app_abbr[]" value="<?= htmlspecialchars($app['abbr']) ?>" required></div>
+                                    <div class="flex-col" style="flex:2"><label for="app_name_<?= $appIdx ?>">Name of Apparatus</label><input type="text" id="app_name_<?= $appIdx ?>" name="app_name[]" value="<?= htmlspecialchars($app['name'], ENT_QUOTES) ?>" required></div>
+                                    <div class="flex-col"><label for="app_abbr_<?= $appIdx ?>">Abbreviation</label><input type="text" id="app_abbr_<?= $appIdx ?>" name="app_abbr[]" value="<?= htmlspecialchars($app['abbr'], ENT_QUOTES) ?>" required></div>
                                     <div class="flex-col">
                                         <label for="app_category_<?= $appIdx ?>">Category</label>
                                         <select id="app_category_<?= $appIdx ?>" name="app_category[]">
@@ -1178,7 +1178,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         <?php foreach ($configData['chores'] as $chore): ?>
                             <div class="item-card flex-row" style="align-items: center; padding: 15px; margin-bottom: 10px;">
                                 <input type="number" name="chore_ids[]" value="<?= $chore['id'] ?>" style="width: 80px; margin:0;" min="1" required>
-                                <input type="text" name="chore_names[]" value="<?= htmlspecialchars($chore['name']) ?>" style="flex-grow: 1; margin:0;" required>
+                                <input type="text" name="chore_names[]" value="<?= htmlspecialchars($chore['name'], ENT_QUOTES) ?>" style="flex-grow: 1; margin:0;" required>
                                 <button type="button" aria-label="Remove" class="delete-btn" onclick="this.parentElement.remove()" style="margin:0;">Remove</button>
                             </div>
                         <?php endforeach; ?>
@@ -1192,7 +1192,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <div id="everyday-container">
                         <?php foreach ($configData['everyday_chores'] as $chore): ?>
                             <div class="flex-row" style="margin-bottom: 10px;">
-                                <input type="text" name="everyday_chores[]" value="<?= htmlspecialchars($chore) ?>" style="flex-grow: 1;">
+                                <input type="text" name="everyday_chores[]" value="<?= htmlspecialchars($chore, ENT_QUOTES) ?>" style="flex-grow: 1;">
                                 <button type="button" aria-label="Remove" class="delete-btn" onclick="this.parentElement.remove()">Remove</button>
                             </div>
                         <?php endforeach; ?>
@@ -1975,7 +1975,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         <?php foreach($archived_chores as $evt): ?>
                             <div class="item-card flex-row" style="align-items: center; justify-content: space-between;">
                                 <div>
-                                    <h3 style="margin:0 0 5px 0; color: var(--text-color);"><?= htmlspecialchars($evt['name']) ?></h3>
+                                    <h3 style="margin:0 0 5px 0; color: var(--text-color);"><?= htmlspecialchars($evt['name'], ENT_QUOTES) ?></h3>
                                     <div style="font-size: 0.9em; color: var(--muted-text);">Start: <?= $evt['start_date'] ?></div>
                                 </div>
                                 <button type="submit" form="delFormChore_<?= $evt['id'] ?>" name="delete_archived_chore" class="delete-btn" onclick="return confirm('Permanently delete this duty?');">Permanently Delete</button>
@@ -1995,7 +1995,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         <?php foreach($archived_events as $evt): ?>
                             <div class="item-card flex-row" style="align-items: center; justify-content: space-between;">
                                 <div>
-                                    <h3 style="margin:0 0 5px 0; color: var(--text-color);"><?= htmlspecialchars($evt['title']) ?></h3>
+                                    <h3 style="margin:0 0 5px 0; color: var(--text-color);"><?= htmlspecialchars($evt['title'], ENT_QUOTES) ?></h3>
                                     <div style="font-size: 0.9em; color: var(--muted-text);">Start: <?= $evt['start_date'] ?></div>
                                 </div>
                                 <button type="submit" form="delFormEvt_<?= $evt['id'] ?>" name="delete_archived_event" class="delete-btn" onclick="return confirm('Permanently delete this event?');">Permanently Delete</button>
@@ -2031,16 +2031,16 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                     <p style="color: var(--muted-text); margin-top: -10px; margin-bottom: 30px;">Manage third-party API keys and services used by the Fire Display dashboard.</p>
 
                     <form method="POST" enctype="multipart/form-data">
-                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>">
                         <div class="input-group">
                             <label for="gemini_api_key">Gemini API Key (for Geocoding fallback)</label>
-                            <input type="text" id="gemini_api_key" name="gemini_api_key" value="<?= htmlspecialchars($configData['api_integrations']['gemini_api_key'] ?? '') ?>" placeholder="AIzaSy..." autocomplete="off">
+                            <input type="text" id="gemini_api_key" name="gemini_api_key" value="<?= htmlspecialchars($configData['api_integrations']['gemini_api_key'] ?? '', ENT_QUOTES) ?>" placeholder="AIzaSy..." autocomplete="off">
                             <p style="font-size: 0.85em; color: var(--muted-text); margin-top: 5px;">This key is used as a fallback to convert free-text burn permit locations into map coordinates when standard geocoding fails.</p>
                         </div>
 
                         <div class="input-group" style="margin-top: 15px;">
                             <label for="google_tts_api_key">Google TTS API Key (for Text-to-Speech)</label>
-                            <input type="text" id="google_tts_api_key" name="google_tts_api_key" value="<?= htmlspecialchars($configData['api_integrations']['google_tts_api_key'] ?? '') ?>" placeholder="AIzaSy..." autocomplete="off">
+                            <input type="text" id="google_tts_api_key" name="google_tts_api_key" value="<?= htmlspecialchars($configData['api_integrations']['google_tts_api_key'] ?? '', ENT_QUOTES) ?>" placeholder="AIzaSy..." autocomplete="off">
                             <p style="font-size: 0.85em; color: var(--muted-text); margin-top: 5px;">This key is used for the Text-to-Speech integration in the dashboard.</p>
                         </div>
 
@@ -2055,15 +2055,15 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
 
                 <div class="card">
                     <form method="post">
-                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>">
                         <div class="form-group">
                             <label for="danger_address">Fire Danger Email Address / Prefix</label>
-                            <input type="text" id="danger_address" name="danger_address" value="<?= htmlspecialchars($configData['email_integration']['danger_address'] ?? '') ?>" placeholder="e.g. danger@yourdomain.com" autocomplete="off">
+                            <input type="text" id="danger_address" name="danger_address" value="<?= htmlspecialchars($configData['email_integration']['danger_address'] ?? '', ENT_QUOTES) ?>" placeholder="e.g. danger@yourdomain.com" autocomplete="off">
                             <small style="display:block; color:var(--muted-text); margin-top:5px;">If not set, falls back to ICS feed if provided, else "Unknown".</small>
                         </div>
                         <div class="form-group" style="margin-top: 15px;">
                             <label for="permit_address">Burn Permits Email Address / Prefix</label>
-                            <input type="text" id="permit_address" name="permit_address" value="<?= htmlspecialchars($configData['email_integration']['permit_address'] ?? '') ?>" placeholder="e.g. permits@yourdomain.com" autocomplete="off">
+                            <input type="text" id="permit_address" name="permit_address" value="<?= htmlspecialchars($configData['email_integration']['permit_address'] ?? '', ENT_QUOTES) ?>" placeholder="e.g. permits@yourdomain.com" autocomplete="off">
                             <small style="display:block; color:var(--muted-text); margin-top:5px;">If not set, falls back to ICS feed if provided.</small>
                         </div>
 
@@ -2088,7 +2088,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                         <em>Note: I have already updated the script to include this as the very first line.</em></p>
 
                         <h4>Step 3: Set up Email Forwarders (Piping) in Bluehost cPanel</h4>
-                        <p>You need to create a "Forwarder" for each email address you want to use (e.g., <code><?= htmlspecialchars($configData['email_integration']['danger_address'] ?: 'danger@yourdomain.com') ?></code> and <code><?= htmlspecialchars($configData['email_integration']['permit_address'] ?: 'permits@yourdomain.com') ?></code>).</p>
+                        <p>You need to create a "Forwarder" for each email address you want to use (e.g., <code><?= htmlspecialchars($configData['email_integration']['danger_address'] ?: 'danger@yourdomain.com', ENT_QUOTES) ?></code> and <code><?= htmlspecialchars($configData['email_integration']['permit_address'] ?: 'permits@yourdomain.com', ENT_QUOTES) ?></code>).</p>
 
                         <ol>
                             <li>Log into your <strong>Bluehost cPanel</strong>.</li>
@@ -2096,7 +2096,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                             <li>Click the <strong>Add Forwarder</strong> button.</li>
                             <li><strong>Address to Forward:</strong>
                                 <ul>
-                                    <li>Enter the prefix for the email address (e.g., <code><?= htmlspecialchars(explode('@', $configData['email_integration']['danger_address'] ?: 'danger')[0]) ?></code>).</li>
+                                    <li>Enter the prefix for the email address (e.g., <code><?= htmlspecialchars(explode('@', $configData['email_integration']['danger_address'] ?: 'danger')[0], ENT_QUOTES) ?></code>).</li>
                                     <li>Select your domain from the drop-down menu.</li>
                                 </ul>
                             </li>
@@ -2113,11 +2113,11 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 </ul>
                             </li>
                             <li>Click <strong>Add Forwarder</strong>.</li>
-                            <li>Repeat steps 3-6 for your second email address (e.g., <code><?= htmlspecialchars($configData['email_integration']['permit_address'] ?: 'permits@yourdomain.com') ?></code>), pointing it to the exact same script: <code>public_html/api/process_email.php</code>.</li>
+                            <li>Repeat steps 3-6 for your second email address (e.g., <code><?= htmlspecialchars($configData['email_integration']['permit_address'] ?: 'permits@yourdomain.com', ENT_QUOTES) ?></code>), pointing it to the exact same script: <code>public_html/api/process_email.php</code>.</li>
                         </ol>
 
                         <h4>How It Works:</h4>
-                        <p>Now, whenever an email is sent to <code><?= htmlspecialchars($configData['email_integration']['danger_address'] ?: 'danger@yourdomain.com') ?></code> or <code><?= htmlspecialchars($configData['email_integration']['permit_address'] ?: 'permits@yourdomain.com') ?></code>, Bluehost's mail server will automatically execute <code>public_html/api/process_email.php</code> and pass the entire contents of the email to the script. The script checks who the email was addressed to (or the subject) and updates the corresponding JSON file.</p>
+                        <p>Now, whenever an email is sent to <code><?= htmlspecialchars($configData['email_integration']['danger_address'] ?: 'danger@yourdomain.com', ENT_QUOTES) ?></code> or <code><?= htmlspecialchars($configData['email_integration']['permit_address'] ?: 'permits@yourdomain.com', ENT_QUOTES) ?></code>, Bluehost's mail server will automatically execute <code>public_html/api/process_email.php</code> and pass the entire contents of the email to the script. The script checks who the email was addressed to (or the subject) and updates the corresponding JSON file.</p>
                     </div>
                 </div>
 
@@ -2157,7 +2157,7 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                 </select>
                             </div>
                             <form method="POST" style="margin: 0;">
-                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES) ?>">
                                 <input type="hidden" name="action" value="clear_logs">
                                 <button type="submit" class="btn btn-remove" onclick="return confirm('Are you sure you want to clear all logs?');">Clear Logs</button>
                             </form>
@@ -2190,11 +2190,11 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
                                                 if ($log['status'] === 'warning') $statusColor = 'var(--warning-color)';
                                                 if ($log['status'] === 'success') $statusColor = 'var(--success-color)';
 
-                                                echo "<tr class='log-row' data-component='".htmlspecialchars($log['component'])."' data-status='".htmlspecialchars($log['status'])."' style='border-bottom: 1px solid var(--border-color);'>";
-                                                echo "<td style='padding: 10px; white-space: nowrap;'>" . htmlspecialchars($log['timestamp']) . "</td>";
-                                                echo "<td style='padding: 10px; font-weight: bold;'>" . htmlspecialchars($log['component']) . "</td>";
-                                                echo "<td style='padding: 10px; color: {$statusColor}; font-weight: bold;'>" . ucfirst(htmlspecialchars($log['status'])) . "</td>";
-                                                echo "<td style='padding: 10px;'>" . htmlspecialchars($log['message']) . "</td>";
+                                                echo "<tr class='log-row' data-component='".htmlspecialchars($log['component'], ENT_QUOTES)."' data-status='".htmlspecialchars($log['status'], ENT_QUOTES)."' style='border-bottom: 1px solid var(--border-color);'>";
+                                                echo "<td style='padding: 10px; white-space: nowrap;'>" . htmlspecialchars($log['timestamp'], ENT_QUOTES) . "</td>";
+                                                echo "<td style='padding: 10px; font-weight: bold;'>" . htmlspecialchars($log['component'], ENT_QUOTES) . "</td>";
+                                                echo "<td style='padding: 10px; color: {$statusColor}; font-weight: bold;'>" . ucfirst(htmlspecialchars($log['status'], ENT_QUOTES)) . "</td>";
+                                                echo "<td style='padding: 10px;'>" . htmlspecialchars($log['message'], ENT_QUOTES) . "</td>";
                                                 echo "<td style='padding: 10px; font-size: 0.9em; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' title='" . htmlspecialchars(json_encode($log['details']), ENT_QUOTES) . "'>" . htmlspecialchars(json_encode($log['details']), ENT_QUOTES) . "</td>";
                                                 echo "</tr>";
                                             }
@@ -2336,21 +2336,21 @@ function isPage($p, $currentPage) { return $p === $currentPage ? 'active' : ''; 
             <?php endif; ?>
 
             <div style="display:flex; justify-content: flex-end;">
-                <button type="submit" name="save_<?= htmlspecialchars(explode('_', $page)[0]) ?>" class="save-btn" style="padding: 15px 40px; margin-bottom: 50px;">💾 Save Changes</button>
+                <button type="submit" name="save_<?= htmlspecialchars(explode('_', $page)[0], ENT_QUOTES) ?>" class="save-btn" style="padding: 15px 40px; margin-bottom: 50px;">💾 Save Changes</button>
             </div>
         </form>
 
         <?php if ($page === 'archived_chores'): ?>
             <?php foreach($archived_chores as $evt): ?>
-                <form id="delFormChore_<?= $evt['id'] ?>" method="POST"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"><input type="hidden" name="delete_id" value="<?= $evt['id'] ?>"></form>
+                <form id="delFormChore_<?= $evt['id'] ?>" method="POST"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>"><input type="hidden" name="delete_id" value="<?= $evt['id'] ?>"></form>
             <?php endforeach; ?>
         <?php elseif ($page === 'archived_events'): ?>
             <?php foreach($archived_events as $evt): ?>
-                <form id="delFormEvt_<?= $evt['id'] ?>" method="POST"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"><input type="hidden" name="delete_id" value="<?= $evt['id'] ?>"></form>
+                <form id="delFormEvt_<?= $evt['id'] ?>" method="POST"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>"><input type="hidden" name="delete_id" value="<?= $evt['id'] ?>"></form>
             <?php endforeach; ?>
         <?php elseif ($page === 'archived_anns'): ?>
             <?php foreach($archived_announcements as $ann): ?>
-                <form id="delFormAnn_<?= $ann['id'] ?>" method="POST"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"><input type="hidden" name="delete_id" value="<?= $ann['id'] ?>"></form>
+                <form id="delFormAnn_<?= $ann['id'] ?>" method="POST"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>"><input type="hidden" name="delete_id" value="<?= $ann['id'] ?>"></form>
             <?php endforeach; ?>
         <?php endif; ?>
 
